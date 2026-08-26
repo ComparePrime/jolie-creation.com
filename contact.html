@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="fr-CH">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Contact & demande de devis | Jolie Création</title>
+<meta name="description" content="Contactez Julie pour votre demande de devis : biscuits personnalisés et décoration événementielle en Suisse romande.">
+<link rel="canonical" href="https://www.jolie-creation.com/contact.html">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Contact & demande de devis | Jolie Création">
+<meta property="og:description" content="Contactez Julie pour votre demande de devis : biscuits personnalisés et décoration événementielle en Suisse romande.">
+<meta property="og:image" content="https://www.jolie-creation.com/images/creations/prenom-giulia.jpg">
+<meta property="og:locale" content="fr_CH">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="favicon.png" type="image/png">
+<link rel="stylesheet" href="styles.css">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Alex+Brush&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+<header class="site-header">
+  <div class="wrap">
+    <a href="index.html" class="brand">
+      <img src="images/logo.png" alt="Jolie Création">
+    </a>
+    <nav class="nav-desktop" aria-label="Navigation principale">
+      <ul>
+        <li><a href="index.html">Accueil</a></li>
+        <li><a href="creations.html">Créations</a></li>
+        <li><a href="formules.html">Nos formules</a></li>
+        <li><a href="evenements.html">Événements</a></li>
+        <li><a href="a-propos.html">À propos de Julie</a></li>
+        <li><a href="contact.html" aria-current="page">Contact</a></li>
+      </ul>
+    </nav>
+    <div class="header-actions">
+      <a href="contact.html" class="btn btn-primary btn-small">Demander un devis</a>
+      <button class="burger" aria-label="Ouvrir le menu"><span></span><span></span><span></span></button>
+    </div>
+  </div>
+</header>
+
+<div class="mobile-nav" role="dialog" aria-modal="true" aria-label="Menu">
+  <div class="mobile-nav-top">
+    <img src="images/logo.png" alt="Jolie Création">
+    <button class="mobile-nav-close" aria-label="Fermer le menu">&times;</button>
+  </div>
+  <ul>
+    <li><a href="index.html">Accueil</a></li>
+    <li><a href="creations.html">Créations</a></li>
+    <li><a href="formules.html">Nos formules</a></li>
+    <li><a href="evenements.html">Événements</a></li>
+    <li><a href="a-propos.html">À propos de Julie</a></li>
+    <li><a href="contact.html">Contact</a></li>
+  </ul>
+  <a href="contact.html" class="btn btn-primary">Demander un devis</a>
+</div>
+
+<main>
+  <div class="page-intro">
+    <div class="wrap">
+      <p class="breadcrumb"><a href="index.html">Accueil</a> / Contact</p>
+      <span class="eyebrow" style="justify-content:center;">Demande de devis</span>
+      <h1>Parlons de votre événement</h1>
+      <p class="narrow" style="color:var(--ink-soft);">Remplissez le formulaire ci-dessous avec un maximum de détails : Julie revient vers vous avec une proposition adaptée à votre thème et à votre budget.</p>
+    </div>
+  </div>
+
+  <section style="padding-top:20px;">
+    <div class="wrap">
+      <div class="contact-layout">
+        <div class="contact-info-card">
+          <h3>Coordonnées</h3>
+          <div class="contact-info-row"><span class="ic">📞</span><div><strong>Téléphone</strong><span><a href="tel:+41783127545">+41 78 312 75 45</a></span></div></div>
+          <div class="contact-info-row"><span class="ic">✉️</span><div><strong>E-mail</strong><span><a href="mailto:info@jolie-creation.com">info@jolie-creation.com</a></span></div></div>
+          <div class="contact-info-row"><span class="ic">📍</span><div><strong>Zone d'activité</strong><span>Suisse romande</span></div></div>
+          <div class="contact-info-row"><span class="ic">⏱️</span><div><strong>Délai de réponse</strong><span>Julie vous répond généralement sous quelques jours</span></div></div>
+          <div class="placeholder-note">Emplacement à compléter — délais de commande habituels, zones de livraison précises et horaires de disponibilité de Julie.</div>
+        </div>
+
+        <form class="devis-form" novalidate>
+          <div class="form-success">Merci pour votre demande ! Julie reviendra vers vous très prochainement. <em>(Formulaire de démonstration — à connecter à une boîte e-mail ou un service d'envoi pour recevoir réellement les demandes.)</em></div>
+          <div class="form-row two">
+            <div class="field"><label for="prenom">Prénom <span class="req">*</span></label><input id="prenom" name="prenom" type="text" required></div>
+            <div class="field"><label for="nom">Nom <span class="req">*</span></label><input id="nom" name="nom" type="text" required></div>
+          </div>
+          <div class="form-row two">
+            <div class="field"><label for="email">E-mail <span class="req">*</span></label><input id="email" name="email" type="email" required></div>
+            <div class="field"><label for="tel">Téléphone</label><input id="tel" name="tel" type="tel"></div>
+          </div>
+          <div class="form-row two">
+            <div class="field">
+              <label for="type-evenement">Type d'événement <span class="req">*</span></label>
+              <select id="type-evenement" name="type-evenement" required>
+                <option value="">Sélectionner…</option>
+                <option>Anniversaire</option>
+                <option>Naissance</option>
+                <option>Baptême</option>
+                <option>Baby shower</option>
+                <option>Mariage</option>
+                <option>Communion</option>
+                <option>Événement professionnel</option>
+                <option>Autre</option>
+              </select>
+            </div>
+            <div class="field"><label for="date-evenement">Date de l'événement</label><input id="date-evenement" name="date-evenement" type="date"></div>
+          </div>
+          <div class="form-row two">
+            <div class="field"><label for="quantite">Nombre de personnes / quantité souhaitée</label><input id="quantite" name="quantite" type="text" placeholder="Ex. 20 personnes"></div>
+            <div class="field">
+              <label for="formule">Formule souhaitée</label>
+              <select id="formule" name="formule">
+                <option value="">Sélectionner…</option>
+                <option>Formule Essentielle</option>
+                <option>Formule Événement</option>
+                <option>Formule Sur-Mesure</option>
+                <option>Je ne sais pas encore</option>
+              </select>
+            </div>
+          </div>
+          <div class="field"><label for="theme">Thème / couleurs souhaités</label><input id="theme" name="theme" type="text" placeholder="Ex. tons roses et dorés, thème licorne…"></div>
+          <div class="field"><label for="message">Votre message <span class="req">*</span></label><textarea id="message" name="message" required placeholder="Décrivez votre projet, vos envies, vos contraintes…"></textarea></div>
+          <div class="field"><label for="inspiration">Une image d'inspiration ? (optionnel)</label><input id="inspiration" name="inspiration" type="file" accept="image/*"></div>
+          <p class="form-note">Les champs marqués d'un <span class="req">*</span> sont obligatoires. Vos informations sont utilisées uniquement pour traiter votre demande de devis.</p>
+          <button type="submit" class="btn btn-primary">Envoyer ma demande</button>
+        </form>
+      </div>
+    </div>
+  </section>
+</main>
+<footer class="site-footer">
+  <div class="wrap">
+    <div class="footer-grid">
+      <div>
+        <img src="images/logo.png" alt="Jolie Création">
+        <p>Biscuits personnalisés &amp; décoration événementielle, imaginés à la main en Suisse romande.</p>
+      </div>
+      <div>
+        <h4>Navigation</h4>
+        <ul>
+          <li><a href="index.html">Accueil</a></li>
+          <li><a href="creations.html">Créations</a></li>
+          <li><a href="formules.html">Nos formules</a></li>
+          <li><a href="evenements.html">Événements</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Jolie Création</h4>
+        <ul>
+          <li><a href="a-propos.html">À propos de Julie</a></li>
+          <li><a href="contact.html">Contact</a></li>
+          <li><a href="mentions-legales.html">Mentions légales</a></li>
+          <li><a href="confidentialite.html">Confidentialité</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Contact</h4>
+        <ul>
+          <li><a href="tel:+41783127545">+41 78 312 75 45</a></li>
+          <li><a href="mailto:info@jolie-creation.com">info@jolie-creation.com</a></li>
+          <li>Suisse romande</li>
+        </ul>
+        <div class="socials" style="margin-top:16px;">
+          <a href="#" aria-label="Instagram">Instagram</a>
+          <a href="#" aria-label="Facebook">Facebook</a>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>&copy; <span data-year></span> Jolie Création. Tous droits réservés.</span>
+      <span><a href="mentions-legales.html">Mentions légales</a> &middot; <a href="confidentialite.html">Confidentialité</a></span>
+    </div>
+  </div>
+</footer>
+<div class="lightbox">
+  <button class="lightbox-close" aria-label="Fermer">&times;</button>
+  <img src="" alt="">
+  <div class="lightbox-cap"></div>
+</div>
+<script src="script.js"></script>
+</body>
+</html>
