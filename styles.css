@@ -499,8 +499,27 @@ section{ padding: 96px 0; }
   font-size: 12.5px; color: rgba(255,253,249,.55);
 }
 .footer-bottom a:hover{ color: var(--gold-light); }
-.socials{ display:flex; gap: 14px; }
-.socials a{ color: rgba(255,253,249,.8); }
+.socials{ display:flex; gap: 14px; flex-wrap:wrap; }
+.socials a{ color: rgba(255,253,249,.8); font-size: 13.5px; }
+.socials a:hover{ color: var(--gold-light); }
+
+/* ---------- WhatsApp flottant ---------- */
+.whatsapp-float{
+  position: fixed;
+  right: 20px; bottom: 20px;
+  width: 56px; height: 56px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--gold-light), var(--gold));
+  display:flex; align-items:center; justify-content:center;
+  font-size: 26px;
+  box-shadow: var(--shadow-lift);
+  z-index: 55;
+  transition: transform .2s ease;
+}
+.whatsapp-float:hover{ transform: scale(1.08); }
+@media (min-width: 900px){
+  .whatsapp-float{ right: 28px; bottom: 28px; }
+}
 
 /* ---------- Page intro (pages secondaires) ---------- */
 .page-intro{
