@@ -46,6 +46,7 @@ body{
   font-size: 17px;
   line-height: 1.65;
   -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
 }
 
 img{ max-width:100%; display:block; }
@@ -63,7 +64,10 @@ p{ margin:0 0 1em; }
 .wrap{
   max-width: var(--container);
   margin: 0 auto;
-  padding: 0 28px;
+  padding: 0 20px;
+}
+@media (min-width: 640px){
+  .wrap{ padding: 0 28px; }
 }
 
 .eyebrow{
@@ -159,7 +163,10 @@ p{ margin:0 0 1em; }
   background: var(--gold);
   border-radius:2px;
 }
-.header-actions{ display:flex; align-items:center; gap:14px; }
+.header-actions{ display:flex; align-items:center; gap:10px; }
+@media (max-width: 419px){
+  .header-actions .btn-primary{ display:none; }
+}
 
 .burger{
   display:inline-flex; flex-direction:column; gap:5px;
@@ -265,17 +272,21 @@ section{ padding: 96px 0; }
   background: var(--paper);
   border-radius: 16px;
   box-shadow: var(--shadow-lift);
-  padding: 16px 20px;
+  padding: 14px 18px;
   font-size: 13.5px;
   display:flex; align-items:center; gap:12px;
   max-width: 230px;
+  left: 14px; right: 14px;
+  bottom: -20px;
+  width: auto;
 }
-.hero-media .float-card.c1{ bottom: -24px; left: -18px; }
 .hero-media .float-card.c1 .dot{ width:10px;height:10px;border-radius:50%; background: var(--blush-deep); flex:none; }
 
 @media (min-width: 960px){
+  .hero-media .float-card.c1{ left: -40px; right:auto; bottom:-24px; }
+}
+@media (min-width: 960px){
   .hero .wrap{ grid-template-columns: 1fr 0.95fr; gap: 60px; }
-  .hero-media .float-card.c1{ left: -40px; }
 }
 
 /* ---------- Univers / valeurs ---------- */
@@ -296,6 +307,13 @@ section{ padding: 96px 0; }
 @media (min-width: 780px){
   .values-grid{ grid-template-columns: repeat(4,1fr); }
 }
+
+/* Reusable responsive grid helpers — avoid forcing multi-column layouts on small phones */
+.grid-2{ grid-template-columns: 1fr; }
+@media (min-width: 640px){ .grid-2{ grid-template-columns: repeat(2,1fr); } }
+.grid-3{ grid-template-columns: 1fr; }
+@media (min-width: 640px){ .grid-3{ grid-template-columns: repeat(2,1fr); } }
+@media (min-width: 980px){ .grid-3{ grid-template-columns: repeat(3,1fr); } }
 
 .univers-layout{
   display:grid; gap: 48px;
@@ -530,6 +548,73 @@ section{ padding: 96px 0; }
 .page-intro h1{ font-size: clamp(34px, 5vw, 52px); margin-top: 14px; }
 .breadcrumb{ font-size: 13px; color: var(--ink-soft); margin-bottom: 18px; }
 .breadcrumb a:hover{ color: var(--gold-deep); }
+
+/* ---------- À propos ---------- */
+.about-layout{
+  display:grid; gap: 36px;
+  grid-template-areas: "top" "photo" "bottom";
+}
+@media (min-width: 960px){
+  .about-layout{
+    grid-template-columns: 0.85fr 1.15fr;
+    grid-template-areas: "top photo" "bottom photo";
+    align-items:start;
+    gap: 50px;
+  }
+}
+.about-top{ grid-area: top; }
+.about-photo{ grid-area: photo; }
+.about-bottom{ grid-area: bottom; }
+.about-photo .scallop-frame{ aspect-ratio: 4/5; }
+
+.divider-heart{
+  display:flex; align-items:center; gap:14px;
+  margin: 16px 0 26px;
+  color: var(--gold);
+}
+.divider-heart::before, .divider-heart::after{
+  content:""; flex:1; height:1px; background: var(--line);
+}
+
+.value-heart{ display:flex; gap:14px; margin-bottom:22px; }
+.value-heart .heart{ flex:none; color: var(--blush-deep); font-size:18px; margin-top:3px; }
+.value-heart h3{
+  font-family: var(--font-body); font-weight:600;
+  font-size: 14px; letter-spacing:.04em; text-transform:uppercase;
+  color: var(--gold-deep); margin-bottom:4px;
+}
+.value-heart p{ font-size: 14.5px; color: var(--ink-soft); margin:0; }
+
+.objectif-box{
+  background: var(--cream-deep);
+  border-radius: 18px;
+  padding: 26px 28px;
+  text-align:center;
+  margin-top: 10px;
+}
+.objectif-box .heart{ color: var(--gold); font-size:18px; display:block; margin-bottom:10px; }
+.objectif-box p{
+  font-family: var(--font-script);
+  font-size: clamp(19px, 2.4vw, 23px);
+  color: var(--ink);
+  line-height:1.5;
+  margin:0;
+}
+
+.bottom-band{
+  background: var(--blush);
+  padding: 26px 20px;
+  text-align:center;
+  display:flex; align-items:center; justify-content:center; gap:18px;
+  flex-wrap:wrap;
+}
+.bottom-band span.heart{ color: var(--gold-deep); font-size:18px; }
+.bottom-band p{
+  font-family: var(--font-script);
+  font-size: clamp(19px, 2.6vw, 24px);
+  color: var(--ink);
+  margin:0;
+}
 
 /* ---------- Formulaire de contact ---------- */
 .contact-layout{ display:grid; gap: 50px; }
