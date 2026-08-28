@@ -389,37 +389,140 @@ main > section:first-of-type + section { padding-top: 80px; }
 
 /* ---------- Formules / cards ---------- */
 .formules-grid{
-  display:grid; gap: 26px;
+  display:grid; gap: 40px;
   grid-template-columns: 1fr;
+  max-width: 1100px !important;
+  margin: 0 auto !important;
 }
-@media (min-width: 860px){ .formules-grid{ grid-template-columns: repeat(3,1fr); } }
+@media (min-width: 860px){
+  .formules-grid{
+    grid-template-columns: repeat(2,1fr);
+    gap: 48px;
+  }
+}
 
 .formule-card{
   background: var(--paper);
-  border-radius: 24px;
-  padding: 36px 30px;
+  border-radius: 28px;
+  overflow: hidden;
   box-shadow: var(--shadow-soft);
   display:flex; flex-direction:column;
   border: 1px solid var(--line);
   position:relative;
+  transition: transform .3s ease, box-shadow .3s ease;
+}
+.formule-card:hover{
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-lift);
 }
 .formule-card.featured{
-  border-color: var(--gold);
+  border-color: var(--gold-light);
   box-shadow: var(--shadow-lift);
-  transform: translateY(-8px);
 }
+.formule-card.featured:hover{
+  transform: translateY(-6px);
+}
+
+.card-image{
+  width: 100%;
+  height: 320px;
+  overflow: hidden;
+  background: var(--cream-deep);
+  position: relative;
+}
+.card-image img{
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  transition: transform .5s ease;
+}
+.formule-card:hover .card-image img{
+  transform: scale(1.04);
+}
+
+.card-content{
+  padding: 32px 32px 24px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
 .formule-badge{
-  position:absolute; top:-14px; left:50%; transform:translateX(-50%);
+  position:absolute; top: 16px; left: 16px; z-index: 10;
   background: var(--ink); color: var(--paper);
-  font-size: 11.5px; letter-spacing:.08em; text-transform:uppercase;
-  padding: 7px 16px; border-radius:999px;
+  font-size: 10.5px; letter-spacing:.1em; text-transform:uppercase;
+  padding: 8px 18px; border-radius: 20px;
+  font-weight: 600;
+  box-shadow: 0 4px 12px rgba(58,44,30,.25);
 }
-.formule-card h3{ font-size: 23px; margin-bottom: 6px; }
-.formule-card .price{ font-family: var(--font-display); color: var(--gold-deep); font-size: 17px; margin-bottom: 18px; }
-.formule-card p.desc{ color: var(--ink-soft); font-size: 14.5px; margin-bottom: 20px; }
-.formule-list{ display:flex; flex-direction:column; gap: 10px; margin-bottom: 28px; flex:1; }
-.formule-list li{ display:flex; gap: 10px; font-size: 14.5px; align-items:flex-start; }
-.formule-list li::before{ content:"✓"; color: var(--gold-deep); font-weight:700; flex:none; }
+
+.formule-card h3{
+  font-size: 26px;
+  margin-bottom: 12px;
+  margin-top: 0;
+  color: var(--ink);
+}
+.formule-card .price{
+  font-family: var(--font-display);
+  color: var(--gold-deep);
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 16px;
+}
+.formule-card p.desc{
+  color: var(--ink-soft);
+  font-size: 15px;
+  line-height: 1.6;
+  margin-bottom: 24px;
+}
+.formule-list{
+  display:flex;
+  flex-direction:column;
+  gap: 14px;
+  margin-bottom: 32px;
+  flex:1;
+}
+.formule-list li{
+  display:flex;
+  gap: 12px;
+  font-size: 14.5px;
+  align-items:flex-start;
+  color: var(--ink-soft);
+  line-height: 1.5;
+}
+.formule-list li::before{
+  content:"•";
+  color: var(--gold-deep);
+  font-weight:700;
+  flex:none;
+  margin-top: 2px;
+}
+
+.formule-card .btn{
+  align-self: flex-start;
+  margin-top: auto;
+  padding: 12px 28px;
+  font-size: 13.5px;
+  border-radius: 24px;
+}
+.formule-card .btn-primary{
+  background: linear-gradient(135deg, var(--gold-light), var(--gold-deep));
+  color: #fff;
+  font-weight: 600;
+}
+.formule-card .btn-primary:hover{
+  filter: brightness(0.95);
+}
+.formule-card .btn-ghost{
+  border: 1.5px solid var(--ink-soft);
+  color: var(--ink);
+  font-weight: 500;
+}
+.formule-card .btn-ghost:hover{
+  background: var(--cream-deep);
+  border-color: var(--ink);
+}
 
 /* ---------- Événements ---------- */
 .events-grid{ display:grid; gap: 20px; grid-template-columns: repeat(2,1fr); }
