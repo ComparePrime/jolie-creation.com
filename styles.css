@@ -231,7 +231,9 @@ p{ margin:0 0 1em; }
 
 /* ---------- Section spacing ---------- */
 section{ padding: 96px 0; }
+main > section:first-of-type + section { padding-top: 120px; }
 .section-deep{ background: var(--cream-deep); }
+.section-deep:first-of-type { padding: 120px 0; }
 .section-ink{ background: var(--ink); color: var(--paper); }
 .section-ink h2, .section-ink h3{ color: var(--paper); }
 .section-head{ max-width: 640px; margin-bottom: 56px; }
