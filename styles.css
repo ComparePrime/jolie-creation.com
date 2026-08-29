@@ -497,12 +497,11 @@ main > section:first-of-type + section { padding-top: 80px; }
 }
 
 .formule-card .btn{
-  align-self: flex-start;
   margin-top: auto;
   margin-left: 32px;
   margin-right: 32px;
   margin-bottom: 32px;
-  padding: 12px 28px;
+  padding: 14px 36px;
   font-size: 13.5px;
   border-radius: 24px;
 }
