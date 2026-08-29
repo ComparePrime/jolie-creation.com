@@ -389,10 +389,9 @@ main > section:first-of-type + section { padding-top: 80px; }
 
 /* ---------- Formules / cards ---------- */
 .formules-grid{
-  display:grid; gap: 40px;
+  display:grid;
+  gap: 40px;
   grid-template-columns: 1fr;
-  max-width: 1100px !important;
-  margin: 0 auto !important;
 }
 @media (min-width: 860px){
   .formules-grid{
@@ -442,8 +441,7 @@ main > section:first-of-type + section { padding-top: 80px; }
 }
 
 .card-content{
-  padding: 32px 32px 24px;
-  flex: 1;
+  padding: 32px 32px 0;
   display: flex;
   flex-direction: column;
 }
@@ -481,7 +479,6 @@ main > section:first-of-type + section { padding-top: 80px; }
   flex-direction:column;
   gap: 14px;
   margin-bottom: 32px;
-  flex:1;
 }
 .formule-list li{
   display:flex;
@@ -500,9 +497,11 @@ main > section:first-of-type + section { padding-top: 80px; }
 }
 
 .formule-card .btn{
-  align-self: flex-start;
   margin-top: auto;
-  padding: 12px 28px;
+  margin-left: 32px;
+  margin-right: 32px;
+  margin-bottom: 32px;
+  padding: 14px 36px;
   font-size: 13.5px;
   border-radius: 24px;
 }
