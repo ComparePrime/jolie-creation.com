@@ -72,6 +72,22 @@ document.addEventListener('DOMContentLoaded', function () {
   // --- Formulaire de devis (démo front-end) ---
   var form = document.querySelector('.devis-form');
   if (form) {
+    var formuleSelect = document.getElementById('formule');
+    var receptionField = formuleSelect ? formuleSelect.closest('.field') : null;
+    var receptionRow = receptionField ? receptionField.closest('.form-row') : null;
+
+    function updateReceptionVisibility() {
+      if (receptionRow && formuleSelect) {
+        var isBiscuitsOnly = formuleSelect.value === 'Biscuits personnalisés (sans mise en scène)';
+        receptionRow.style.display = isBiscuitsOnly ? '' : 'none';
+      }
+    }
+
+    if (formuleSelect) {
+      formuleSelect.addEventListener('change', updateReceptionVisibility);
+      updateReceptionVisibility();
+    }
+
     form.addEventListener('submit', function (e) {
       e.preventDefault();
       var success = document.querySelector('.form-success');
@@ -80,6 +96,9 @@ document.addEventListener('DOMContentLoaded', function () {
         success.scrollIntoView({ behavior: 'smooth', block: 'center' });
       }
       form.reset();
+      if (formuleSelect) {
+        updateReceptionVisibility();
+      }
     });
   }
 

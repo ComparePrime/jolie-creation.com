@@ -399,6 +399,11 @@ main > section:first-of-type + section { padding-top: 80px; }
     gap: 48px;
   }
 }
+@media (min-width: 1100px){
+  .formules-grid{
+    grid-template-columns: repeat(3,1fr);
+  }
+}
 
 .formule-card{
   background: var(--paper);
