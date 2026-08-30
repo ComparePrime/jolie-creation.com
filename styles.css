@@ -8,9 +8,9 @@
    ============================================================ */
 
 :root{
-  --cream:        #FBF6EC;
-  --cream-deep:   #F3E7D3;
-  --paper:        #FFFDF9;
+  --cream:        #FCF1EB;
+  --cream-deep:   #F5DED3;
+  --paper:        #FFFBF7;
   --ink:          #3A2C1E;
   --ink-soft:     #6B5A48;
   --gold:         #B98A46;
@@ -18,7 +18,8 @@
   --gold-light:   #E7C77E;
   --blush:        #E7BBAC;
   --blush-deep:   #D89C8B;
-  --line:         #E7D9C2;
+  --line:         #EFD8CB;
+  --header-bg:    252, 241, 235;
 
   --font-display: "Fraunces", "Iowan Old Style", Georgia, serif;
   --font-script:  "Alex Brush", cursive;
@@ -62,13 +63,32 @@ html{ scroll-behavior: smooth; }
 
 body{
   margin:0;
-  background: var(--cream);
+  background-color: var(--cream);
   color: var(--ink);
   font-family: var(--font-body);
   font-size: 17px;
   line-height: 1.65;
   -webkit-font-smoothing: antialiased;
   overflow-x: hidden;
+  position: relative;
+}
+/* Motif de marque en fond, fixe pendant le défilement (desktop et mobile).
+   Un calque position:fixed (plutôt que background-attachment:fixed) se
+   dimensionne toujours sur la fenêtre visible, jamais sur la hauteur totale
+   de la page, et évite les soucis de performance historiques de
+   background-attachment:fixed sur mobile. Voile crème pour garantir la
+   lisibilité du texte quel que soit l'endroit du motif révélé. */
+body::before{
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background-image:
+    linear-gradient(rgba(252, 241, 235, 0.9), rgba(252, 241, 235, 0.9)),
+    url('images/fond-jolie-creation.jpg');
+  background-size: cover;
+  background-position: center top;
+  background-repeat: no-repeat;
 }
 
 img{ max-width:100%; display:block; }
@@ -157,7 +177,7 @@ p{ margin:0 0 1em; overflow-wrap: break-word; }
 /* ---------- Header ---------- */
 .site-header{
   position: sticky; top:0; z-index: 60;
-  background: rgba(251,246,236,.88);
+  background: rgba(var(--header-bg), .88);
   backdrop-filter: blur(10px);
   border-bottom: 1px solid var(--line);
 }
