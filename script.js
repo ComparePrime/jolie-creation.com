@@ -73,8 +73,8 @@ document.addEventListener('DOMContentLoaded', function () {
   var form = document.querySelector('.devis-form');
   if (form) {
     var formuleSelect = document.getElementById('formule');
-    var receptionField = formuleSelect ? formuleSelect.closest('.field') : null;
-    var receptionRow = receptionField ? receptionField.closest('.form-row') : null;
+    var receptionSelect = document.getElementById('reception');
+    var receptionRow = receptionSelect ? receptionSelect.closest('.form-row') : null;
 
     function updateReceptionVisibility() {
       if (receptionRow && formuleSelect) {
