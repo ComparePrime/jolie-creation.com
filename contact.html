@@ -130,17 +130,35 @@
           </div>
           <div class="form-row two">
             <div class="field"><label for="theme">Thème / couleurs souhaités</label><input id="theme" name="theme" type="text" placeholder="Ex. tons roses et dorés, thème licorne…"></div>
-            <div class="field">
-              <label for="reception">Livraison ou retrait ?</label>
-              <select id="reception" name="reception">
+            <div class="field" id="reception-mode-field">
+              <label for="reception-mode">Livraison ou retrait ?</label>
+              <select id="reception-mode" name="reception-mode">
                 <option value="">Sélectionner…</option>
-                <option>Retrait à Domdidier (Fribourg)</option>
-                <option>Livraison en Suisse</option>
-                <option>Livraison en France</option>
-                <option>Livraison ailleurs en Europe</option>
-                <option>Ne s'applique pas (mini-scénographie)</option>
+                <option value="retrait">Retrait à Domdidier (Canton de Fribourg)</option>
+                <option value="livraison">Livraison</option>
               </select>
             </div>
+          </div>
+          <div class="form-row two" id="pays-row" hidden>
+            <div class="field" id="pays-field">
+              <label for="pays-livraison">Pays de livraison</label>
+              <select id="pays-livraison" name="pays-livraison">
+                <option value="">Sélectionner…</option>
+                <option value="suisse">Suisse</option>
+                <option value="france">France</option>
+                <option value="europe">Autre pays d'Europe</option>
+              </select>
+            </div>
+          </div>
+          <div class="field" id="mondial-relay-field" hidden>
+            <label>Point Relais / Locker Mondial Relay <span class="req">*</span></label>
+            <div id="mondial-relay-widget-zone"></div>
+            <div id="mondial-relay-fallback" class="placeholder-note" style="margin-top:0;">
+              La sélection interactive du point relais sera activée dès que le compte professionnel Mondial Relay de Jolie Création sera configuré. En attendant, merci d'indiquer ci-dessous la ville ou le code postal où vous souhaitez récupérer votre colis en France&nbsp;: je vous confirmerai les points relais disponibles avec votre devis.
+            </div>
+            <input type="text" id="mondial-relay-manual" name="mondial-relay-manual" placeholder="Ville ou code postal en France" style="margin-top:12px;">
+            <input type="hidden" id="mondial-relay-id" name="mondial-relay-id">
+            <input type="hidden" id="mondial-relay-address" name="mondial-relay-address">
           </div>
           <div class="field"><label for="message">Votre message <span class="req">*</span></label><textarea id="message" name="message" required placeholder="Décrivez votre projet, vos envies, vos contraintes…"></textarea></div>
           <div class="field"><label for="inspiration">Une image d'inspiration ? (optionnel)</label><input id="inspiration" name="inspiration" type="file" accept="image/*"></div>
@@ -205,6 +223,14 @@
   <img src="" alt="">
   <div class="lightbox-cap"></div>
 </div>
+<!--
+  Widget Mondial Relay (sélection de Point Relais / Locker) — à activer une fois
+  le compte professionnel Mondial Relay obtenu et l'ID Enseigne (Brand ID) renseigné
+  dans MONDIAL_RELAY_BRAND_ID (script.js). Décommenter les deux lignes ci-dessous
+  et renseigner la constante pour rendre le sélecteur interactif.
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script src="https://widget.mondialrelay.com/parcelshop-picker/js/latest/mondialrelay.parcelshopwidget.min.js"></script>
+-->
 <script src="script.js"></script>
 </body>
 </html>
