@@ -339,6 +339,17 @@ main > section:first-of-type + section { padding-top: 80px; }
   .hero .wrap{ grid-template-columns: 1fr 0.95fr; gap: 60px; }
 }
 
+/* Hero sans photo (accueil) : une seule colonne centrée. Sans cette règle,
+   le texte resterait dans la colonne de gauche avec un vide à droite. */
+.hero-solo .wrap{
+  grid-template-columns: 1fr;
+  justify-items: center;
+  text-align: center;
+}
+.hero-solo .hero-copy{ max-width: 780px; }
+.hero-solo .hero-copy p.lead{ margin-left: auto; margin-right: auto; }
+.hero-solo .hero-actions{ justify-content: center; margin-bottom: 0; }
+
 /* ---------- Univers / valeurs ---------- */
 .values-grid{
   display:grid; gap: 26px;
@@ -455,6 +466,11 @@ main > section:first-of-type + section { padding-top: 80px; }
   .formules-grid{
     grid-template-columns: repeat(3,1fr);
   }
+}
+/* Une grille explicitement en 2 colonnes (accueil) ne doit pas être
+   repassée en 3 colonnes par la règle ci-dessus. */
+@media (min-width: 860px){
+  .formules-grid.grid-2{ grid-template-columns: repeat(2,1fr); }
 }
 
 .formule-card{
