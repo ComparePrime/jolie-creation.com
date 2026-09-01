@@ -248,11 +248,14 @@ document.addEventListener('DOMContentLoaded', function () {
       { selector: '.timeline li', max: 5, step: 90 }
     ];
     var mediaSelectors = ['.hero-media', '.univers-media', '.about-photo', '.home-gallery-strip .scallop-frame'];
+    // Arrivée depuis la gauche, légèrement décalée pour passer après le
+    // reste du hero (qui, lui, monte).
+    var leftSelectors = ['.hero-question'];
     var soloSelectors = [
       '.hero-copy', '.section-head', '.page-intro > .wrap', '.cta-final',
       '.univers-layout > div:not(.univers-media)', '.contact-info-card', 'form.devis-form',
       '.about-top', '.about-bottom', '.objectif-box', '.bottom-band'
-    ];
+    ].concat(leftSelectors);
 
     var revealTargets = new Map(); // element -> delayMs
 
@@ -287,9 +290,14 @@ document.addEventListener('DOMContentLoaded', function () {
       }, { threshold: 0.1, rootMargin: '0px 0px -10% 0px' });
 
       var mediaSelectorList = mediaSelectors.join(',');
+      var leftSelectorList = leftSelectors.join(',');
       revealTargets.forEach(function (delay, el) {
         el.classList.add('reveal-init');
         if (el.matches(mediaSelectorList)) el.classList.add('reveal-media');
+        if (el.matches(leftSelectorList)) {
+          el.classList.add('reveal-left');
+          if (!delay) delay = 220;
+        }
         if (delay) el.style.transitionDelay = delay + 'ms';
         revealObserver.observe(el);
       });
