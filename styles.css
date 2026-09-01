@@ -355,6 +355,27 @@ main > section:first-of-type + section { padding-top: 80px; }
 .hero-solo .hero-copy p.lead{ margin-left: auto; margin-right: auto; }
 .hero-solo .hero-actions{ justify-content: center; margin-bottom: 0; }
 
+/* Sans boutons, le hero se termine sur le texte : on resserre le bas
+   pour enchaîner directement sur les deux cartes. */
+.hero-solo{ padding-bottom: 30px; }
+.hero-solo .hero-copy > *:last-child{ margin-bottom: 0; }
+.hero-solo + section{ padding-top: 42px; }
+
+/* Phrase mise en avant, dans le script signature de Jolie Création.
+   Un script a une hauteur d'x faible : il lui faut une taille nettement
+   supérieure au texte courant pour paraître plus grand et rester lisible. */
+.hero-accroche{
+  font-family: var(--font-script);
+  font-size: clamp(32px, 5.2vw, 44px);
+  line-height: 1.25;
+  color: var(--gold-deep);
+  max-width: 660px;
+  margin: 6px auto 24px;
+}
+@media (max-width: 560px){
+  .hero-accroche{ font-size: clamp(29px, 8vw, 34px); line-height: 1.3; }
+}
+
 /* ---------- Univers / valeurs ---------- */
 .values-grid{
   display:grid; gap: 26px;
