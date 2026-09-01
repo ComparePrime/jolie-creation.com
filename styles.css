@@ -456,6 +456,11 @@ main > section:first-of-type + section { padding-top: 80px; }
     grid-template-columns: repeat(3,1fr);
   }
 }
+/* Une grille explicitement en 2 colonnes (accueil) ne doit pas être
+   repassée en 3 colonnes par la règle ci-dessus. */
+@media (min-width: 860px){
+  .formules-grid.grid-2{ grid-template-columns: repeat(2,1fr); }
+}
 
 .formule-card{
   background: var(--paper);
