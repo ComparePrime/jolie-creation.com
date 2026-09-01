@@ -365,7 +365,18 @@ main > section:first-of-type + section { padding-top: 80px; }
   text-align: center;
 }
 .hero-solo .hero-copy{ max-width: 860px; }
-.hero-solo{ padding-top: 64px; padding-bottom: 34px; }
+.hero-solo{
+  padding-top: 64px;
+  padding-bottom: 34px;
+  /* Voile crème : le filigrane du fond passait au premier plan et se
+     mélangeait au texte (deux calligraphies dorées superposées). Il est
+     ici apaisé derrière le texte puis rendu au décor sur les bords. */
+  background: radial-gradient(130% 105% at 50% 50%,
+    rgba(252,241,235,.96) 0%,
+    rgba(252,241,235,.93) 45%,
+    rgba(252,241,235,.70) 70%,
+    rgba(252,241,235,0) 92%);
+}
 .hero-solo .hero-copy > *:last-child{ margin-bottom: 0; }
 .hero-solo + section{ padding-top: 46px; }
 
@@ -377,12 +388,15 @@ main > section:first-of-type + section { padding-top: 80px; }
 
 /* Titre : serif, imposant mais compact. La largeur limitée le force à
    se casser en 2 lignes courtes plutôt qu'en une longue coulée. */
+/* Fraunces en 400 : en 600 le titre était épais et "gras de journal".
+   Allégé et agrandi, il gagne le raffinement attendu. */
 .hero-solo h1{
-  font-size: clamp(34px, 4.6vw, 54px);
-  line-height: 1.12;
-  letter-spacing: -0.015em;
-  max-width: 27ch;
-  margin: 22px auto 0;
+  font-weight: 400;
+  font-size: clamp(36px, 5vw, 60px);
+  line-height: 1.14;
+  letter-spacing: -0.005em;
+  max-width: 26ch;
+  margin: 24px auto 0;
 }
 
 .hero-intro{
@@ -421,9 +435,10 @@ main > section:first-of-type + section { padding-top: 80px; }
   font-family: var(--font-script);
   font-size: clamp(21px, 2.4vw, 28px);
   line-height: 1.3;
-  color: var(--gold);
+  /* --gold était trop clair sur le fond crème : la ligne se perdait. */
+  color: var(--gold-deep);
   max-width: 760px;
-  margin: 12px auto 0 !important;
+  margin: 14px auto 0 !important;
 }
 
 .hero-transition{
