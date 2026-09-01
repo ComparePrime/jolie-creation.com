@@ -370,6 +370,49 @@ main > section:first-of-type + section { padding-top: 80px; }
 .value-card h3{ font-size: 18px; margin-bottom: 8px; hyphens: auto; }
 .value-card p{ font-size: 14.5px; color: var(--ink-soft); margin:0; }
 
+/* Catégories cliquables (page Biscuits personnalisés) */
+.category-card{
+  display: block;
+  border: 1px solid transparent;
+  transition: transform .25s ease, box-shadow .25s ease, border-color .25s ease;
+}
+.category-card h3{ margin-bottom: 0; }
+.category-card:hover{
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-lift);
+  border-color: var(--gold-light);
+}
+
+/* Thèmes d'anniversaire, en pastilles */
+.themes-block{
+  margin-top: 46px;
+  text-align: center;
+}
+.themes-block h3{
+  font-size: 17px;
+  margin-bottom: 18px;
+}
+.themes-list{
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: center;
+}
+.theme-chip{
+  padding: 10px 18px;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  background: var(--paper);
+  font-size: 13.5px;
+  color: var(--ink-soft);
+  transition: border-color .2s ease, color .2s ease, transform .2s ease;
+}
+.theme-chip:hover{
+  border-color: var(--gold);
+  color: var(--ink);
+  transform: translateY(-2px);
+}
+
 @media (min-width: 780px){
   .values-grid{ grid-template-columns: repeat(4,1fr); }
 }

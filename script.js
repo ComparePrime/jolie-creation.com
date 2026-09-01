@@ -104,26 +104,74 @@ document.addEventListener('DOMContentLoaded', function () {
     if (paysSelect) paysSelect.addEventListener('change', updateCascade);
     updateCascade();
 
-    // --- Pré-remplissage depuis un package biscuits (?formule=biscuits&theme=...&quantite=...) ---
-    (function prefillFromPackage() {
+    // --- Liste des thèmes : visible uniquement pour un anniversaire ---
+    var evenementSelect = document.getElementById('type-evenement');
+    var themeAnnivRow = document.getElementById('theme-anniversaire-row');
+    var themeAnnivSelect = document.getElementById('theme-anniversaire');
+
+    function updateThemeAnniversaire() {
+      if (!themeAnnivRow || !evenementSelect) return;
+      var isAnniversaire = evenementSelect.value === 'Anniversaire';
+      themeAnnivRow.hidden = !isAnniversaire;
+      if (!isAnniversaire && themeAnnivSelect) themeAnnivSelect.value = '';
+    }
+
+    if (evenementSelect) evenementSelect.addEventListener('change', updateThemeAnniversaire);
+    updateThemeAnniversaire();
+
+    // --- Pré-remplissage depuis une catégorie ou un thème
+    //     (?formule=biscuits&evenement=...&theme=...) ---
+    (function prefillFromCategory() {
       var params = new URLSearchParams(window.location.search);
       var formuleParam = params.get('formule');
+      var evenementParam = params.get('evenement');
       var themeParam = params.get('theme');
       var quantiteParam = params.get('quantite');
-      if (!formuleParam && !themeParam && !quantiteParam) return;
+      if (!formuleParam && !evenementParam && !themeParam && !quantiteParam) return;
 
       if (formuleParam === 'biscuits' && formuleSelect) {
-        formuleSelect.value = 'Biscuits personnalisés (sans mise en scène)';
+        formuleSelect.value = 'Biscuits personnalis\u00e9s (sans mise en sc\u00e8ne)';
         updateCascade();
       }
-      var themeField = document.getElementById('theme');
-      if (themeParam && themeField) themeField.value = themeParam;
+
+      // L'\u00e9v\u00e9nement n'est repris que s'il existe r\u00e9ellement dans la liste.
+      var evenementRetenu = null;
+      if (evenementParam && evenementSelect) {
+        var valeurs = Array.prototype.map.call(evenementSelect.options, function (o) { return o.value; });
+        if (valeurs.indexOf(evenementParam) !== -1) {
+          evenementSelect.value = evenementParam;
+          evenementRetenu = evenementParam;
+          updateThemeAnniversaire();
+        }
+      }
+
+      // Un th\u00e8me d'anniversaire va dans la liste d\u00e9roulante, sinon en texte libre.
+      var themeRetenu = null;
+      if (themeParam) {
+        var placeDansListe = false;
+        if (themeAnnivSelect && themeAnnivRow && !themeAnnivRow.hidden) {
+          var themes = Array.prototype.map.call(themeAnnivSelect.options, function (o) { return o.value; });
+          if (themes.indexOf(themeParam) !== -1) {
+            themeAnnivSelect.value = themeParam;
+            placeDansListe = true;
+          }
+        }
+        if (!placeDansListe) {
+          var themeField = document.getElementById('theme');
+          if (themeField) themeField.value = themeParam;
+        }
+        themeRetenu = themeParam;
+      }
+
       var quantiteField = document.getElementById('quantite');
       if (quantiteParam && quantiteField) quantiteField.value = quantiteParam;
 
       var note = document.getElementById('prefill-note');
-      if (note && themeParam) {
-        note.textContent = 'Vos informations pour le package « ' + themeParam + ' » ont été reprises ci-dessous. Vous pouvez les modifier avant l’envoi.';
+      if (note && (evenementRetenu || themeRetenu)) {
+        var libelle = evenementRetenu || '';
+        if (themeRetenu) libelle += (libelle ? ' \u2014 th\u00e8me ' : 'Th\u00e8me ') + themeRetenu;
+        note.textContent = 'Votre demande pour \u00ab\u00a0' + libelle +
+          '\u00a0\u00bb a \u00e9t\u00e9 pr\u00e9-remplie ci-dessous. Vous pouvez la modifier avant l\u2019envoi.';
         note.hidden = false;
       }
     })();
@@ -174,6 +222,7 @@ document.addEventListener('DOMContentLoaded', function () {
       }
       form.reset();
       updateCascade();
+      updateThemeAnniversaire();
     });
   }
 
