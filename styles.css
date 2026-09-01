@@ -188,22 +188,24 @@ p{ margin:0 0 1em; overflow-wrap: break-word; }
   padding-top:14px; padding-bottom:14px;
   gap: 20px;
 }
-.brand{ display:flex; align-items:center; gap:12px; }
+/* flex:none — sinon le logo se fait comprimer par le menu sur les
+   largeurs intermédiaires et se retrouve déformé. */
+.brand{ display:flex; align-items:center; gap:12px; flex: none; }
 .brand img{ height: 46px; width:auto; }
 .brand-text{ display:none; }
 
 .nav-desktop{ display:none; }
-.nav-desktop ul{ display:flex; gap: 24px; align-items:center; }
-.nav-desktop li + li{ margin-left: 0; }
+/* Un seul mécanisme d'espacement (gap) : un margin-right cumulé au gap
+   doublait l'écart et faisait déborder le menu. */
+.nav-desktop ul{ display:flex; gap: 22px; align-items:center; }
 .nav-desktop a{
   font-size: 14px;
   letter-spacing: .02em;
   color: var(--ink-soft);
   position:relative;
   padding: 6px 0;
-  margin-right: 24px;
+  white-space: nowrap;
 }
-.nav-desktop li:last-child a{ margin-right: 0; }
 .nav-desktop a:hover, .nav-desktop a[aria-current="page"]{ color: var(--ink); }
 .nav-desktop a[aria-current="page"]::after{
   content:""; position:absolute; left:0; right:0; bottom:0; height:2px;
@@ -242,7 +244,10 @@ p{ margin:0 0 1em; overflow-wrap: break-word; }
 }
 .mobile-nav .btn{ margin-top: 28px; width:100%; justify-content:center; text-align:center; }
 
-@media (min-width: 900px){
+/* 1024px : largeur mesurée à partir de laquelle les 5 rubriques + le bouton
+   tiennent sans comprimer le logo ni coller les éléments. En dessous, le
+   menu burger prend le relais avec exactement les mêmes rubriques. */
+@media (min-width: 1024px){
   .nav-desktop{ display:block; }
   .burger{ display:none; }
 }
