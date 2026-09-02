@@ -428,7 +428,9 @@ main > section:first-of-type + section { padding-top: 80px; }
    réservée au titre, et l'italique léger évite l'effet massif que
    donnait un script dense sur deux lignes.
    Une seule taille et une seule couleur pour toute la phrase : elle se
-   lit comme un ensemble, la largeur limitée suffit à la composer. */
+   lit comme un ensemble, la largeur limitée suffit à la composer.
+   Brun foncé plutôt que doré : le motif de marque en fond est lui-même
+   doré, la phrase s'y détache nettement mieux. */
 .hero-question p{
   font-family: var(--font-quote);
   font-style: italic;
@@ -436,7 +438,7 @@ main > section:first-of-type + section { padding-top: 80px; }
   font-size: clamp(25px, 3.3vw, 40px);
   line-height: 1.3;
   letter-spacing: .005em;
-  color: var(--gold-deep);
+  color: var(--ink);
   max-width: 860px;
   margin: 0 auto;
   text-wrap: balance; /* lignes de longueurs proches */
@@ -455,8 +457,6 @@ main > section:first-of-type + section { padding-top: 80px; }
   .hero-solo h1{ max-width: 13ch; margin-top: 18px; }
   .hero-intro{ margin-top: 22px; line-height: 1.7; }
   .hero-question{ margin-top: 44px; padding-top: 28px; }
-  .hero-question-lead{ font-size: clamp(30px, 8.6vw, 38px); }
-  .hero-question-tail{ font-size: clamp(21px, 5.8vw, 26px); }
   .hero-transition{ margin-top: 34px; font-size: 15px; }
 }
 
