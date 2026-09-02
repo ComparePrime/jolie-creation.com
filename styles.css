@@ -301,7 +301,7 @@ main > section:first-of-type + section { padding-top: 80px; }
 .section-ink h2, .section-ink h3{ color: var(--paper); }
 .section-head{ max-width: 640px; margin-bottom: 56px; }
 .section-head.center{ margin-left:auto; margin-right:auto; text-align:center; }
-.section-head h2{ font-size: clamp(30px, 4vw, 42px); margin-top: 14px; }
+.section-head h2{ font-size: clamp(30px, 4vw, 42px); margin-top: 14px; text-wrap: balance; }
 .section-head p{ color: var(--ink-soft); font-size: 17px; }
 .section-ink .section-head p{ color: rgba(255,253,249,.75); }
 
@@ -481,12 +481,21 @@ main > section:first-of-type + section { padding-top: 80px; }
   border: 1px solid transparent;
   transition: transform .25s ease, box-shadow .25s ease, border-color .25s ease;
 }
-.category-card h3{ margin-bottom: 0; }
+.category-card h3{ margin-bottom: 0; font-size: 17px; }
+/* Filet doré à la place de l'icône : il s'allonge au survol. */
+.category-card::before{
+  content:"";
+  display:block; width: 26px; height:1px;
+  margin: 0 auto 16px;
+  background: var(--gold);
+  transition: width .25s ease;
+}
 .category-card:hover{
   transform: translateY(-3px);
   box-shadow: var(--shadow-lift);
   border-color: var(--gold-light);
 }
+.category-card:hover::before{ width: 48px; }
 
 /* Thèmes d'anniversaire, en pastilles */
 .themes-block{
@@ -838,6 +847,150 @@ main > section:first-of-type + section { padding-top: 80px; }
   border-color: var(--ink);
 }
 
+/* ---------- Icônes en trait ----------
+   Remplacent les emojis : même trait doré que les filets de la charte,
+   au lieu du rendu coloré et variable d'un système à l'autre. */
+.ic svg{ width: 22px; height: 22px; display:block; }
+.value-card .ic svg{ width: 26px; height: 26px; }
+.ic-line{
+  fill: none;
+  stroke: var(--gold-deep);
+  stroke-width: 1.4;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* Petit ornement de section : filet – losange – filet. */
+.ornament{
+  display:flex; align-items:center; justify-content:center;
+  gap: 10px; margin: 0 0 16px;
+}
+.ornament::before, .ornament::after{
+  content:""; width: 34px; height:1px;
+}
+.ornament::before{ background: linear-gradient(90deg, transparent, var(--gold)); }
+.ornament::after{ background: linear-gradient(90deg, var(--gold), transparent); }
+.ornament i{
+  width: 5px; height: 5px; flex:none;
+  background: var(--gold); transform: rotate(45deg);
+}
+
+/* ---------- Package permanent mis en avant ---------- */
+.package-feature{
+  display:grid;
+  background: var(--paper);
+  border: 1px solid var(--gold-light);
+  border-radius: 28px;
+  overflow: hidden;
+  box-shadow: var(--shadow-lift);
+}
+.package-media img{ width:100%; height:auto; }
+@media (min-width: 860px){
+  .package-feature{ grid-template-columns: 0.85fr 1.15fr; }
+  /* Sur grand écran la photo épouse la hauteur du texte ; sur mobile elle
+     garde ses proportions d'origine (règle ci-dessus). */
+  .package-media{ position:relative; }
+  .package-media img{ position:absolute; inset:0; height:100%; object-fit: cover; }
+}
+.package-body{ padding: 32px 26px; display:flex; flex-direction:column; }
+@media (min-width: 860px){ .package-body{ padding: 46px 48px; } }
+.package-tag{
+  align-self:flex-start;
+  font-size: 10.5px; letter-spacing:.14em; text-transform:uppercase; font-weight:600;
+  color: var(--gold-deep);
+  border: 1px solid var(--gold-light);
+  padding: 6px 15px; border-radius: 999px;
+  margin-bottom: 20px;
+}
+.package-body h3{ font-size: clamp(27px, 4vw, 36px); margin: 0 0 .3em; }
+.package-desc{ color: var(--ink-soft); font-size: 15.5px; margin-bottom: 24px; }
+
+.package-price{
+  display:flex; align-items:baseline; flex-wrap:wrap; gap: 8px;
+  margin-bottom: 26px; padding-bottom: 24px;
+  border-bottom: 1px solid var(--line);
+}
+.package-price .montant{
+  font-family: var(--font-display); font-weight:600;
+  font-size: clamp(42px, 6vw, 56px); line-height: 1;
+  color: var(--ink);
+}
+.package-price .devise{
+  font-family: var(--font-display); font-size: 18px;
+  letter-spacing:.08em; color: var(--gold-deep);
+}
+.package-price .mention{ font-size: 13.5px; color: var(--ink-soft); }
+
+.package-compo{ display:flex; flex-direction:column; gap: 15px; margin: 0 0 32px; }
+.package-compo li{
+  display:flex; gap: 16px; align-items:baseline;
+  font-size: 15px; line-height: 1.5; color: var(--ink-soft);
+}
+.package-compo .qte{
+  flex: none; width: 30px; text-align:right;
+  font-family: var(--font-display); font-weight:600; font-size: 21px;
+  color: var(--gold-deep);
+}
+.package-compo li.total{
+  border-top: 1px solid var(--line); padding-top: 15px;
+  color: var(--ink); font-weight: 500;
+}
+.package-feature .btn{ align-self:flex-start; margin-top:auto; }
+
+/* ---------- Collections du moment ---------- */
+.collections-grid{
+  display:grid; gap: 26px;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  max-width: 980px; margin: 0 auto;
+}
+/* Une seule collection mise en avant : la carte se recentre au lieu
+   de s'étirer sur toute la largeur. */
+.collection-card:only-child{ max-width: 460px; margin: 0 auto; }
+.collection-card{
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: 26px;
+  padding: 34px 26px 30px;
+  display:flex; flex-direction:column; text-align:center;
+  box-shadow: var(--shadow-soft);
+  transition: transform .25s ease, box-shadow .25s ease, border-color .25s ease;
+}
+.collection-card:hover{
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-lift);
+  border-color: var(--gold-light);
+}
+.collection-kicker{
+  font-size: 10.5px; letter-spacing:.16em; text-transform:uppercase;
+  font-weight:600; color: var(--gold-deep);
+}
+.collection-card h3{ font-size: clamp(25px, 3.4vw, 31px); margin: 12px 0 0; }
+.collection-card > p{
+  color: var(--ink-soft); font-size: 15px;
+  margin: 14px auto 26px; max-width: 38ch;
+}
+.collection-formats{ margin-top: auto; }
+.collection-formats-label{
+  display:block; font-size: 11px; letter-spacing:.14em;
+  text-transform:uppercase; color: var(--ink-soft); margin-bottom: 12px;
+}
+.size-chips{ display:flex; flex-wrap:wrap; gap: 10px; justify-content:center; }
+.size-chip{
+  padding: 10px 18px; border-radius: 999px;
+  border: 1px solid var(--line); background: var(--cream);
+  font-size: 13.5px; color: var(--ink);
+  transition: border-color .2s ease, background .2s ease, transform .2s ease;
+}
+.size-chip:hover{ border-color: var(--gold); background: var(--paper); transform: translateY(-2px); }
+.collection-note{ font-size: 13px; color: var(--ink-soft); margin: 20px 0 22px; }
+.collection-card .btn{ align-self:center; }
+/* Sur petit écran, les trois formats tiennent sur une seule ligne :
+   ils se lisent alors comme un choix de taille, pas comme trois liens. */
+@media (max-width: 430px){
+  .collection-card{ padding-left: 20px; padding-right: 20px; }
+  .size-chip{ padding: 10px 13px; font-size: 13px; }
+}
+
 /* ---------- Événements ---------- */
 .events-grid{ display:grid; gap: 20px; grid-template-columns: repeat(2,1fr); }
 @media (min-width: 780px){ .events-grid{ grid-template-columns: repeat(4,1fr); } }
@@ -948,11 +1101,11 @@ main > section:first-of-type + section { padding-top: 80px; }
   border-radius: 50%;
   background: linear-gradient(135deg, var(--gold-light), var(--gold));
   display:flex; align-items:center; justify-content:center;
-  font-size: 26px;
   box-shadow: var(--shadow-lift);
   z-index: 55;
   transition: transform .2s ease;
 }
+.whatsapp-float svg{ width: 26px; height: 26px; fill: #fff; display:block; }
 .whatsapp-float:hover{ transform: scale(1.08); }
 @media (min-width: 900px){
   .whatsapp-float{ right: 28px; bottom: 28px; }
