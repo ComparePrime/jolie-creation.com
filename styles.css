@@ -588,6 +588,88 @@ main > section:first-of-type + section { padding-top: 80px; }
 @media (min-width: 780px){ .home-gallery-strip{ grid-template-columns: repeat(4,1fr); } }
 .home-gallery-strip .scallop-frame{ aspect-ratio: 1/1.15; }
 
+/* ---------- Portfolio « Mes réalisations » ----------
+   Les photos de l'atelier vont du 9:16 au 3:2. Une tuile à ratio
+   fixe en couperait une bonne part (jusqu'à la moitié de la largeur
+   sur les paysages), donc la galerie est en colonnes CSS : chaque
+   image garde ses proportions d'origine et n'est jamais recadrée. */
+.folio-nav{ margin-top: 28px; }
+.folio-nav ul{
+  display:flex; flex-wrap:wrap; gap:10px; justify-content:center;
+}
+.folio-nav a{
+  display:block;
+  padding: 9px 17px;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  background: var(--paper);
+  font-size: 13.5px;
+  line-height: 1.3;
+  color: var(--ink-soft);
+  transition: border-color .2s ease, color .2s ease;
+}
+.folio-nav a:hover{ border-color: var(--gold); color: var(--ink); }
+
+/* Décalage sous le header collant lors des sauts d'ancre. */
+.folio-group{ scroll-margin-top: 104px; }
+.folio-group + .folio-group{ margin-top: 72px; }
+.folio-group-head{ max-width: 760px; margin-bottom: 32px; }
+.folio-group-head h3{
+  font-size: clamp(24px, 3vw, 33px);
+  margin: 12px 0 .35em;
+}
+.folio-group-head p{ color: var(--ink-soft); font-size: 16.5px; margin: 0; }
+
+.folio-set + .folio-set{ margin-top: 46px; }
+.folio-set-head{ max-width: 720px; margin-bottom: 20px; }
+.folio-set-head h4{
+  font-size: 19px;
+  letter-spacing: .01em;
+  margin: 0 0 .35em;
+}
+.folio-set-head h4::before{
+  content:"";
+  display:inline-block; vertical-align: middle;
+  width: 26px; height:1px; margin-right: 12px;
+  background: var(--gold);
+}
+.folio-set-head p{ color: var(--ink-soft); font-size: 15.5px; margin: 0; }
+
+.folio-masonry{ column-count: 2; column-gap: 16px; }
+@media (min-width: 700px){ .folio-masonry{ column-count: 3; column-gap: 18px; } }
+@media (min-width: 1080px){ .folio-masonry{ column-count: 4; column-gap: 20px; } }
+
+.folio-item{
+  break-inside: avoid;
+  -webkit-column-break-inside: avoid;
+  margin: 0 0 16px;
+}
+@media (min-width: 700px){ .folio-item{ margin-bottom: 18px; } }
+@media (min-width: 1080px){ .folio-item{ margin-bottom: 20px; } }
+
+/* Pas d'aspect-ratio ici, contrairement aux autres cadres du site :
+   c'est ce qui garantit l'absence de recadrage. */
+.folio-item .scallop-frame{ cursor: zoom-in; }
+.folio-item .scallop-frame img{
+  width: 100%; height: auto;
+  transition: transform .5s cubic-bezier(.22,.61,.36,1);
+}
+.folio-item .scallop-frame:hover img{ transform: scale(1.03); }
+
+/* Ensemble d'une seule photo : sans cette exception, elle se retrouverait
+   seule dans une colonne étroite du multi-colonnes. */
+.folio-solo{ column-count: 1; max-width: 460px; }
+
+/* Photo unique de la section micro-scénographies : elle non plus
+   n'est pas recadrée, d'où l'absence d'aspect-ratio imposé. */
+.folio-feature{ max-width: 420px; }
+.folio-feature .scallop-frame{ cursor: zoom-in; }
+.folio-feature .scallop-frame img{ width: 100%; height: auto; }
+
+/* Titre long de la page portfolio : réparti sur des lignes de longueur
+   proche, pour éviter un « & » orphelin en fin de première ligne. */
+.folio-h1{ text-wrap: balance; }
+
 /* Lightbox */
 .lightbox{
   position: fixed; inset:0; z-index: 100;

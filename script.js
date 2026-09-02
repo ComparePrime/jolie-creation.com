@@ -50,13 +50,22 @@ document.addEventListener('DOMContentLoaded', function () {
     var lbCap = lightbox.querySelector('.lightbox-cap');
     var lbClose = lightbox.querySelector('.lightbox-close');
     document.querySelectorAll('[data-lightbox]').forEach(function (trigger) {
-      trigger.addEventListener('click', function () {
+      function openLb() {
         var src = trigger.getAttribute('data-lightbox');
         var cap = trigger.getAttribute('data-caption') || '';
         lbImg.src = src;
         lbImg.alt = cap;
         lbCap.textContent = cap;
         lightbox.classList.add('open');
+      }
+      trigger.addEventListener('click', openLb);
+      // Les déclencheurs ne sont pas des <button> : on rétablit
+      // l'ouverture au clavier pour ceux qui portent un tabindex.
+      trigger.addEventListener('keydown', function (e) {
+        if (e.key === 'Enter' || e.key === ' ' || e.key === 'Spacebar') {
+          e.preventDefault();
+          openLb();
+        }
       });
     });
     function closeLb() { lightbox.classList.remove('open'); lbImg.src = ''; }
@@ -244,6 +253,7 @@ document.addEventListener('DOMContentLoaded', function () {
       { selector: '.event-card', max: 5, step: 70 },
       { selector: '.why-item', max: 4, step: 90 },
       { selector: '.gallery-item', max: 7, step: 55 },
+      { selector: '.folio-item', max: 6, step: 45 },
       { selector: '.home-gallery-strip .scallop-frame', max: 5, step: 70 },
       { selector: '.timeline li', max: 5, step: 90 }
     ];
