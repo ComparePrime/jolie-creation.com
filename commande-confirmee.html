@@ -3,15 +3,11 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>À propos de moi — Jolie Création</title>
-<meta name="description" content="Je m'appelle Julie, fondatrice de Jolie Création. Passionnée par la pâtisserie créative depuis toujours, je crée des biscuits personnalisés et des micro-scénographies en Suisse romande.">
-<link rel="canonical" href="https://www.jolie-creation.com/a-propos.html">
-<meta property="og:type" content="website">
-<meta property="og:title" content="À propos de moi — Jolie Création">
-<meta property="og:description" content="Je m'appelle Julie, fondatrice de Jolie Création. Passionnée par la pâtisserie créative depuis toujours, je crée des biscuits personnalisés et des micro-scénographies en Suisse romande.">
-<meta property="og:image" content="https://www.jolie-creation.com/images/about/julie.jpg">
+<title>Commande confirmée | Jolie Création</title>
+<meta name="description" content="Confirmation de votre commande Jolie Création.">
+<meta name="robots" content="noindex, nofollow">
+<link rel="canonical" href="https://www.jolie-creation.com/commande-confirmee.html">
 <meta property="og:locale" content="fr_CH">
-<meta name="twitter:card" content="summary_large_image">
 <link rel="icon" href="favicon.png" type="image/png">
 <link rel="stylesheet" href="styles.css">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Alex+Brush&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
@@ -28,7 +24,7 @@
         <li><a href="biscuits-personnalises.html">Biscuits personnalisés</a></li>
         <li><a href="mini-scenographies.html">Micro-scénographies</a></li>
         <li><a href="evenements.html">Mes réalisations</a></li>
-        <li><a href="a-propos.html" aria-current="page">À propos de moi</a></li>
+        <li><a href="a-propos.html">À propos de moi</a></li>
       </ul>
     </nav>
     <div class="header-actions">
@@ -58,79 +54,32 @@
 </div>
 
 <main>
-  <section style="padding-top:48px;">
+  <div class="page-intro">
     <div class="wrap">
-      <div class="about-layout">
-        <div class="about-top">
-          <p class="breadcrumb"><a href="index.html">Accueil</a> / À propos de moi</p>
-          <span class="eyebrow">À propos de moi</span>
-          <h1 style="font-size:clamp(32px,4.5vw,46px); margin-top:10px;">Passion, <span class="script">créativité</span> et gourmandise</h1>
-          <div class="divider-heart"><span>♥</span></div>
-          <p style="color:var(--ink-soft); font-size:16.5px; margin-bottom:30px;">Je m'appelle Julie, fondatrice de <strong style="color:var(--gold-deep);">Jolie Création</strong>. Passionnée par la pâtisserie créative et le travail manuel depuis toujours, j'ai transformé ma passion en métier pour sublimer vos plus beaux moments.</p>
+      <p class="breadcrumb"><a href="index.html">Accueil</a> / Commande</p>
+      <ol class="etapes">
+        <li class="faite">Panier</li>
+        <li class="faite">Paiement</li>
+        <li class="courante" aria-current="step">Confirmation</li>
+      </ol>
+    </div>
+  </div>
 
-          <div class="value-heart">
-            <span class="heart">♥</span>
-            <div><h3>Artisanat &amp; qualité</h3><p>Chaque biscuit est fait main avec des ingrédients de qualité et beaucoup de soin.</p></div>
-          </div>
-          <div class="value-heart">
-            <span class="heart">♥</span>
-            <div><h3>Créativité &amp; personnalisation</h3><p>Des créations uniques et sur mesure, pensées avec vous pour correspondre à votre événement.</p></div>
-          </div>
-          <div class="value-heart">
-            <span class="heart">♥</span>
-            <div><h3>Écoute &amp; bienveillance</h3><p>À votre écoute pour créer des douceurs qui vous ressemblent et qui marquent les esprits.</p></div>
-          </div>
-
-          <div class="objectif-box">
-            <span class="heart">♥</span>
-            <p>Mon objectif : apporter une touche de douceur et d'émotion à vos événements grâce à des biscuits aussi beaux que bons.</p>
-          </div>
-        </div>
-
-        <div class="about-photo">
-          <div class="scallop-frame arch-frame">
-            <img src="images/julie.jpeg" alt="Julie, fondatrice de Jolie Création" loading="eager">
-          </div>
+  <section style="padding-top:10px;">
+    <div class="wrap">
+      <div class="confirmation-carte" id="carte">
+        <div class="ornament"><i></i></div>
+        <h1 id="conf-titre">Merci pour votre commande</h1>
+        <p id="conf-texte">Vérification de votre paiement en cours…</p>
+        <div id="conf-detail"></div>
+        <div class="hero-actions" style="justify-content:center; margin-top:30px;">
+          <a href="index.html" class="btn btn-ghost">Retour à l’accueil</a>
+          <a href="biscuits-personnalises.html" class="btn btn-primary">Voir les biscuits</a>
         </div>
       </div>
     </div>
   </section>
 
-  <section style="padding-top:40px;">
-    <div class="wrap">
-      <div class="bottom-band" style="border-radius:22px;">
-        <span class="heart">♥</span>
-        <p>Fait main avec passion, pour des moments inoubliables</p>
-        <span class="heart">♥</span>
-      </div>
-    </div>
-  </section>
-
-  <section class="section-deep">
-    <div class="wrap">
-      <div class="section-head">
-        <span class="eyebrow">Mon approche</span>
-        <h2>Une écoute avant tout</h2>
-        <p>Avant de dessiner le premier biscuit, je prends le temps de comprendre votre événement.</p>
-      </div>
-      <div class="why-grid">
-        <div class="why-item"><span class="why-num">01</span><div><h3>L'échange</h3><p>Un premier contact pour cerner le thème, les couleurs et l'occasion.</p></div></div>
-        <div class="why-item"><span class="why-num">02</span><div><h3>La création</h3><p>Chaque biscuit est dessiné, découpé et décoré à la main.</p></div></div>
-        <div class="why-item"><span class="why-num">03</span><div><h3>La remise</h3><p>Un emballage soigné, pensé pour préserver chaque détail jusqu'à vous, ou un accueil chaleureux au retrait.</p></div></div>
-      </div>
-    </div>
-  </section>
-
-  <section>
-    <div class="wrap">
-      <div class="cta-final">
-        <span class="eyebrow" style="color:var(--gold-light);">Envie d'échanger avec moi ?</span>
-        <h2>Parlons de <span class="script">votre projet</span></h2>
-        <p>Racontez-moi votre événement, je reviens vers vous avec une proposition adaptée.</p>
-        <div class="hero-actions"><a href="contact.html" class="btn btn-primary">Demander un devis</a></div>
-      </div>
-    </div>
-  </section>
 </main>
 <footer class="site-footer">
   <div class="wrap">
@@ -181,13 +130,92 @@
 <a class="whatsapp-float" href="https://api.whatsapp.com/send/?phone=41783127545&text&type=phone_number&app_absent=0" target="_blank" rel="noopener" aria-label="Discuter sur WhatsApp">
   <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413z"/></svg>
 </a>
-<div class="lightbox">
-  <button class="lightbox-close" aria-label="Fermer">&times;</button>
-  <img src="" alt="">
-  <div class="lightbox-cap"></div>
-</div>
 <script src="catalogue.js"></script>
 <script src="boutique.js"></script>
 <script src="script.js"></script>
+<script>
+
+(function () {
+  var Panier = window.JCPanier;
+  var params = new URLSearchParams(location.search);
+  var session = params.get('session_id');
+  var titre = document.getElementById('conf-titre');
+  var texte = document.getElementById('conf-texte');
+  var detail = document.getElementById('conf-detail');
+
+  function franc(centimes, devise) {
+    var f = centimes / 100;
+    return (f % 1 === 0 ? String(f) : f.toFixed(2)) + ' ' + (devise || 'CHF');
+  }
+
+  if (!session) {
+    titre.textContent = 'Aucune commande à afficher';
+    texte.textContent = 'Cette page confirme une commande après paiement. Si vous venez de payer, ouvrez le lien reçu par e-mail.';
+    return;
+  }
+
+  fetch('/.netlify/functions/get-order?session_id=' + encodeURIComponent(session))
+    .then(function (r) { return r.json().then(function (d) { return { ok: r.ok, data: d }; }); })
+    .then(function (res) {
+      if (!res.ok) {
+        titre.textContent = 'Commande en cours de vérification';
+        texte.textContent = 'Le détail de votre commande n’a pas pu être relu. Si votre paiement a été débité, vous recevez la confirmation par e-mail ; sinon, contactez-moi.';
+        return;
+      }
+      var c = res.data;
+      // Le panier n'est vidé que si Stripe confirme le paiement.
+      if (c.statut === 'paid') {
+        Panier.vider();
+        titre.textContent = 'Merci, votre commande est confirmée';
+        texte.textContent = c.email
+          ? 'Un justificatif vient de partir à ' + c.email + '. Je vous recontacte rapidement pour la suite.'
+          : 'Je vous recontacte rapidement pour la suite.';
+      } else {
+        titre.textContent = 'Paiement non finalisé';
+        texte.textContent = 'Votre paiement n’apparaît pas comme abouti. Votre panier est conservé, vous pouvez réessayer.';
+      }
+
+      var ref = document.createElement('span');
+      ref.className = 'confirmation-ref';
+      ref.textContent = 'Référence ' + c.reference;
+      detail.appendChild(ref);
+
+      if (c.articles && c.articles.length) {
+        var ul = document.createElement('ul');
+        ul.className = 'confirmation-lignes';
+        c.articles.forEach(function (a) {
+          var li = document.createElement('li');
+          var g = document.createElement('span');
+          g.textContent = a.qte + ' × ' + a.nom;
+          var d = document.createElement('span');
+          d.className = 'montant';
+          d.textContent = franc(a.montant, c.devise);
+          li.appendChild(g); li.appendChild(d);
+          ul.appendChild(li);
+        });
+        detail.appendChild(ul);
+        var total = document.createElement('div');
+        total.className = 'confirmation-total';
+        var lt = document.createElement('strong'); lt.textContent = 'Total payé';
+        var mt = document.createElement('span'); mt.className = 'montant';
+        mt.textContent = franc(c.total, c.devise);
+        total.appendChild(lt); total.appendChild(mt);
+        detail.appendChild(total);
+      }
+
+      if (c.aConfirmer) {
+        var p = document.createElement('p');
+        p.className = 'paiement-note';
+        p.textContent = 'À confirmer ensemble avant la préparation : ' + c.aConfirmer + '.';
+        detail.appendChild(p);
+      }
+    })
+    .catch(function () {
+      titre.textContent = 'Commande en cours de vérification';
+      texte.textContent = 'Impossible de joindre le service de paiement pour relire votre commande. Contactez-moi si vous avez un doute.';
+    });
+})();
+
+</script>
 </body>
 </html>

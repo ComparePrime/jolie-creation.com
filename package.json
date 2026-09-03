@@ -1,0 +1,12 @@
+{
+  "name": "jolie-creation",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Site vitrine et boutique en ligne Jolie Création",
+  "scripts": {
+    "test": "node tests/catalogue.test.js"
+  },
+  "dependencies": {
+    "stripe": "^17.5.0"
+  }
+}

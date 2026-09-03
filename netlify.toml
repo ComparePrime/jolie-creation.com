@@ -1,0 +1,23 @@
+# Configuration de déploiement Netlify — Jolie Création
+#
+# Le site est statique : rien à construire. Seules les fonctions
+# serverless sont bundlées, car elles seules ont besoin de la
+# dépendance Stripe et du fichier catalogue.js situé à la racine.
+#
+# Variable d'environnement à renseigner dans Netlify
+# (Site settings -> Environment variables), jamais dans le dépôt :
+#   STRIPE_SECRET_KEY = sk_live_... (ou sk_test_... pour les essais)
+
+[build]
+  publish = "."
+  functions = "netlify/functions"
+
+[functions]
+  # esbuild embarque catalogue.js dans le bundle de chaque fonction,
+  # bien qu'il se trouve en dehors du dossier functions.
+  node_bundler = "esbuild"
+
+[[redirects]]
+  from = "/api/*"
+  to = "/.netlify/functions/:splat"
+  status = 200

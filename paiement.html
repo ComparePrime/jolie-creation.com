@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="fr-CH">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Paiement sécurisé | Jolie Création</title>
+<meta name="description" content="Finalisez votre commande Jolie Création. Paiement sécurisé par carte, TWINT, Apple Pay ou Google Pay.">
+<meta name="robots" content="noindex, nofollow">
+<link rel="canonical" href="https://www.jolie-creation.com/paiement.html">
+<meta property="og:locale" content="fr_CH">
+<link rel="icon" href="favicon.png" type="image/png">
+<link rel="stylesheet" href="styles.css">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Alex+Brush&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+<header class="site-header">
+  <div class="wrap">
+    <a href="index.html" class="brand">
+      <img src="images/logo.png" alt="Jolie Création">
+    </a>
+    <nav class="nav-desktop" aria-label="Navigation principale">
+      <ul>
+        <li><a href="index.html">Accueil</a></li>
+        <li><a href="biscuits-personnalises.html">Biscuits personnalisés</a></li>
+        <li><a href="mini-scenographies.html">Micro-scénographies</a></li>
+        <li><a href="evenements.html">Mes réalisations</a></li>
+        <li><a href="a-propos.html">À propos de moi</a></li>
+      </ul>
+    </nav>
+    <div class="header-actions">
+      <a href="panier.html" class="header-cart" data-panier-lien aria-label="Mon panier, vide">
+        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><g class="ic-line"><path d="M4 6.4h2.1l2 10.2h9.6l1.9-7.4H7"/><circle cx="9.4" cy="19.6" r="1.2"/><circle cx="16.6" cy="19.6" r="1.2"/></g></svg>
+        <span class="header-cart-count" data-panier-compteur hidden>0</span>
+      </a>
+      <a href="contact.html" class="btn btn-primary btn-small">Demander un devis</a>
+      <button class="burger" aria-label="Ouvrir le menu"><span></span><span></span><span></span></button>
+    </div>
+  </div>
+</header>
+
+<div class="mobile-nav" role="dialog" aria-modal="true" aria-label="Menu">
+  <div class="mobile-nav-top">
+    <img src="images/logo.png" alt="Jolie Création">
+    <button class="mobile-nav-close" aria-label="Fermer le menu">&times;</button>
+  </div>
+  <ul>
+    <li><a href="index.html">Accueil</a></li>
+    <li><a href="biscuits-personnalises.html">Biscuits personnalisés</a></li>
+    <li><a href="mini-scenographies.html">Micro-scénographies</a></li>
+    <li><a href="evenements.html">Mes réalisations</a></li>
+    <li><a href="a-propos.html">À propos de moi</a></li>
+  </ul>
+  <a href="contact.html" class="btn btn-primary">Demander un devis</a>
+</div>
+
+<main>
+  <div class="page-intro">
+    <div class="wrap">
+      <p class="breadcrumb"><a href="index.html">Accueil</a> / <a href="panier.html">Mon panier</a> / Paiement</p>
+      <ol class="etapes">
+        <li class="faite">Panier</li>
+        <li class="courante" aria-current="step">Paiement</li>
+        <li class="">Confirmation</li>
+      </ol>
+      <h1>Finaliser ma commande</h1>
+    </div>
+  </div>
+
+  <section style="padding-top:20px;">
+    <div class="wrap">
+      <div class="paiement-layout" id="paiement-contenu" hidden>
+        <div class="paiement-form">
+          <div id="paiement-message"></div>
+          <h2>Vos coordonnées</h2>
+          <form id="form-paiement" class="form-boutique" novalidate>
+            <div class="form-grid">
+              <div class="field"><label for="pay-prenom">Prénom <span class="req">*</span></label><input id="pay-prenom" name="prenom" type="text" autocomplete="given-name" required></div>
+              <div class="field"><label for="pay-nom">Nom <span class="req">*</span></label><input id="pay-nom" name="nom" type="text" autocomplete="family-name" required></div>
+              <div class="field"><label for="pay-email">E-mail <span class="req">*</span></label><input id="pay-email" name="email" type="email" autocomplete="email" required></div>
+              <div class="field"><label for="pay-tel">Téléphone</label><input id="pay-tel" name="telephone" type="tel" autocomplete="tel"></div>
+            </div>
+            <div class="field">
+              <label for="pay-reception">Réception de la commande <span class="req">*</span></label>
+              <select id="pay-reception" name="reception" required>
+                <option value="">Sélectionner…</option>
+                <option value="retrait">Retrait à Domdidier (Fribourg)</option>
+                <option value="livraison">Livraison</option>
+              </select>
+            </div>
+            <div class="field" id="pay-pays-champ" hidden>
+              <label for="pay-pays">Pays de livraison</label>
+              <select id="pay-pays" name="pays">
+                <option value="Suisse">Suisse</option>
+                <option value="France">France</option>
+                <option value="Autre pays d’Europe">Autre pays d’Europe</option>
+              </select>
+            </div>
+            <div class="field"><label for="pay-message">Précisions sur votre commande</label><textarea id="pay-message" name="message" placeholder="Date souhaitée, prénom à inscrire, couleurs…"></textarea></div>
+            <p class="form-note">Les champs marqués d’un <span class="req">*</span> sont obligatoires. Vos coordonnées servent uniquement à traiter votre commande.</p>
+            <button type="submit" class="btn btn-primary" id="pay-bouton">Payer en toute sécurité</button>
+            <p class="paiement-note">Le paiement est traité par Stripe sur une page sécurisée. Aucune donnée bancaire ne transite par ce site.</p>
+            <ul class="moyens-paiement">
+              <li>Carte bancaire</li><li>TWINT</li><li>Apple&nbsp;Pay</li><li>Google&nbsp;Pay</li>
+            </ul>
+          </form>
+        </div>
+        <aside class="panier-recap" aria-labelledby="pay-recap-titre">
+          <h2 id="pay-recap-titre">Votre commande</h2>
+          <div id="pay-recap-lignes"></div>
+          <div class="recap-total">
+            <strong>Total à payer</strong>
+            <span class="montant" id="pay-total">0 CHF</span>
+          </div>
+          <p class="recap-mention" id="pay-mention"></p>
+          <a href="panier.html" class="btn btn-ghost btn-small" style="width:100%; margin-top:16px;">Modifier mon panier</a>
+        </aside>
+      </div>
+
+      <div class="panier-vide" id="paiement-vide" hidden>
+        <div class="ornament"><i></i></div>
+        <h2>Rien à payer pour l’instant</h2>
+        <p>Votre panier est vide, ou son contenu doit être complété avant le paiement.</p>
+        <div class="hero-actions" style="justify-content:center;">
+          <a href="panier.html" class="btn btn-primary">Retour au panier</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</main>
+<footer class="site-footer">
+  <div class="wrap">
+    <div class="footer-grid">
+      <div>
+        <img src="images/logo.png" alt="Jolie Création">
+        <p>Biscuits personnalisés &amp; décoration événementielle.</p>
+        <div class="socials" style="margin-top:16px;">
+          <a href="https://www.instagram.com/_jolie.creation_/" target="_blank" rel="noopener" aria-label="Instagram">Instagram</a>
+          <a href="https://www.facebook.com/profile.php?id=100064819849220" target="_blank" rel="noopener" aria-label="Facebook">Facebook</a>
+          <a href="https://api.whatsapp.com/send/?phone=41783127545&text&type=phone_number&app_absent=0" target="_blank" rel="noopener" aria-label="WhatsApp">WhatsApp</a>
+        </div>
+      </div>
+      <div>
+        <h4>Mes offres</h4>
+        <ul>
+          <li><a href="biscuits-personnalises.html">Biscuits personnalisés</a></li>
+          <li><a href="mini-scenographies.html">Micro-scénographies</a></li>
+          <li><a href="evenements.html">Mes réalisations</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Biscuits personnalisés</h4>
+        <ul>
+          <li>Livraison Suisse &middot; France &middot; Europe</li>
+          <li>Retrait possible à Domdidier (FR)</li>
+          <li><a href="a-propos.html">À propos de moi</a></li>
+          <li><a href="mentions-legales.html">Mentions légales</a></li>
+          <li><a href="confidentialite.html">Confidentialité</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Contact</h4>
+        <ul>
+          <li><a href="tel:+41783127545">+41 78 312 75 45</a></li>
+          <li><a href="mailto:info@jolie-creation.com">info@jolie-creation.com</a></li>
+          <li><a href="https://api.whatsapp.com/send/?phone=41783127545&text&type=phone_number&app_absent=0" target="_blank" rel="noopener">Discuter sur WhatsApp</a></li>
+          <li>Suisse romande</li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>&copy; <span data-year></span> Jolie Création. Tous droits réservés.</span>
+      <span><a href="mentions-legales.html">Mentions légales</a> &middot; <a href="confidentialite.html">Confidentialité</a></span>
+    </div>
+  </div>
+</footer>
+<a class="whatsapp-float" href="https://api.whatsapp.com/send/?phone=41783127545&text&type=phone_number&app_absent=0" target="_blank" rel="noopener" aria-label="Discuter sur WhatsApp">
+  <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413z"/></svg>
+</a>
+<script src="catalogue.js"></script>
+<script src="boutique.js"></script>
+<script src="script.js"></script>
+<script>
+
+(function () {
+  var Cat = window.JCCatalogue, Panier = window.JCPanier;
+  var form = document.getElementById('form-paiement');
+  var bouton = document.getElementById('pay-bouton');
+  var zoneMessage = document.getElementById('paiement-message');
+  var receptionSel = document.getElementById('pay-reception');
+  var paysChamp = document.getElementById('pay-pays-champ');
+
+  function message(texte, html) {
+    zoneMessage.innerHTML = '';
+    if (!texte) return;
+    var p = document.createElement('p');
+    p.className = 'paiement-erreur';
+    if (html) p.innerHTML = texte; else p.textContent = texte;
+    zoneMessage.appendChild(p);
+    zoneMessage.scrollIntoView({ block: 'nearest' });
+  }
+
+  function rendreRecap() {
+    var t = Panier.totaux();
+    var utilisable = t.lignes.length > 0 && !Panier.blocage();
+    document.getElementById('paiement-contenu').hidden = !utilisable;
+    document.getElementById('paiement-vide').hidden = utilisable;
+    if (!utilisable) return;
+
+    var zone = document.getElementById('pay-recap-lignes');
+    zone.innerHTML = '';
+    t.lignes.forEach(function (l) {
+      var a = Cat.article(l.id);
+      var d = document.createElement('div');
+      d.className = 'recap-ligne';
+      var g = document.createElement('span');
+      g.textContent = l.qte + ' × ' + a.court;
+      var dr = document.createElement('span');
+      dr.textContent = a.aConfirmer
+        ? Cat.formater(a.prixMin * l.qte) + ' à ' + Cat.formater(a.prixMax * l.qte)
+        : Cat.formater(a.prix * l.qte);
+      d.appendChild(g); d.appendChild(dr);
+      zone.appendChild(d);
+    });
+    document.getElementById('pay-total').textContent = Cat.formater(t.payable);
+
+    var mentions = [];
+    if (t.aConfirmerMax > 0) {
+      mentions.push('Les biscuits au tarif variable (' + Cat.formater(t.aConfirmerMin) + ' à ' +
+        Cat.formater(t.aConfirmerMax) + ') ne sont pas inclus dans ce paiement : leur montant est confirmé avant la préparation.');
+    }
+    mentions.push('Frais de livraison éventuels confirmés séparément.');
+    document.getElementById('pay-mention').textContent = mentions.join(' ');
+  }
+
+  receptionSel.addEventListener('change', function () {
+    paysChamp.hidden = receptionSel.value !== 'livraison';
+  });
+
+  if (new URLSearchParams(location.search).get('annule')) {
+    message('Le paiement a été interrompu. Votre panier est intact, vous pouvez réessayer.');
+  }
+
+  form.addEventListener('submit', function (e) {
+    e.preventDefault();
+    var manquants = [];
+    ['pay-prenom', 'pay-nom', 'pay-email', 'pay-reception'].forEach(function (id) {
+      var champ = document.getElementById(id);
+      if (!champ.value.trim()) manquants.push(champ.previousElementSibling.textContent.replace(' *', '').trim());
+    });
+    var email = document.getElementById('pay-email').value.trim();
+    if (email && !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) manquants.push('une adresse e-mail valide');
+    if (manquants.length) { message('Merci de renseigner : ' + manquants.join(', ') + '.'); return; }
+
+    var probleme = Panier.blocage();
+    if (probleme) { message(probleme); return; }
+
+    var charge = {
+      lignes: Panier.lire().map(function (l) { return { id: l.id, qte: l.qte, details: l.details }; }),
+      client: {
+        nom: document.getElementById('pay-prenom').value.trim() + ' ' + document.getElementById('pay-nom').value.trim(),
+        email: email,
+        telephone: document.getElementById('pay-tel').value.trim(),
+        reception: receptionSel.value,
+        pays: receptionSel.value === 'livraison' ? document.getElementById('pay-pays').value : '',
+        message: document.getElementById('pay-message').value.trim()
+      }
+    };
+
+    bouton.disabled = true;
+    bouton.textContent = 'Redirection vers le paiement…';
+    message('');
+
+    fetch('/.netlify/functions/create-checkout-session', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(charge)
+    }).then(function (r) {
+      // Une réponse illisible (page 404 HTML d'un hébergeur sans fonctions,
+      // par exemple) ne doit pas être annoncée comme un problème de réseau.
+      return r.text().then(function (txt) {
+        var data = {};
+        try { data = JSON.parse(txt); } catch (e) { data = { erreur: 'stripe_non_configure' }; }
+        return { ok: r.ok, statut: r.status, data: data };
+      });
+    }).then(function (res) {
+      if (res.ok && res.data.url) { window.location.href = res.data.url; return; }
+      // Aucun paiement simulé : si Stripe n'est pas encore branché, on
+      // le dit et on propose la commande par message.
+      if (res.statut === 503 || res.statut === 404 || res.data.erreur === 'stripe_non_configure') {
+        message('Le paiement en ligne n’est pas encore activé sur ce site. ' +
+          'Votre commande peut être finalisée directement : ' +
+          '<a href="https://api.whatsapp.com/send/?phone=41783127545&amp;text&amp;type=phone_number&amp;app_absent=0" target="_blank" rel="noopener">par WhatsApp</a> ' +
+          'ou à <a href="mailto:info@jolie-creation.com">info@jolie-creation.com</a>. ' +
+          'Gardez cette page ouverte, votre panier y est enregistré.', true);
+      } else {
+        message(res.data.message || 'Le paiement n’a pas pu être lancé. Merci de réessayer.');
+      }
+      bouton.disabled = false;
+      bouton.textContent = 'Payer en toute sécurité';
+    }).catch(function () {
+      message('Connexion impossible au service de paiement. Vérifiez votre connexion et réessayez.');
+      bouton.disabled = false;
+      bouton.textContent = 'Payer en toute sécurité';
+    });
+  });
+
+  document.addEventListener('panier:maj', rendreRecap);
+  rendreRecap();
+})();
+
+</script>
+</body>
+</html>

@@ -32,6 +32,10 @@
       </ul>
     </nav>
     <div class="header-actions">
+      <a href="panier.html" class="header-cart" data-panier-lien aria-label="Mon panier, vide">
+        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><g class="ic-line"><path d="M4 6.4h2.1l2 10.2h9.6l1.9-7.4H7"/><circle cx="9.4" cy="19.6" r="1.2"/><circle cx="16.6" cy="19.6" r="1.2"/></g></svg>
+        <span class="header-cart-count" data-panier-compteur hidden>0</span>
+      </a>
       <a href="contact.html" class="btn btn-primary btn-small">Demander un devis</a>
       <button class="burger" aria-label="Ouvrir le menu"><span></span><span></span><span></span></button>
     </div>
@@ -100,7 +104,7 @@
         <div class="package-body">
           <span class="package-tag">Package permanent</span>
           <h3>Thème Océan</h3>
-          <p class="package-desc">Un ensemble complet dans un dégradé de bleus : baleine, tortue, hippocampe, coquillages et étoiles de mer, décorés un à un au glaçage royal. Le prénom et l'âge peuvent être ajoutés sur les pièces principales.</p>
+          <p class="package-desc">Baleine, tortue, hippocampe et coquillages dans un dégradé de bleus, décorés un à un au glaçage royal.</p>
           <p class="package-price">
             <span class="montant">69</span>
             <span class="devise">CHF</span>
@@ -111,9 +115,48 @@
             <li><span class="qte">5</span><span>petits biscuits simples</span></li>
             <li class="total"><span class="qte">12</span><span>biscuits au total</span></li>
           </ul>
-          <a href="contact.html?formule=biscuits&amp;theme=Package+Th%C3%A8me+Oc%C3%A9an&amp;quantite=12+biscuits+%28package+Th%C3%A8me+Oc%C3%A9an%29" class="btn btn-primary">Commander le package Océan</a>
+          <div class="formule-actions" style="margin:auto 0 0; align-items:flex-start;">
+            <button type="button" class="btn btn-primary" data-ajout-panier="pack-ocean">Ajouter au panier</button>
+            <a href="contact.html?formule=biscuits&amp;theme=Package+Th%C3%A8me+Oc%C3%A9an" class="lien-devis">Ou demander un devis</a>
+          </div>
         </div>
       </article>
+
+      <div class="pack-grid" style="margin-top:34px;">
+        <article class="pack-card">
+          <div class="pack-photo">
+            <img src="images/creations/naissance-lapin-2.jpg" alt="Biscuit décoré représentant un lapin peint à la main, entouré de biscuits carotte et marguerite" width="1196" height="1800" loading="lazy" decoding="async">
+          </div>
+          <div class="pack-corps">
+            <h3>Pierre Lapin</h3>
+            <p class="pack-prix">Dès 77 CHF</p>
+            <p class="pack-note">Package de 12 biscuits. Prénom et âge personnalisables.</p>
+            <button type="button" class="btn btn-primary btn-small" data-ajout-panier="pack-pierre-lapin">Ajouter au panier</button>
+          </div>
+        </article>
+        <article class="pack-card">
+          <div class="pack-photo sans-photo" aria-hidden="true">
+            <span>Jolie</span>
+          </div>
+          <div class="pack-corps">
+            <h3>Cheval</h3>
+            <p class="pack-prix">Dès 72.50 CHF</p>
+            <p class="pack-note">Package de 12 biscuits. Prénom et âge personnalisables.</p>
+            <button type="button" class="btn btn-primary btn-small" data-ajout-panier="pack-cheval">Ajouter au panier</button>
+          </div>
+        </article>
+        <article class="pack-card">
+          <div class="pack-photo">
+            <img src="images/creations/licorne-4.jpeg" alt="Biscuit licorne au glaçage blanc, crinière lilas et rose, corne peinte à l’or" width="1063" height="1600" loading="lazy" decoding="async">
+          </div>
+          <div class="pack-corps">
+            <h3>Licorne</h3>
+            <p class="pack-prix">Dès 73.50 CHF</p>
+            <p class="pack-note">Package de 12 biscuits. Prénom et âge personnalisables.</p>
+            <button type="button" class="btn btn-primary btn-small" data-ajout-panier="pack-licorne">Ajouter au panier</button>
+          </div>
+        </article>
+      </div>
     </div>
   </section>
 
@@ -179,6 +222,99 @@
   <!-- ==========================================================
        3. SUR MESURE — disponible toute l'année également
        ========================================================== -->
+  <!-- ==========================================================
+       BISCUITS SUPPLÉMENTAIRES
+       Les tarifs en fourchette ne sont pas arrondis d'office : ces
+       biscuits sont portés au panier puis facturés après confirmation.
+       ========================================================== -->
+  <section id="supplements" aria-labelledby="supplements-title">
+    <div class="wrap">
+      <div class="section-head center">
+        <div class="ornament"><i></i></div>
+        <span class="eyebrow" style="justify-content:center;">En complément</span>
+        <h2 id="supplements-title">Ajouter des biscuits</h2>
+        <p class="narrow">Votre package contient déjà 12 biscuits. Vous pouvez en ajouter autant que vous le souhaitez, à l’unité.</p>
+      </div>
+
+      <p class="sup-minimum"><span><strong>La commande de biscuits démarre à 12 biscuits.</strong> Les biscuits ci-dessous s’ajoutent à un package : choisissez d’abord un package, puis complétez.</span></p>
+
+      <div class="sup-grid">
+        <div class="sup-card">
+          <h3>Petit biscuit</h3>
+          <p class="sup-prix">4 CHF</p>
+          <p>Petit format avec décoration simple.</p>
+          <div class="sup-achat">
+            <div>
+              <label for="qte-biscuit-petit">Quantité</label>
+              <input id="qte-biscuit-petit" type="number" min="1" max="99" value="1" inputmode="numeric">
+            </div>
+            <button type="button" class="btn btn-primary btn-small" data-ajout-panier="biscuit-petit" data-quantite-champ="qte-biscuit-petit">Ajouter au panier</button>
+          </div>
+        </div>
+
+        <div class="sup-card">
+          <h3>Biscuit standard</h3>
+          <p class="sup-prix">5 à 6 CHF</p>
+          <p>Format classique. Le prix final dépend de la taille et du niveau de détail, il vous est confirmé avant la préparation.</p>
+          <div class="sup-achat">
+            <div>
+              <label for="qte-biscuit-standard">Quantité</label>
+              <input id="qte-biscuit-standard" type="number" min="1" max="99" value="1" inputmode="numeric">
+            </div>
+            <button type="button" class="btn btn-primary btn-small" data-ajout-panier="biscuit-standard" data-quantite-champ="qte-biscuit-standard">Ajouter au panier</button>
+          </div>
+        </div>
+
+        <div class="sup-card">
+          <h3>Grand biscuit</h3>
+          <p class="sup-prix">7 à 8 CHF</p>
+          <p>Grand format, idéal pour les pièces principales ou les créations plus élaborées. Le prix final dépend de la personnalisation.</p>
+          <div class="sup-achat">
+            <div>
+              <label for="qte-biscuit-grand">Quantité</label>
+              <input id="qte-biscuit-grand" type="number" min="1" max="99" value="1" inputmode="numeric">
+            </div>
+            <button type="button" class="btn btn-primary btn-small" data-ajout-panier="biscuit-grand" data-quantite-champ="qte-biscuit-grand">Ajouter au panier</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="ingredients" class="section-deep" aria-labelledby="ingredients-title">
+    <div class="wrap">
+      <div class="section-head center">
+        <div class="ornament"><i></i></div>
+        <span class="eyebrow" style="justify-content:center;">Transparence</span>
+        <h2 id="ingredients-title">Ingrédients &amp; conservation</h2>
+      </div>
+
+      <div class="ingredients-grid">
+        <div class="ingredient-bloc">
+          <h3>Biscuit</h3>
+          <p>Beurre, farine, sucre glace, œuf, sel de Guérande, extrait de vanille.</p>
+        </div>
+        <div class="ingredient-bloc">
+          <h3>Glaçage</h3>
+          <p>Sucre glace, poudre de blanc d’œuf (peut contenir des traces de lait et de fruits à coque), colorant alimentaire.</p>
+        </div>
+        <div class="ingredient-bloc">
+          <h3>Conservation</h3>
+          <ul>
+            <li>À consommer dans les 6 semaines dans son sachet d’origine.</li>
+            <li>À conserver dans un endroit sec, à l’abri de la lumière et de l’humidité.</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="conservation-alerte">
+        <div class="ornament"><i></i></div>
+        <p>Ne pas mettre au réfrigérateur.</p>
+        <small>L’humidité ferait perdre au glaçage sa tenue et son éclat.</small>
+      </div>
+    </div>
+  </section>
+
   <section id="sur-mesure" aria-labelledby="sur-mesure-title">
     <div class="wrap">
       <div class="section-head center">
@@ -332,6 +468,8 @@
   <img src="" alt="">
   <div class="lightbox-cap"></div>
 </div>
+<script src="catalogue.js"></script>
+<script src="boutique.js"></script>
 <script src="script.js"></script>
 </body>
 </html>
