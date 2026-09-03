@@ -32,6 +32,10 @@
       </ul>
     </nav>
     <div class="header-actions">
+      <a href="panier.html" class="header-cart" data-panier-lien aria-label="Mon panier, vide">
+        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><g class="ic-line"><path d="M4 6.4h2.1l2 10.2h9.6l1.9-7.4H7"/><circle cx="9.4" cy="19.6" r="1.2"/><circle cx="16.6" cy="19.6" r="1.2"/></g></svg>
+        <span class="header-cart-count" data-panier-compteur hidden>0</span>
+      </a>
       <a href="contact.html" class="btn btn-primary btn-small">Demander un devis</a>
       <button class="burger" aria-label="Ouvrir le menu"><span></span><span></span><span></span></button>
     </div>
@@ -97,6 +101,7 @@
       <div class="section-head center">
         <span class="eyebrow">Mes micro-scénographies</span>
         <h2 id="formules-title">Trois formules, un même univers</h2>
+        <p class="narrow">Chaque formule s’ajoute au panier après quelques informations sur votre événement : date, lieu, thème et demandes particulières. Le tarif indiqué est un tarif de départ ; tout complément lié à vos options vous est confirmé avant l’événement.</p>
       </div>
       <div class="formules-grid">
         <div class="formule-card no-image">
@@ -112,7 +117,10 @@
               <li>Installation et démontage</li>
             </ul>
           </div>
-          <a href="contact.html" class="btn btn-ghost btn-small">Demander un devis</a>
+          <div class="formule-actions">
+            <button type="button" class="btn btn-ghost btn-small" data-ajout-panier="sceno-essentiel">Ajouter au panier</button>
+            <a href="contact.html" class="lien-devis">Ou demander un devis</a>
+          </div>
         </div>
         <div class="formule-card featured no-image">
           <span class="formule-badge">Formule phare</span>
@@ -129,7 +137,10 @@
               <li>Installation et démontage</li>
             </ul>
           </div>
-          <a href="contact.html" class="btn btn-primary btn-small">Demander un devis</a>
+          <div class="formule-actions">
+            <button type="button" class="btn btn-primary btn-small" data-ajout-panier="sceno-signature">Ajouter au panier</button>
+            <a href="contact.html" class="lien-devis">Ou demander un devis</a>
+          </div>
         </div>
         <div class="formule-card no-image">
           <div class="card-content">
@@ -146,7 +157,10 @@
               <li>Installation et démontage</li>
             </ul>
           </div>
-          <a href="contact.html" class="btn btn-ghost btn-small">Demander un devis</a>
+          <div class="formule-actions">
+            <button type="button" class="btn btn-ghost btn-small" data-ajout-panier="sceno-signature-plus">Ajouter au panier</button>
+            <a href="contact.html" class="lien-devis">Ou demander un devis</a>
+          </div>
         </div>
       </div>
     </div>
@@ -256,6 +270,8 @@
   <img src="" alt="">
   <div class="lightbox-cap"></div>
 </div>
+<script src="catalogue.js"></script>
+<script src="boutique.js"></script>
 <script src="script.js"></script>
 </body>
 </html>

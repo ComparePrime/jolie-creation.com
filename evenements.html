@@ -32,6 +32,10 @@
       </ul>
     </nav>
     <div class="header-actions">
+      <a href="panier.html" class="header-cart" data-panier-lien aria-label="Mon panier, vide">
+        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><g class="ic-line"><path d="M4 6.4h2.1l2 10.2h9.6l1.9-7.4H7"/><circle cx="9.4" cy="19.6" r="1.2"/><circle cx="16.6" cy="19.6" r="1.2"/></g></svg>
+        <span class="header-cart-count" data-panier-compteur hidden>0</span>
+      </a>
       <a href="contact.html" class="btn btn-primary btn-small">Demander un devis</a>
       <button class="burger" aria-label="Ouvrir le menu"><span></span><span></span><span></span></button>
     </div>
@@ -625,6 +629,8 @@
   ]
 }
 </script>
+<script src="catalogue.js"></script>
+<script src="boutique.js"></script>
 <script src="script.js"></script>
 </body>
 </html>

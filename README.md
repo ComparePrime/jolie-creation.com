@@ -1,1 +1,124 @@
 # jolie-creation.com
+
+Site vitrine et boutique en ligne de Jolie Création : biscuits personnalisés
+décorés à la main et micro-scénographies événementielles.
+
+Site statique, sans étape de compilation. Les pages sont du HTML servi tel
+quel ; seul le paiement passe par deux fonctions serverless.
+
+---
+
+## Activer le paiement en ligne
+
+Le parcours panier → paiement → confirmation est déjà en place et testé.
+Il ne manque qu'une chose : **la clé secrète Stripe**. Tant qu'elle n'est
+pas renseignée, la page de paiement affiche un message honnête et propose
+de finaliser la commande par WhatsApp ou par e-mail. Aucun faux paiement
+n'est simulé.
+
+### 1. Récupérer la clé
+
+Dans le tableau de bord Stripe : **Développeurs → Clés API → Clé secrète**.
+Elle commence par `sk_live_` en production, `sk_test_` pour les essais.
+
+### 2. La renseigner dans Netlify
+
+**Site settings → Environment variables → Add a variable**
+
+| Nom                 | Valeur        |
+| ------------------- | ------------- |
+| `STRIPE_SECRET_KEY` | `sk_live_...` |
+
+Puis redéployer le site pour que les fonctions voient la variable.
+
+> Cette clé ne doit jamais être écrite dans un fichier du dépôt, ni dans une
+> page HTML, ni dans un fichier JavaScript. Elle permet de débiter des
+> cartes : une clé publiée est une clé compromise, à révoquer immédiatement
+> depuis le tableau de bord Stripe.
+
+### 3. Activer les moyens de paiement
+
+**Réglages → Paiements → Moyens de paiement** : activer au minimum les
+cartes et **TWINT**. Apple Pay et Google Pay s'activent au même endroit et
+apparaissent automatiquement sur les appareils compatibles.
+
+Le code ne fige volontairement aucune liste de moyens de paiement : Stripe
+propose ceux qui sont activés sur le compte. Un moyen activé plus tard
+apparaît donc sans modification du site.
+
+### 4. Vérifier avec une carte de test
+
+Avec une clé `sk_test_`, passer une commande et payer avec le numéro
+`4242 4242 4242 4242`, une date future et n'importe quel CVC. La commande
+doit apparaître dans le tableau de bord Stripe, et la page de confirmation
+afficher le montant réellement payé.
+
+---
+
+## Ce qui reste à faire avant l'ouverture de la boutique
+
+- **Conditions générales de vente.** Une boutique en ligne suisse doit les
+  publier et y renvoyer depuis le tunnel de commande. Elles n'existent pas
+  encore sur le site.
+- **Frais de livraison.** Ils ne sont pas facturés en ligne : le site
+  indique qu'ils sont confirmés séparément selon la destination.
+- **Photo du package Cheval.** Aucune photo de ce thème dans
+  `images/creations` : la carte affiche un aplat typographique en attendant.
+  Déposer le fichier, puis remplacer le bloc `pack-photo sans-photo` de
+  `biscuits-personnalises.html` par une balise `img`.
+
+---
+
+## Structure
+
+| Fichier / dossier                              | Rôle                                                        |
+| ---------------------------------------------- | ----------------------------------------------------------- |
+| `catalogue.js`                                 | Prix et articles achetables. Source unique, navigateur + serveur. |
+| `boutique.js`                                  | Panier (localStorage), boutons d'ajout, formulaire de détails. |
+| `panier.html`                                  | Récapitulatif, quantités, totaux.                            |
+| `paiement.html`                                | Coordonnées client, puis redirection vers Stripe Checkout.   |
+| `commande-confirmee.html`                      | Relit l'état réel du paiement auprès de Stripe.              |
+| `netlify/functions/create-checkout-session.js` | Crée la session de paiement. Seul endroit où vit la clé.     |
+| `netlify/functions/get-order.js`               | Relit une commande payée.                                    |
+| `tests/catalogue.test.js`                      | Tests de la fonction de paiement (`npm test`).               |
+
+### Deux principes du code de paiement
+
+**Les prix ne viennent jamais du navigateur.** La page envoie des
+identifiants d'articles et des quantités ; la fonction serveur relit les
+montants dans `catalogue.js`. Un panier trafiqué dans la console ne peut pas
+faire baisser la somme débitée.
+
+**Les tarifs en fourchette ne sont pas arrondis d'office.** Les biscuits
+standard (5 à 6 CHF) et grands (7 à 8 CHF) sont portés au panier mais exclus
+du paiement en ligne : leur montant dépend de la personnalisation et est
+confirmé avant la préparation. Le panier affiche donc deux totaux.
+
+---
+
+## Modifier le catalogue
+
+Tout se passe dans `catalogue.js`. Ajouter un package revient à ajouter une
+entrée au tableau `ARTICLES`, puis à poser un bouton dans la page :
+
+```html
+<button type="button" class="btn btn-primary" data-ajout-panier="pack-nouveau">
+  Ajouter au panier
+</button>
+```
+
+Les montants sont **en centimes** : `7250` pour 72.50 CHF. Manipuler des
+francs en virgule flottante finit toujours par produire un `72.49999999`.
+
+---
+
+## Développement local
+
+```bash
+npx http-server -p 8080 -s      # le site, sans les fonctions
+npm test                        # tests de la fonction de paiement
+```
+
+Pour tester le paiement de bout en bout en local, il faut la CLI Netlify
+(`netlify dev`) et un fichier `.env` contenant `STRIPE_SECRET_KEY`. Ce
+fichier est ignoré par git.

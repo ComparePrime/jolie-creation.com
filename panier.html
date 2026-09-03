@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="fr-CH">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mon panier | Jolie Création</title>
+<meta name="description" content="Votre panier Jolie Création : packages de biscuits personnalisés et micro-scénographies.">
+<meta name="robots" content="noindex, nofollow">
+<link rel="canonical" href="https://www.jolie-creation.com/panier.html">
+<meta property="og:locale" content="fr_CH">
+<link rel="icon" href="favicon.png" type="image/png">
+<link rel="stylesheet" href="styles.css">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Alex+Brush&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+<header class="site-header">
+  <div class="wrap">
+    <a href="index.html" class="brand">
+      <img src="images/logo.png" alt="Jolie Création">
+    </a>
+    <nav class="nav-desktop" aria-label="Navigation principale">
+      <ul>
+        <li><a href="index.html">Accueil</a></li>
+        <li><a href="biscuits-personnalises.html">Biscuits personnalisés</a></li>
+        <li><a href="mini-scenographies.html">Micro-scénographies</a></li>
+        <li><a href="evenements.html">Mes réalisations</a></li>
+        <li><a href="a-propos.html">À propos de moi</a></li>
+      </ul>
+    </nav>
+    <div class="header-actions">
+      <a href="panier.html" class="header-cart" data-panier-lien aria-label="Mon panier, vide">
+        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><g class="ic-line"><path d="M4 6.4h2.1l2 10.2h9.6l1.9-7.4H7"/><circle cx="9.4" cy="19.6" r="1.2"/><circle cx="16.6" cy="19.6" r="1.2"/></g></svg>
+        <span class="header-cart-count" data-panier-compteur hidden>0</span>
+      </a>
+      <a href="contact.html" class="btn btn-primary btn-small">Demander un devis</a>
+      <button class="burger" aria-label="Ouvrir le menu"><span></span><span></span><span></span></button>
+    </div>
+  </div>
+</header>
+
+<div class="mobile-nav" role="dialog" aria-modal="true" aria-label="Menu">
+  <div class="mobile-nav-top">
+    <img src="images/logo.png" alt="Jolie Création">
+    <button class="mobile-nav-close" aria-label="Fermer le menu">&times;</button>
+  </div>
+  <ul>
+    <li><a href="index.html">Accueil</a></li>
+    <li><a href="biscuits-personnalises.html">Biscuits personnalisés</a></li>
+    <li><a href="mini-scenographies.html">Micro-scénographies</a></li>
+    <li><a href="evenements.html">Mes réalisations</a></li>
+    <li><a href="a-propos.html">À propos de moi</a></li>
+  </ul>
+  <a href="contact.html" class="btn btn-primary">Demander un devis</a>
+</div>
+
+<main>
+  <div class="page-intro">
+    <div class="wrap">
+      <p class="breadcrumb"><a href="index.html">Accueil</a> / Mon panier</p>
+      <ol class="etapes">
+        <li class="courante" aria-current="step">Panier</li>
+        <li class="">Paiement</li>
+        <li class="">Confirmation</li>
+      </ol>
+      <h1>Mon panier</h1>
+    </div>
+  </div>
+
+  <section style="padding-top:20px;">
+    <div class="wrap">
+      <div class="panier-layout" id="panier-contenu" hidden>
+        <div>
+          <div class="panier-lignes" id="panier-lignes"></div>
+        </div>
+        <aside class="panier-recap" aria-labelledby="recap-titre">
+          <h2 id="recap-titre">Récapitulatif</h2>
+          <div id="recap-detail"></div>
+          <div class="recap-total">
+            <strong>Total à payer</strong>
+            <span class="montant" id="recap-total">0 CHF</span>
+          </div>
+          <p class="recap-mention" id="recap-mention"></p>
+          <div id="recap-alerte"></div>
+          <a href="paiement.html" class="btn btn-primary" id="recap-suite">Passer au paiement</a>
+        </aside>
+      </div>
+
+      <div class="panier-vide" id="panier-vide" hidden>
+        <div class="ornament"><i></i></div>
+        <h2>Votre panier est vide</h2>
+        <p>Découvrez les packages de biscuits disponibles toute l'année et les trois formules de micro-scénographie.</p>
+        <div class="hero-actions" style="justify-content:center;">
+          <a href="biscuits-personnalises.html" class="btn btn-primary">Voir les biscuits</a>
+          <a href="mini-scenographies.html" class="btn btn-ghost">Voir les micro-scénographies</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</main>
+<footer class="site-footer">
+  <div class="wrap">
+    <div class="footer-grid">
+      <div>
+        <img src="images/logo.png" alt="Jolie Création">
+        <p>Biscuits personnalisés &amp; décoration événementielle.</p>
+        <div class="socials" style="margin-top:16px;">
+          <a href="https://www.instagram.com/_jolie.creation_/" target="_blank" rel="noopener" aria-label="Instagram">Instagram</a>
+          <a href="https://www.facebook.com/profile.php?id=100064819849220" target="_blank" rel="noopener" aria-label="Facebook">Facebook</a>
+          <a href="https://api.whatsapp.com/send/?phone=41783127545&text&type=phone_number&app_absent=0" target="_blank" rel="noopener" aria-label="WhatsApp">WhatsApp</a>
+        </div>
+      </div>
+      <div>
+        <h4>Mes offres</h4>
+        <ul>
+          <li><a href="biscuits-personnalises.html">Biscuits personnalisés</a></li>
+          <li><a href="mini-scenographies.html">Micro-scénographies</a></li>
+          <li><a href="evenements.html">Mes réalisations</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Biscuits personnalisés</h4>
+        <ul>
+          <li>Livraison Suisse &middot; France &middot; Europe</li>
+          <li>Retrait possible à Domdidier (FR)</li>
+          <li><a href="a-propos.html">À propos de moi</a></li>
+          <li><a href="mentions-legales.html">Mentions légales</a></li>
+          <li><a href="confidentialite.html">Confidentialité</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Contact</h4>
+        <ul>
+          <li><a href="tel:+41783127545">+41 78 312 75 45</a></li>
+          <li><a href="mailto:info@jolie-creation.com">info@jolie-creation.com</a></li>
+          <li><a href="https://api.whatsapp.com/send/?phone=41783127545&text&type=phone_number&app_absent=0" target="_blank" rel="noopener">Discuter sur WhatsApp</a></li>
+          <li>Suisse romande</li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>&copy; <span data-year></span> Jolie Création. Tous droits réservés.</span>
+      <span><a href="mentions-legales.html">Mentions légales</a> &middot; <a href="confidentialite.html">Confidentialité</a></span>
+    </div>
+  </div>
+</footer>
+<a class="whatsapp-float" href="https://api.whatsapp.com/send/?phone=41783127545&text&type=phone_number&app_absent=0" target="_blank" rel="noopener" aria-label="Discuter sur WhatsApp">
+  <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413z"/></svg>
+</a>
+<script src="catalogue.js"></script>
+<script src="boutique.js"></script>
+<script src="script.js"></script>
+<script>
+
+(function () {
+  var Cat = window.JCCatalogue, Panier = window.JCPanier;
+  var LIBELLES = { date: 'Date', lieu: 'Lieu', theme: 'Thème', options: 'Options', demandes: 'Demandes' };
+
+  function el(balise, classe, texte) {
+    var n = document.createElement(balise);
+    if (classe) n.className = classe;
+    if (texte != null) n.textContent = texte;
+    return n;
+  }
+
+  function ligneHTML(ligne) {
+    var a = Cat.article(ligne.id);
+    var bloc = el('article', 'panier-ligne');
+
+    var tete = el('div');
+    tete.appendChild(el('h3', null, a.nom));
+    if (a.resume) tete.appendChild(el('p', 'ligne-resume', a.resume));
+    bloc.appendChild(tete);
+
+    var prix = el('div', 'ligne-prix');
+    if (a.aConfirmer) {
+      prix.textContent = Cat.formater(a.prixMin * ligne.qte) + ' à ' + Cat.formater(a.prixMax * ligne.qte);
+      prix.appendChild(el('small', null, 'montant à confirmer'));
+    } else {
+      prix.textContent = Cat.formater(a.prix * ligne.qte);
+      if (a.aPartirDe) prix.appendChild(el('small', null, 'tarif de départ'));
+    }
+    bloc.appendChild(prix);
+
+    if (ligne.details) {
+      var dl = el('dl', 'ligne-details');
+      Object.keys(LIBELLES).forEach(function (cle) {
+        if (!ligne.details[cle]) return;
+        var d = el('div');
+        d.appendChild(el('dt', null, LIBELLES[cle]));
+        d.appendChild(el('dd', null, ligne.details[cle]));
+        dl.appendChild(d);
+      });
+      if (dl.children.length) bloc.appendChild(dl);
+    }
+
+    var pied = el('div', 'ligne-pied');
+    var pas = el('div', 'qte-stepper');
+    var moins = el('button', null, '−');
+    moins.type = 'button';
+    moins.setAttribute('aria-label', 'Retirer un ' + a.court);
+    moins.disabled = ligne.qte <= 1;
+    var champ = el('input');
+    champ.type = 'number'; champ.min = '1'; champ.max = '99';
+    champ.value = ligne.qte;
+    champ.setAttribute('aria-label', 'Quantité pour ' + a.court);
+    var plus = el('button', null, '+');
+    plus.type = 'button';
+    plus.setAttribute('aria-label', 'Ajouter un ' + a.court);
+    moins.onclick = function () { Panier.definirQuantite(ligne.cle, ligne.qte - 1); };
+    plus.onclick = function () { Panier.definirQuantite(ligne.cle, ligne.qte + 1); };
+    champ.onchange = function () {
+      var v = Math.min(99, Math.max(1, parseInt(champ.value, 10) || 1));
+      Panier.definirQuantite(ligne.cle, v);
+    };
+    pas.appendChild(moins); pas.appendChild(champ); pas.appendChild(plus);
+
+    var retirer = el('button', 'ligne-retirer', 'Retirer');
+    retirer.type = 'button';
+    retirer.onclick = function () { Panier.retirer(ligne.cle); };
+
+    pied.appendChild(pas); pied.appendChild(retirer);
+    bloc.appendChild(pied);
+    return bloc;
+  }
+
+  function rendre() {
+    var t = Panier.totaux();
+    document.getElementById('panier-contenu').hidden = t.lignes.length === 0;
+    document.getElementById('panier-vide').hidden = t.lignes.length > 0;
+    if (!t.lignes.length) return;
+
+    var zone = document.getElementById('panier-lignes');
+    zone.innerHTML = '';
+    t.lignes.forEach(function (l) { zone.appendChild(ligneHTML(l)); });
+
+    var detail = document.getElementById('recap-detail');
+    detail.innerHTML = '';
+    function recapLigne(libelle, valeur) {
+      var d = el('div', 'recap-ligne');
+      d.appendChild(el('span', null, libelle));
+      d.appendChild(el('span', null, valeur));
+      detail.appendChild(d);
+    }
+    recapLigne('Articles', String(t.nbArticles));
+    recapLigne('Payable en ligne', Cat.formater(t.payable));
+    if (t.aConfirmerMax > 0) {
+      recapLigne('À confirmer', Cat.formater(t.aConfirmerMin) + ' à ' + Cat.formater(t.aConfirmerMax));
+    }
+    document.getElementById('recap-total').textContent = Cat.formater(t.payable);
+
+    var mentions = [];
+    if (t.aConfirmerMax > 0) {
+      mentions.push('Les biscuits au tarif variable ne sont pas facturés en ligne : leur montant exact dépend de la taille et du niveau de détail, et vous est confirmé avant la préparation.');
+    }
+    mentions.push('Les frais de livraison éventuels sont confirmés séparément selon la destination.');
+    document.getElementById('recap-mention').textContent = mentions.join(' ');
+
+    var alerte = document.getElementById('recap-alerte');
+    alerte.innerHTML = '';
+    var suite = document.getElementById('recap-suite');
+    var probleme = Panier.blocage();
+    if (probleme) {
+      alerte.appendChild(el('p', 'recap-alerte', probleme));
+      suite.setAttribute('aria-disabled', 'true');
+      suite.classList.add('btn-desactive');
+      suite.href = 'biscuits-personnalises.html#supplements';
+      suite.textContent = 'Compléter ma commande';
+    } else {
+      suite.removeAttribute('aria-disabled');
+      suite.classList.remove('btn-desactive');
+      suite.href = 'paiement.html';
+      suite.textContent = 'Passer au paiement';
+    }
+  }
+
+  document.addEventListener('panier:maj', rendre);
+  rendre();
+})();
+
+</script>
+</body>
+</html>
