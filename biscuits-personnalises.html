@@ -65,8 +65,8 @@
         <h1>Des biscuits créés spécialement pour <span class="script">votre</span> événement</h1>
         <p class="lead">Des packages disponibles toute l'année, des collections mises en avant au fil des saisons, et la possibilité de tout composer sur mesure. Chaque biscuit est décoré à la main dans mon atelier de Domdidier.</p>
         <div class="hero-actions">
-          <a href="#packages" class="btn btn-primary">Voir les packages</a>
-          <a href="#collections" class="btn btn-ghost">Les collections du moment</a>
+          <a href="#collections" class="btn btn-primary">Les collections du moment</a>
+          <a href="#packages" class="btn btn-ghost">Voir les packages</a>
         </div>
         <div class="hero-trust">
           <div><strong>Livraison</strong>Suisse, France &amp; Europe</div>
@@ -77,85 +77,6 @@
         <div class="scallop-frame arch-frame">
           <img src="images/creations/prenom-giulia.jpg" alt="Biscuits personnalisés au prénom, calligraphié au glaçage doré" width="1800" height="1196" loading="eager">
         </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- ==========================================================
-       1. PACKAGES DISPONIBLES TOUTE L'ANNÉE
-       Offres permanentes, commandables quelle que soit la saison.
-       Pour ajouter un package permanent, dupliquer le bloc
-       <article class="package-feature"> et adapter titre, prix,
-       composition, photo et lien.
-       ========================================================== -->
-  <section id="packages" aria-labelledby="packages-title">
-    <div class="wrap">
-      <div class="section-head center">
-        <div class="ornament"><i></i></div>
-        <span class="eyebrow" style="justify-content:center;">Toute l'année</span>
-        <h2 id="packages-title">Packages disponibles toute l'année</h2>
-        <p class="narrow">Ces offres restent commandables en permanence, sans attendre une saison particulière.</p>
-      </div>
-
-      <article class="package-feature">
-        <div class="package-media">
-          <img src="images/creations/anniversaire-ocean-etagere.jpg" alt="Biscuits décorés sur le thème de l'océan : baleine, tortue, hippocampe, étoiles de mer et chiffre, présentés sur une étagère" width="1665" height="1800" loading="lazy">
-        </div>
-        <div class="package-body">
-          <span class="package-tag">Package permanent</span>
-          <h3>Thème Océan</h3>
-          <p class="package-desc">Baleine, tortue, hippocampe et coquillages dans un dégradé de bleus, décorés un à un au glaçage royal.</p>
-          <p class="package-price">
-            <span class="montant">69</span>
-            <span class="devise">CHF</span>
-            <span class="mention">les 12 biscuits</span>
-          </p>
-          <ul class="package-compo">
-            <li><span class="qte">7</span><span>biscuits personnalisés, avec plusieurs détails et décorations</span></li>
-            <li><span class="qte">5</span><span>petits biscuits simples</span></li>
-            <li class="total"><span class="qte">12</span><span>biscuits au total</span></li>
-          </ul>
-          <div class="formule-actions" style="margin:auto 0 0; align-items:flex-start;">
-            <button type="button" class="btn btn-primary" data-ajout-panier="pack-ocean">Ajouter au panier</button>
-            <a href="contact.html?formule=biscuits&amp;theme=Package+Th%C3%A8me+Oc%C3%A9an" class="lien-devis">Ou demander un devis</a>
-          </div>
-        </div>
-      </article>
-
-      <div class="pack-grid" style="margin-top:34px;">
-        <article class="pack-card">
-          <div class="pack-photo">
-            <img src="images/creations/naissance-lapin-2.jpg" alt="Biscuit décoré représentant un lapin peint à la main, entouré de biscuits carotte et marguerite" width="1196" height="1800" loading="lazy" decoding="async">
-          </div>
-          <div class="pack-corps">
-            <h3>Pierre Lapin</h3>
-            <p class="pack-prix">Dès 77 CHF</p>
-            <p class="pack-note">Package de 12 biscuits. Prénom et âge personnalisables.</p>
-            <button type="button" class="btn btn-primary btn-small" data-ajout-panier="pack-pierre-lapin">Ajouter au panier</button>
-          </div>
-        </article>
-        <article class="pack-card">
-          <div class="pack-photo sans-photo" aria-hidden="true">
-            <span>Jolie</span>
-          </div>
-          <div class="pack-corps">
-            <h3>Cheval</h3>
-            <p class="pack-prix">Dès 72.50 CHF</p>
-            <p class="pack-note">Package de 12 biscuits. Prénom et âge personnalisables.</p>
-            <button type="button" class="btn btn-primary btn-small" data-ajout-panier="pack-cheval">Ajouter au panier</button>
-          </div>
-        </article>
-        <article class="pack-card">
-          <div class="pack-photo">
-            <img src="images/creations/licorne-4.jpeg" alt="Biscuit licorne au glaçage blanc, crinière lilas et rose, corne peinte à l’or" width="1063" height="1600" loading="lazy" decoding="async">
-          </div>
-          <div class="pack-corps">
-            <h3>Licorne</h3>
-            <p class="pack-prix">Dès 73.50 CHF</p>
-            <p class="pack-note">Package de 12 biscuits. Prénom et âge personnalisables.</p>
-            <button type="button" class="btn btn-primary btn-small" data-ajout-panier="pack-licorne">Ajouter au panier</button>
-          </div>
-        </article>
       </div>
     </div>
   </section>
@@ -220,64 +141,103 @@
   </section>
 
   <!-- ==========================================================
-       3. SUR MESURE — disponible toute l'année également
+       PACKAGES DISPONIBLES TOUTE L'ANNÉE
+       Offres permanentes, commandables quelle que soit la saison.
+       Pour en ajouter un : une entrée dans catalogue.js, puis une
+       carte <article class="pack-card"> ci-dessous.
        ========================================================== -->
+  <section id="packages" aria-labelledby="packages-title">
+    <div class="wrap">
+      <div class="section-head center">
+        <div class="ornament"><i></i></div>
+        <span class="eyebrow" style="justify-content:center;">Toute l'année</span>
+        <h2 id="packages-title">Packages disponibles toute l'année</h2>
+        <p class="narrow">Ces offres restent commandables en permanence, sans attendre une saison particulière. Chaque package contient 12 biscuits et se complète au moment de l'ajout au panier.</p>
+      </div>
+
+      <div class="pack-grid">
+        <article class="pack-card">
+          <div class="pack-photo">
+            <img src="images/creations/anniversaire-ocean-etagere.jpg" alt="Biscuits décorés sur le thème de l'océan présentés sur une étagère : baleine, tortue, hippocampe et étoiles de mer" width="1665" height="1800" loading="lazy" decoding="async">
+          </div>
+          <div class="pack-corps">
+            <h3>Thème Océan</h3>
+            <p class="pack-prix">69 CHF</p>
+            <p class="pack-note">12 biscuits : 7 décorés et 5 simples.</p>
+            <button type="button" class="btn btn-primary btn-small" data-ajout-panier="pack-ocean">Ajouter au panier</button>
+          </div>
+        </article>
+        <article class="pack-card">
+          <div class="pack-photo">
+            <img src="images/creations/naissance-lapin-2.jpg" alt="Biscuit décoré représentant un lapin peint à la main, entouré de biscuits carotte et marguerite" width="1196" height="1800" loading="lazy" decoding="async">
+          </div>
+          <div class="pack-corps">
+            <h3>Pierre Lapin</h3>
+            <p class="pack-prix">Dès 77 CHF</p>
+            <p class="pack-note">Package de 12 biscuits. Prénom et âge personnalisables.</p>
+            <button type="button" class="btn btn-primary btn-small" data-ajout-panier="pack-pierre-lapin">Ajouter au panier</button>
+          </div>
+        </article>
+        <article class="pack-card">
+          <div class="pack-photo">
+            <img src="images/creations/cheval-5.jpeg" alt="Biscuits sur le thème du cheval : tête de poney, cœur au prénom calligraphié, marguerites et fer à cheval" width="1110" height="1600" loading="lazy" decoding="async">
+          </div>
+          <div class="pack-corps">
+            <h3>Cheval</h3>
+            <p class="pack-prix">Dès 72.50 CHF</p>
+            <p class="pack-note">Package de 12 biscuits. Prénom et âge personnalisables.</p>
+            <button type="button" class="btn btn-primary btn-small" data-ajout-panier="pack-cheval">Ajouter au panier</button>
+          </div>
+        </article>
+        <article class="pack-card">
+          <div class="pack-photo">
+            <img src="images/creations/licorne-4.jpeg" alt="Biscuit licorne au glaçage blanc, crinière lilas et rose, corne peinte à l’or" width="1063" height="1600" loading="lazy" decoding="async">
+          </div>
+          <div class="pack-corps">
+            <h3>Licorne</h3>
+            <p class="pack-prix">Dès 73.50 CHF</p>
+            <p class="pack-note">Package de 12 biscuits. Prénom et âge personnalisables.</p>
+            <button type="button" class="btn btn-primary btn-small" data-ajout-panier="pack-licorne">Ajouter au panier</button>
+          </div>
+        </article>
+      </div>
+    </div>
+  </section>
+
   <!-- ==========================================================
        BISCUITS SUPPLÉMENTAIRES
-       Les tarifs en fourchette ne sont pas arrondis d'office : ces
-       biscuits sont portés au panier puis facturés après confirmation.
+       Ils ne s'achètent pas séparément : ils se choisissent dans la
+       fenêtre d'ajout d'un package. Cette section présente les
+       formats et les tarifs, elle ne vend rien à elle seule.
        ========================================================== -->
   <section id="supplements" aria-labelledby="supplements-title">
     <div class="wrap">
       <div class="section-head center">
         <div class="ornament"><i></i></div>
         <span class="eyebrow" style="justify-content:center;">En complément</span>
-        <h2 id="supplements-title">Ajouter des biscuits</h2>
-        <p class="narrow">Votre package contient déjà 12 biscuits. Vous pouvez en ajouter autant que vous le souhaitez, à l’unité.</p>
+        <h2 id="supplements-title">Ajouter des biscuits à votre package</h2>
+        <p class="narrow">La commande de biscuits démarre à 12 biscuits, soit un package. Vous le complétez ensuite à l'unité, directement au moment de l'ajouter au panier.</p>
       </div>
-
-      <p class="sup-minimum"><span><strong>La commande de biscuits démarre à 12 biscuits.</strong> Les biscuits ci-dessous s’ajoutent à un package : choisissez d’abord un package, puis complétez.</span></p>
 
       <div class="sup-grid">
         <div class="sup-card">
           <h3>Petit biscuit</h3>
           <p class="sup-prix">4 CHF</p>
           <p>Petit format avec décoration simple.</p>
-          <div class="sup-achat">
-            <div>
-              <label for="qte-biscuit-petit">Quantité</label>
-              <input id="qte-biscuit-petit" type="number" min="1" max="99" value="1" inputmode="numeric">
-            </div>
-            <button type="button" class="btn btn-primary btn-small" data-ajout-panier="biscuit-petit" data-quantite-champ="qte-biscuit-petit">Ajouter au panier</button>
-          </div>
         </div>
-
         <div class="sup-card">
           <h3>Biscuit standard</h3>
           <p class="sup-prix">5 à 6 CHF</p>
           <p>Format classique. Le prix final dépend de la taille et du niveau de détail, il vous est confirmé avant la préparation.</p>
-          <div class="sup-achat">
-            <div>
-              <label for="qte-biscuit-standard">Quantité</label>
-              <input id="qte-biscuit-standard" type="number" min="1" max="99" value="1" inputmode="numeric">
-            </div>
-            <button type="button" class="btn btn-primary btn-small" data-ajout-panier="biscuit-standard" data-quantite-champ="qte-biscuit-standard">Ajouter au panier</button>
-          </div>
         </div>
-
         <div class="sup-card">
           <h3>Grand biscuit</h3>
           <p class="sup-prix">7 à 8 CHF</p>
           <p>Grand format, idéal pour les pièces principales ou les créations plus élaborées. Le prix final dépend de la personnalisation.</p>
-          <div class="sup-achat">
-            <div>
-              <label for="qte-biscuit-grand">Quantité</label>
-              <input id="qte-biscuit-grand" type="number" min="1" max="99" value="1" inputmode="numeric">
-            </div>
-            <button type="button" class="btn btn-primary btn-small" data-ajout-panier="biscuit-grand" data-quantite-champ="qte-biscuit-grand">Ajouter au panier</button>
-          </div>
         </div>
       </div>
+
+      <p class="sup-minimum" style="margin:34px 0 0;"><span><strong>Comment faire&nbsp;?</strong> Choisissez un package ci-dessus, puis indiquez le nombre de biscuits supplémentaires dans la fenêtre qui s'ouvre. Ils rejoignent la même ligne de commande.</span></p>
     </div>
   </section>
 

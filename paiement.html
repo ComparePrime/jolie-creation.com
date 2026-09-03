@@ -209,18 +209,26 @@
 
     var zone = document.getElementById('pay-recap-lignes');
     zone.innerHTML = '';
-    t.lignes.forEach(function (l) {
-      var a = Cat.article(l.id);
+    function rangRecap(libelle, montant, classe) {
       var d = document.createElement('div');
-      d.className = 'recap-ligne';
+      d.className = 'recap-ligne' + (classe ? ' ' + classe : '');
       var g = document.createElement('span');
-      g.textContent = l.qte + ' × ' + a.court;
+      g.textContent = libelle;
       var dr = document.createElement('span');
-      dr.textContent = a.aConfirmer
-        ? Cat.formater(a.prixMin * l.qte) + ' à ' + Cat.formater(a.prixMax * l.qte)
-        : Cat.formater(a.prix * l.qte);
+      dr.textContent = montant;
       d.appendChild(g); d.appendChild(dr);
       zone.appendChild(d);
+    }
+    t.lignes.forEach(function (l) {
+      var a = Cat.article(l.id);
+      var r = Panier.totauxLigne(l);
+      rangRecap(l.qte + ' × ' + a.court, Cat.formater(a.prix * l.qte));
+      // Les biscuits ajoutés apparaissent sous leur package, décalés.
+      r.supplements.forEach(function (item) {
+        rangRecap(item.qte + ' × ' + item.article.court, item.article.aConfirmer
+          ? Cat.formater(item.article.prixMin * item.qte) + ' à ' + Cat.formater(item.article.prixMax * item.qte)
+          : Cat.formater(item.article.prix * item.qte), 'recap-sous-ligne');
+      });
     });
     document.getElementById('pay-total').textContent = Cat.formater(t.payable);
 
@@ -256,7 +264,7 @@
     if (probleme) { message(probleme); return; }
 
     var charge = {
-      lignes: Panier.lire().map(function (l) { return { id: l.id, qte: l.qte, details: l.details }; }),
+      lignes: Panier.lire().map(function (l) { return { id: l.id, qte: l.qte, details: l.details, supplements: l.supplements }; }),
       client: {
         nom: document.getElementById('pay-prenom').value.trim() + ' ' + document.getElementById('pay-nom').value.trim(),
         email: email,

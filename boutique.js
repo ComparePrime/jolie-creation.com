@@ -4,11 +4,16 @@
    Chargé sur toutes les pages, après catalogue.js.
    Le panier vit dans localStorage : rien n'est envoyé au serveur
    avant le passage au paiement.
+
+   Un principe de structure : les biscuits supplémentaires ne sont
+   jamais une ligne à eux seuls. Ils sont attachés à la ligne du
+   package qui les porte, ce qui garantit le minimum de 12 biscuits
+   sans avoir à le vérifier après coup.
    ============================================================ */
 (function () {
   'use strict';
 
-  var CLE = 'jc-panier-v1';
+  var CLE = 'jc-panier-v2';
   var Cat = window.JCCatalogue;
   if (!Cat) return;
 
@@ -16,10 +21,7 @@
      localStorage lève en navigation privée sur certains navigateurs :
      tout passe par try/catch, le panier retombe alors sur la mémoire
      de la page plutôt que de casser le site. */
-  var memoire = null;
-
   function lire() {
-    if (memoire) return memoire;
     try {
       var brut = window.localStorage.getItem(CLE);
       var lignes = brut ? JSON.parse(brut) : [];
@@ -30,39 +32,58 @@
   }
 
   function valide(ligne) {
-    return ligne && typeof ligne.id === 'string' && Cat.article(ligne.id) &&
-      typeof ligne.qte === 'number' && ligne.qte > 0;
+    if (!ligne || typeof ligne.id !== 'string') return false;
+    var a = Cat.article(ligne.id);
+    if (!a || typeof ligne.qte !== 'number' || ligne.qte <= 0) return false;
+    // Un supplément esseulé n'est pas une commande valable.
+    return a.categorie !== 'biscuit-sup';
   }
 
   function ecrire(lignes) {
-    memoire = lignes;
     try { window.localStorage.setItem(CLE, JSON.stringify(lignes)); } catch (e) { /* mémoire seule */ }
-    memoire = null;
     majCompteurs();
     document.dispatchEvent(new CustomEvent('panier:maj'));
   }
 
-  /* Deux micro-scénographies aux dates différentes sont deux lignes
-     distinctes : la clé de ligne inclut donc les détails saisis. */
-  function cleLigne(id, details) {
-    var suffixe = '';
+  /* Deux articles aux détails ou aux suppléments différents forment deux
+     lignes distinctes : la clé de ligne reprend donc tout ce qui les
+     distingue. */
+  function cleLigne(id, details, supplements) {
+    var morceaux = [id];
     if (details) {
-      var cles = Object.keys(details).sort();
-      suffixe = cles.map(function (k) { return k + '=' + details[k]; }).join('|');
+      Object.keys(details).sort().forEach(function (k) { morceaux.push(k + '=' + details[k]); });
     }
-    return suffixe ? id + '::' + suffixe : id;
+    if (supplements) {
+      Object.keys(supplements).sort().forEach(function (k) {
+        if (supplements[k] > 0) morceaux.push(k + '#' + supplements[k]);
+      });
+    }
+    return morceaux.join('::');
   }
 
-  function ajouter(id, qte, details) {
+  function nettoyerSupplements(supplements) {
+    var propre = null;
+    Object.keys(supplements || {}).forEach(function (id) {
+      var a = Cat.article(id);
+      var q = parseInt(supplements[id], 10) || 0;
+      if (!a || a.categorie !== 'biscuit-sup' || q <= 0) return;
+      if (!propre) propre = {};
+      propre[id] = Math.min(99, q);
+    });
+    return propre;
+  }
+
+  function ajouter(id, qte, details, supplements) {
     var a = Cat.article(id);
-    if (!a) return null;
+    if (!a || a.categorie === 'biscuit-sup') return null;
     qte = Math.max(1, parseInt(qte, 10) || 1);
+    var sup = a.categorie === 'package-biscuits' ? nettoyerSupplements(supplements) : null;
     var lignes = lire();
-    var cle = cleLigne(id, details);
+    var cle = cleLigne(id, details, sup);
     var existante = null;
     lignes.forEach(function (l) { if (l.cle === cle) existante = l; });
     if (existante) existante.qte += qte;
-    else lignes.push({ cle: cle, id: id, qte: qte, details: details || null });
+    else lignes.push({ cle: cle, id: id, qte: qte, details: details || null, supplements: sup });
     ecrire(lignes);
     return a;
   }
@@ -84,44 +105,46 @@
   /* ---------- Totaux ----------
      Deux montants séparés : ce qui part chez Stripe, et ce qui reste
      à confirmer parce que son tarif est une fourchette. */
+  function totauxLigne(ligne) {
+    var a = Cat.article(ligne.id);
+    var r = { payable: 0, confirmerMin: 0, confirmerMax: 0, biscuits: 0, supplements: [] };
+    r.payable = a.prix * ligne.qte;
+    r.biscuits = (a.biscuits || 0) * ligne.qte;
+    Object.keys(ligne.supplements || {}).forEach(function (id) {
+      var s = Cat.article(id);
+      if (!s) return;
+      var q = ligne.supplements[id] * ligne.qte;
+      if (s.aConfirmer) {
+        r.confirmerMin += s.prixMin * q;
+        r.confirmerMax += s.prixMax * q;
+      } else {
+        r.payable += s.prix * q;
+      }
+      r.biscuits += q;
+      r.supplements.push({ article: s, qte: q, parUnite: ligne.supplements[id] });
+    });
+    return r;
+  }
+
   function totaux() {
     var lignes = lire();
-    var t = {
-      lignes: lignes,
-      nbArticles: 0,
-      payable: 0,
-      aConfirmerMin: 0,
-      aConfirmerMax: 0,
-      biscuitsPackage: 0,
-      biscuitsSup: 0,
-      aDesSup: false
-    };
+    var t = { lignes: lignes, nbArticles: 0, payable: 0, aConfirmerMin: 0, aConfirmerMax: 0, biscuits: 0 };
     lignes.forEach(function (l) {
-      var a = Cat.article(l.id);
+      var r = totauxLigne(l);
       t.nbArticles += l.qte;
-      if (a.aConfirmer) {
-        t.aConfirmerMin += a.prixMin * l.qte;
-        t.aConfirmerMax += a.prixMax * l.qte;
-      } else {
-        t.payable += a.prix * l.qte;
-      }
-      if (a.categorie === 'package-biscuits') t.biscuitsPackage += (a.biscuits || 0) * l.qte;
-      if (a.categorie === 'biscuit-sup') { t.biscuitsSup += l.qte; t.aDesSup = true; }
+      t.payable += r.payable;
+      t.aConfirmerMin += r.confirmerMin;
+      t.aConfirmerMax += r.confirmerMax;
+      t.biscuits += r.biscuits;
     });
     return t;
   }
 
-  /* Règle métier : la commande de biscuits démarre à 12 pièces, donc
-     des biscuits supplémentaires seuls ne constituent pas une commande. */
   function blocage() {
     var t = totaux();
     if (!t.lignes.length) return 'Votre panier est vide.';
-    if (t.aDesSup && t.biscuitsPackage < Cat.MIN_BISCUITS) {
-      return 'Les biscuits supplémentaires s’ajoutent à un package : la commande de biscuits démarre à ' +
-        Cat.MIN_BISCUITS + ' biscuits. Ajoutez un package pour continuer.';
-    }
     if (t.payable <= 0) {
-      return 'Votre panier ne contient que des articles dont le tarif reste à confirmer. ' +
+      return 'Votre panier ne contient aucun article payable en ligne. ' +
         'Contactez-moi directement pour finaliser cette commande.';
     }
     return null;
@@ -164,32 +187,25 @@
     minuteur = setTimeout(function () { zone.classList.remove('visible'); }, 5000);
   }
 
-  /* ---------- Boutons « Ajouter au panier » ----------
-     Un bouton portant data-ajout-panier="<id>" suffit ; s'il porte
-     aussi data-details, un formulaire s'ouvre avant l'ajout. */
+  /* ---------- Boutons « Ajouter au panier » ---------- */
   function brancherBoutons() {
     document.querySelectorAll('[data-ajout-panier]').forEach(function (bouton) {
       if (bouton.dataset.branche) return;
       bouton.dataset.branche = '1';
       bouton.addEventListener('click', function (e) {
         e.preventDefault();
-        var id = bouton.getAttribute('data-ajout-panier');
-        var a = Cat.article(id);
+        var a = Cat.article(bouton.getAttribute('data-ajout-panier'));
         if (!a) return;
-        if (a.details) { ouvrirFormulaireDetails(a); return; }
-        var champQte = bouton.getAttribute('data-quantite-champ');
-        var qte = 1;
-        if (champQte) {
-          var input = document.getElementById(champQte);
-          qte = input ? parseInt(input.value, 10) || 1 : 1;
-        }
-        ajouter(id, qte);
-        annoncer((qte > 1 ? qte + ' × ' : '') + a.court + ' ajouté au panier.');
+        if (a.modale) { ouvrirModale(a); return; }
+        ajouter(a.id, 1);
+        annoncer(a.court + ' ajouté au panier.');
       });
     });
   }
 
-  /* ---------- Formulaire de détails (micro-scénographies) ---------- */
+  /* ---------- Modale d'ajout ----------
+     Deux variantes : les informations de l'événement pour une
+     micro-scénographie, les biscuits supplémentaires pour un package. */
   var dialogue = null;
   var dernierDeclencheur = null;
 
@@ -204,7 +220,7 @@
       '<div class="details-modale-fond" data-fermer></div>' +
       '<div class="details-modale-boite" role="document">' +
       '  <button type="button" class="details-modale-fermer" data-fermer aria-label="Fermer">&times;</button>' +
-      '  <span class="eyebrow" data-modale-sur-titre>Votre événement</span>' +
+      '  <span class="eyebrow" data-modale-sur-titre></span>' +
       '  <h2 data-modale-titre></h2>' +
       '  <p class="details-modale-intro" data-modale-intro></p>' +
       '  <form class="details-form" novalidate></form>' +
@@ -226,39 +242,49 @@
     if (dernierDeclencheur) dernierDeclencheur.focus();
   }
 
-  function ouvrirFormulaireDetails(a) {
+  function champHTML(champ) {
+    var bloc = document.createElement('div');
+    bloc.className = 'field';
+    var idChamp = 'detail-' + champ.cle;
+    var label = document.createElement('label');
+    label.setAttribute('for', idChamp);
+    label.textContent = champ.libelle;
+    if (champ.requis) {
+      var etoile = document.createElement('span');
+      etoile.className = 'req';
+      etoile.textContent = ' *';
+      label.appendChild(etoile);
+    }
+    var saisie = document.createElement(champ.type === 'zone' ? 'textarea' : 'input');
+    if (champ.type !== 'zone') saisie.type = champ.type;
+    saisie.id = idChamp;
+    saisie.name = champ.cle;
+    if (champ.exemple) saisie.placeholder = champ.exemple;
+    if (champ.requis) saisie.required = true;
+    if (champ.type === 'date') saisie.min = new Date().toISOString().slice(0, 10);
+    bloc.appendChild(label);
+    bloc.appendChild(saisie);
+    return bloc;
+  }
+
+  function ouvrirModale(a) {
     var d = construireDialogue();
     dernierDeclencheur = document.activeElement;
+    var estPackage = a.modale === 'package';
+
+    d.querySelector('[data-modale-sur-titre]').textContent = estPackage ? 'Votre package' : 'Votre événement';
     d.querySelector('[data-modale-titre]').textContent = a.court;
-    d.querySelector('[data-modale-intro]').textContent =
-      'Ces informations accompagnent votre commande. Elles me permettent de préparer votre décor.';
+    d.querySelector('[data-modale-intro]').textContent = estPackage
+      ? a.resume
+      : 'Ces informations accompagnent votre commande. Elles me permettent de préparer votre décor.';
+
     var form = d.querySelector('.details-form');
     form.innerHTML = '';
+    var champs = estPackage ? [Cat.CHAMP_PACKAGE] : Cat.CHAMPS_SCENOGRAPHIE;
+    champs.forEach(function (champ) { form.appendChild(champHTML(champ)); });
 
-    Cat.CHAMPS_SCENOGRAPHIE.forEach(function (champ) {
-      var bloc = document.createElement('div');
-      bloc.className = 'field';
-      var idChamp = 'detail-' + champ.cle;
-      var label = document.createElement('label');
-      label.setAttribute('for', idChamp);
-      label.textContent = champ.libelle;
-      if (champ.requis) {
-        var etoile = document.createElement('span');
-        etoile.className = 'req';
-        etoile.textContent = ' *';
-        label.appendChild(etoile);
-      }
-      var saisie = document.createElement(champ.type === 'zone' ? 'textarea' : 'input');
-      if (champ.type !== 'zone') saisie.type = champ.type;
-      saisie.id = idChamp;
-      saisie.name = champ.cle;
-      if (champ.exemple) saisie.placeholder = champ.exemple;
-      if (champ.requis) saisie.required = true;
-      if (champ.type === 'date') saisie.min = new Date().toISOString().slice(0, 10);
-      bloc.appendChild(label);
-      bloc.appendChild(saisie);
-      form.appendChild(bloc);
-    });
+    var saisiesSup = {};
+    if (estPackage) form.appendChild(blocSupplements(a, saisiesSup));
 
     var erreur = document.createElement('p');
     erreur.className = 'details-erreur';
@@ -267,9 +293,6 @@
 
     var rappel = document.createElement('p');
     rappel.className = 'details-rappel';
-    rappel.textContent = a.aPartirDe
-      ? 'Tarif de départ : ' + Cat.formater(a.prix) + '. Un éventuel complément lié à vos options vous est confirmé avant l’événement.'
-      : Cat.formater(a.prix);
     form.appendChild(rappel);
 
     var valider = document.createElement('button');
@@ -278,11 +301,43 @@
     valider.textContent = 'Ajouter au panier';
     form.appendChild(valider);
 
+    function majRappel() {
+      if (!estPackage) {
+        rappel.textContent = a.aPartirDe
+          ? 'Tarif de départ : ' + Cat.formater(a.prix) + '. Un éventuel complément lié à vos options vous est confirmé avant l’événement.'
+          : Cat.formater(a.prix);
+        return;
+      }
+      var payable = a.prix, min = 0, max = 0, biscuits = a.biscuits || 0;
+      Cat.SUPPLEMENTS.forEach(function (id) {
+        var s = Cat.article(id);
+        var q = parseInt(saisiesSup[id].value, 10) || 0;
+        biscuits += q;
+        if (s.aConfirmer) { min += s.prixMin * q; max += s.prixMax * q; }
+        else payable += s.prix * q;
+      });
+      rappel.innerHTML = '';
+      var ligne = document.createElement('strong');
+      ligne.textContent = (a.aPartirDe ? 'Dès ' : '') + Cat.formater(payable) + ' · ' + biscuits + ' biscuits';
+      rappel.appendChild(ligne);
+      if (max > 0) {
+        var comp = document.createElement('span');
+        comp.textContent = ' + ' + Cat.formater(min) + ' à ' + Cat.formater(max) +
+          ' de biscuits au tarif variable, confirmés avant la préparation.';
+        rappel.appendChild(comp);
+      }
+    }
+
+    Object.keys(saisiesSup).forEach(function (id) {
+      saisiesSup[id].addEventListener('input', majRappel);
+    });
+    majRappel();
+
     form.onsubmit = function (e) {
       e.preventDefault();
       var details = {};
       var manquants = [];
-      Cat.CHAMPS_SCENOGRAPHIE.forEach(function (champ) {
+      champs.forEach(function (champ) {
         var saisie = form.elements[champ.cle];
         var v = (saisie.value || '').trim();
         if (champ.requis && !v) manquants.push(champ.libelle);
@@ -294,7 +349,15 @@
         return;
       }
       erreur.hidden = true;
-      ajouter(a.id, 1, details);
+      var supplements = null;
+      if (estPackage) {
+        supplements = {};
+        Cat.SUPPLEMENTS.forEach(function (id) {
+          var q = parseInt(saisiesSup[id].value, 10) || 0;
+          if (q > 0) supplements[id] = q;
+        });
+      }
+      ajouter(a.id, 1, Object.keys(details).length ? details : null, supplements);
       fermerDialogue();
       annoncer(a.court + ' ajouté au panier.');
     };
@@ -305,6 +368,59 @@
     if (premier) premier.focus();
   }
 
+  /* Les biscuits supplémentaires se choisissent ici, et nulle part
+     ailleurs : c'est ce qui les lie au package. */
+  function blocSupplements(a, saisies) {
+    var bloc = document.createElement('fieldset');
+    bloc.className = 'sup-modale';
+
+    var legende = document.createElement('legend');
+    legende.textContent = 'Ajouter des biscuits';
+    bloc.appendChild(legende);
+
+    var intro = document.createElement('p');
+    intro.className = 'sup-modale-intro';
+    intro.textContent = 'Ce package contient déjà ' + (a.biscuits || Cat.MIN_BISCUITS) +
+      ' biscuits. Vous pouvez le compléter à l’unité.';
+    bloc.appendChild(intro);
+
+    Cat.SUPPLEMENTS.forEach(function (id) {
+      var s = Cat.article(id);
+      var rang = document.createElement('div');
+      rang.className = 'sup-rang';
+
+      var texte = document.createElement('div');
+      var nom = document.createElement('span');
+      nom.className = 'sup-rang-nom';
+      nom.textContent = s.court;
+      var prix = document.createElement('span');
+      prix.className = 'sup-rang-prix';
+      prix.textContent = Cat.formaterFourchette(s) + (s.aConfirmer ? ' · confirmé avant préparation' : '');
+      texte.appendChild(nom);
+      texte.appendChild(prix);
+
+      var idChamp = 'sup-' + id;
+      var label = document.createElement('label');
+      label.className = 'sr-seulement';
+      label.setAttribute('for', idChamp);
+      label.textContent = 'Nombre de ' + s.court;
+      var saisie = document.createElement('input');
+      saisie.type = 'number';
+      saisie.id = idChamp;
+      saisie.min = '0';
+      saisie.max = '99';
+      saisie.value = '0';
+      saisie.inputMode = 'numeric';
+      saisies[id] = saisie;
+
+      rang.appendChild(texte);
+      rang.appendChild(label);
+      rang.appendChild(saisie);
+      bloc.appendChild(rang);
+    });
+    return bloc;
+  }
+
   window.JCPanier = {
     lire: lire,
     ajouter: ajouter,
@@ -312,6 +428,7 @@
     retirer: retirer,
     vider: vider,
     totaux: totaux,
+    totauxLigne: totauxLigne,
     blocage: blocage,
     majCompteurs: majCompteurs
   };

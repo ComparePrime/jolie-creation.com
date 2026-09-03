@@ -23,7 +23,7 @@
       categorie: 'scenographie',
       prix: 39000,
       aPartirDe: true,
-      details: true,
+      modale: 'scenographie',
       page: 'mini-scenographies.html',
       resume: '1 backdrop, personnalisation, petite composition de ballons, 1 présentoir, 12 biscuits, installation et démontage.'
     },
@@ -34,7 +34,7 @@
       categorie: 'scenographie',
       prix: 59000,
       aPartirDe: true,
-      details: true,
+      modale: 'scenographie',
       page: 'mini-scenographies.html',
       resume: '2 backdrops, 2 compositions de ballons, 2 présentoirs, éléments décoratifs, 18 biscuits, installation et démontage.'
     },
@@ -45,7 +45,7 @@
       categorie: 'scenographie',
       prix: 79000,
       aPartirDe: true,
-      details: true,
+      modale: 'scenographie',
       page: 'mini-scenographies.html',
       resume: '2 backdrops personnalisés, ballons plus fournis, 2 à 3 présentoirs, tapis, accessoires, 24 biscuits, installation et démontage.'
     },
@@ -59,8 +59,10 @@
       prix: 6900,
       aPartirDe: false,
       biscuits: 12,
+      modale: 'package',
       page: 'biscuits-personnalises.html',
-      resume: '7 biscuits personnalisés décorés et 5 petits biscuits simples, soit 12 biscuits.'
+      resume: '7 biscuits personnalisés décorés et 5 petits biscuits simples, soit 12 biscuits.',
+      composition: ['7 biscuits personnalisés, avec plusieurs détails et décorations', '5 petits biscuits simples']
     },
     {
       id: 'pack-pierre-lapin',
@@ -70,6 +72,7 @@
       prix: 7700,
       aPartirDe: true,
       biscuits: 12,
+      modale: 'package',
       page: 'biscuits-personnalises.html',
       resume: 'Package de 12 biscuits sur le thème Pierre Lapin.'
     },
@@ -81,6 +84,7 @@
       prix: 7250,
       aPartirDe: true,
       biscuits: 12,
+      modale: 'package',
       page: 'biscuits-personnalises.html',
       resume: 'Package de 12 biscuits sur le thème Cheval.'
     },
@@ -92,11 +96,17 @@
       prix: 7350,
       aPartirDe: true,
       biscuits: 12,
+      modale: 'package',
       page: 'biscuits-personnalises.html',
       resume: 'Package de 12 biscuits sur le thème Licorne.'
     },
 
     /* ---------- Biscuits supplémentaires ----------
+       Ils ne constituent jamais une commande à eux seuls : ils se
+       choisissent au moment d'ajouter un package au panier et
+       voyagent avec lui. Le minimum de 12 biscuits est donc garanti
+       par la structure, pas par une règle à vérifier après coup.
+
        Les deux derniers ont un tarif en fourchette : leur montant
        exact dépend de la taille et du niveau de détail. Ils sont
        donc portés au panier mais exclus du paiement en ligne, et
@@ -151,6 +161,19 @@
       exemple: 'Contraintes de lieu, horaires, allergies…' }
   ];
 
+  /* Seul champ demandé avec un package : les cartes annoncent le prénom
+     et l'âge personnalisables, encore faut-il pouvoir les indiquer. */
+  var CHAMP_PACKAGE = {
+    cle: 'personnalisation',
+    libelle: 'Prénom, âge ou précisions',
+    type: 'text',
+    requis: false,
+    exemple: 'Ex. Léo, 4 ans'
+  };
+
+  /* Biscuits proposés en complément d'un package, dans l'ordre d'affichage. */
+  var SUPPLEMENTS = ['biscuit-petit', 'biscuit-standard', 'biscuit-grand'];
+
   var MIN_BISCUITS = 12;
   var DEVISE = 'CHF';
 
@@ -171,6 +194,8 @@
   var API = {
     ARTICLES: ARTICLES,
     CHAMPS_SCENOGRAPHIE: CHAMPS_SCENOGRAPHIE,
+    CHAMP_PACKAGE: CHAMP_PACKAGE,
+    SUPPLEMENTS: SUPPLEMENTS,
     MIN_BISCUITS: MIN_BISCUITS,
     DEVISE: DEVISE,
     article: article,

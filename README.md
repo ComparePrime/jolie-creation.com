@@ -62,10 +62,6 @@ afficher le montant réellement payé.
   encore sur le site.
 - **Frais de livraison.** Ils ne sont pas facturés en ligne : le site
   indique qu'ils sont confirmés séparément selon la destination.
-- **Photo du package Cheval.** Aucune photo de ce thème dans
-  `images/creations` : la carte affiche un aplat typographique en attendant.
-  Déposer le fichier, puis remplacer le bloc `pack-photo sans-photo` de
-  `biscuits-personnalises.html` par une balise `img`.
 
 ---
 
@@ -93,6 +89,12 @@ faire baisser la somme débitée.
 standard (5 à 6 CHF) et grands (7 à 8 CHF) sont portés au panier mais exclus
 du paiement en ligne : leur montant dépend de la personnalisation et est
 confirmé avant la préparation. Le panier affiche donc deux totaux.
+
+**Les biscuits supplémentaires n'existent pas seuls.** Ils se choisissent
+dans la fenêtre qui s'ouvre à l'ajout d'un package, et voyagent attachés à
+sa ligne de panier (`ligne.supplements`). Le minimum de 12 biscuits est donc
+garanti par la structure des données, pas par une règle vérifiée après coup ;
+la fonction serveur refuse quand même un supplément qui arriverait isolé.
 
 ---
 
