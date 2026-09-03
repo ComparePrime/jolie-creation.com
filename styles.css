@@ -644,30 +644,56 @@ main > section:first-of-type + section { padding-top: 80px; }
 }
 .folio-set-head p{ color: var(--ink-soft); font-size: 15.5px; margin: 0; }
 
-.folio-masonry{ column-count: 2; column-gap: 16px; }
-@media (min-width: 700px){ .folio-masonry{ column-count: 3; column-gap: 18px; } }
-@media (min-width: 1080px){ .folio-masonry{ column-count: 4; column-gap: 20px; } }
+/* ---------- Galerie en rangées justifiées ----------
+   Le multi-colonnes répartissait les photos par hauteur : dès que leur
+   nombre ne tombait pas juste, une ou deux colonnes restaient à moitié
+   vides et laissaient un trou au bas de l'ensemble.
 
+   Ici les rangées sont explicites, et chaque photo porte son rapport
+   largeur/hauteur (--r). Une croissance proportionnelle à ce rapport
+   donne mécaniquement la même hauteur à toutes les photos d'une rangée
+   et remplit exactement la largeur : ni bord droit en escalier, ni trou
+   en bas, et aucun recadrage puisque aucune proportion n'est imposée.
+   Les rangées de une ou deux photos portent une largeur maximale,
+   calculée à la composition, sans quoi leurs photos seraient géantes. */
+.folio-masonry{ display: flex; flex-direction: column; gap: 20px; }
+.folio-rangee{ display: flex; gap: 20px; }
 .folio-item{
-  break-inside: avoid;
-  -webkit-column-break-inside: avoid;
-  margin: 0 0 16px;
+  flex: 1 1 0;
+  flex-grow: var(--r);
+  min-width: 0;
+  margin: 0;
 }
-@media (min-width: 700px){ .folio-item{ margin-bottom: 18px; } }
-@media (min-width: 1080px){ .folio-item{ margin-bottom: 20px; } }
 
-/* Pas d'aspect-ratio ici, contrairement aux autres cadres du site :
-   c'est ce qui garantit l'absence de recadrage. */
-.folio-item .scallop-frame{ cursor: zoom-in; }
+/* Sous 700 px, quatre photos sur une rangée deviendraient minuscules :
+   les rangées s'effacent et les photos se répartissent sur deux colonnes. */
+@media (max-width: 699px){
+  .folio-masonry{ display: block; column-count: 2; column-gap: 14px; }
+  .folio-rangee{ display: contents; }
+  .folio-rangee[style]{ max-width: none !important; }
+  .folio-item{
+    display: block;
+    break-inside: avoid;
+    -webkit-column-break-inside: avoid;
+    margin-bottom: 14px;
+  }
+}
+
+/* Le cadre remplit la case que le flex lui a attribuée ; l'image le
+   recouvre. Toutes les photos d'une rangée ayant la même hauteur et une
+   largeur proportionnelle à leur rapport, le recouvrement ne recadre
+   rien : la case a exactement les proportions de la photo. */
+.folio-item .scallop-frame{ cursor: zoom-in; height: 100%; }
 .folio-item .scallop-frame img{
-  width: 100%; height: auto;
+  width: 100%; height: 100%; object-fit: cover;
   transition: transform .5s cubic-bezier(.22,.61,.36,1);
 }
+@media (max-width: 699px){
+  /* En colonnes, la hauteur redevient celle de l'image. */
+  .folio-item .scallop-frame{ height: auto; }
+  .folio-item .scallop-frame img{ height: auto; }
+}
 .folio-item .scallop-frame:hover img{ transform: scale(1.03); }
-
-/* Ensemble d'une seule photo : sans cette exception, elle se retrouverait
-   seule dans une colonne étroite du multi-colonnes. */
-.folio-solo{ column-count: 1; max-width: 460px; }
 
 /* Photo unique de la section micro-scénographies : elle non plus
    n'est pas recadrée, d'où l'absence d'aspect-ratio imposé. */
