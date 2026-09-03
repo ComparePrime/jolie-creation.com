@@ -77,6 +77,7 @@ afficher le montant réellement payé.
 | `netlify/functions/create-checkout-session.js` | Crée la session de paiement. Seul endroit où vit la clé.     |
 | `netlify/functions/get-order.js`               | Relit une commande payée.                                    |
 | `tests/catalogue.test.js`                      | Tests de la fonction de paiement (`npm test`).               |
+| `outils-galerie.py`                            | Recompose la galerie de « Mes réalisations » en rangées.     |
 
 ### Deux principes du code de paiement
 
@@ -95,6 +96,24 @@ dans la fenêtre qui s'ouvre à l'ajout d'un package, et voyagent attachés à
 sa ligne de panier (`ligne.supplements`). Le minimum de 12 biscuits est donc
 garanti par la structure des données, pas par une règle vérifiée après coup ;
 la fonction serveur refuse quand même un supplément qui arriverait isolé.
+
+---
+
+## Modifier la galerie « Mes réalisations »
+
+Les photos sont posées à plat dans les `<div class="folio-masonry">` de
+`mes-realisations.html` : une balise `<figure class="folio-item">` par
+photo. Après tout ajout ou retrait, relancer :
+
+```bash
+python3 outils-galerie.py
+```
+
+Le script relit les dimensions réelles des fichiers, regroupe les photos
+en rangées et écrit le résultat dans la page. Chaque rangée occupe
+exactement la largeur et toutes ses photos y ont la même hauteur, sans
+aucun recadrage. Le script est idempotent : le relancer deux fois donne
+le même résultat.
 
 ---
 
