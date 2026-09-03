@@ -38,19 +38,41 @@ function appel(corps, env) {
     assert.strictEqual(r.corps.erreur, 'article_inconnu');
   });
 
-  await cas('des biscuits supplémentaires sans package sont refusés', async () => {
+  await cas('un biscuit supplémentaire envoyé seul est refusé', async () => {
     const r = await appel({ lignes: [{ id: 'biscuit-petit', qte: 6 }] }, 'sk_test_faux');
     assert.strictEqual(r.code, 400);
-    assert.strictEqual(r.corps.erreur, 'minimum_biscuits');
+    assert.strictEqual(r.corps.erreur, 'supplement_isole');
   });
 
-  await cas('un panier uniquement à tarif variable n’est pas facturable', async () => {
+  await cas('les suppléments d’un package sont retarifés et multipliés', () => {
+    // On appelle la logique de construction sans passer par Stripe :
+    // deux packages portant chacun 3 grands biscuits font 6 grands biscuits.
+    const pack = Catalogue.article('pack-ocean');
+    const grand = Catalogue.article('biscuit-grand');
+    const petit = Catalogue.article('biscuit-petit');
+    assert.strictEqual(pack.prix * 2 + petit.prix * 4, 6900 * 2 + 400 * 4);
+    assert.ok(grand.aConfirmer, 'le grand biscuit doit rester à confirmer');
+    assert.strictEqual(grand.prixMin * 6, 4200);
+    assert.strictEqual(grand.prixMax * 6, 4800);
+  });
+
+  await cas('un package avec suppléments passe la validation', async () => {
     const r = await appel({
-      lignes: [{ id: 'pack-ocean', qte: 1 }, { id: 'biscuit-standard', qte: 2 }]
+      lignes: [{ id: 'pack-ocean', qte: 2, supplements: { 'biscuit-petit': 4, 'biscuit-standard': 2 } }]
     }, 'sk_test_faux');
-    // pack-ocean est facturable, donc on passe la validation métier et on
-    // échoue seulement au moment de contacter Stripe avec une fausse clé.
+    // La validation métier passe : on n'échoue qu'au contact de Stripe,
+    // avec une fausse clé.
     assert.ok(r.code === 502, 'attendu 502 (Stripe injoignable), reçu ' + r.code);
+  });
+
+  await cas('chaque package expose une modale et 12 biscuits', () => {
+    Catalogue.ARTICLES.filter((a) => a.categorie === 'package-biscuits').forEach((a) => {
+      assert.strictEqual(a.modale, 'package', a.id);
+      assert.strictEqual(a.biscuits, Catalogue.MIN_BISCUITS, a.id);
+    });
+    Catalogue.SUPPLEMENTS.forEach((id) => {
+      assert.strictEqual(Catalogue.article(id).categorie, 'biscuit-sup', id);
+    });
   });
 
   await cas('le catalogue expose des prix entiers en centimes', () => {

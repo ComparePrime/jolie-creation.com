@@ -154,7 +154,8 @@
 
 (function () {
   var Cat = window.JCCatalogue, Panier = window.JCPanier;
-  var LIBELLES = { date: 'Date', lieu: 'Lieu', theme: 'Thème', options: 'Options', demandes: 'Demandes' };
+  var LIBELLES = { personnalisation: 'Personnalisation', date: 'Date', lieu: 'Lieu',
+                   theme: 'Thème', options: 'Options', demandes: 'Demandes' };
 
   function el(balise, classe, texte) {
     var n = document.createElement(balise);
@@ -172,13 +173,14 @@
     if (a.resume) tete.appendChild(el('p', 'ligne-resume', a.resume));
     bloc.appendChild(tete);
 
+    var r = Panier.totauxLigne(ligne);
     var prix = el('div', 'ligne-prix');
-    if (a.aConfirmer) {
-      prix.textContent = Cat.formater(a.prixMin * ligne.qte) + ' à ' + Cat.formater(a.prixMax * ligne.qte);
-      prix.appendChild(el('small', null, 'montant à confirmer'));
-    } else {
-      prix.textContent = Cat.formater(a.prix * ligne.qte);
-      if (a.aPartirDe) prix.appendChild(el('small', null, 'tarif de départ'));
+    prix.textContent = (a.aPartirDe ? 'Dès ' : '') + Cat.formater(r.payable);
+    if (r.confirmerMax > 0) {
+      prix.appendChild(el('small', null, '+ ' + Cat.formater(r.confirmerMin) + ' à ' +
+        Cat.formater(r.confirmerMax) + ' à confirmer'));
+    } else if (a.aPartirDe) {
+      prix.appendChild(el('small', null, 'tarif de départ'));
     }
     bloc.appendChild(prix);
 
@@ -192,6 +194,21 @@
         dl.appendChild(d);
       });
       if (dl.children.length) bloc.appendChild(dl);
+    }
+
+    if (r.supplements.length) {
+      var sup = el('ul', 'ligne-supplements');
+      sup.appendChild(el('li', 'ligne-supplements-titre',
+        'Biscuits ajoutés à ce package (' + r.biscuits + ' biscuits au total)'));
+      r.supplements.forEach(function (item) {
+        var li = el('li');
+        li.appendChild(el('span', null, item.qte + ' × ' + item.article.court));
+        li.appendChild(el('span', 'montant', item.article.aConfirmer
+          ? Cat.formater(item.article.prixMin * item.qte) + ' à ' + Cat.formater(item.article.prixMax * item.qte)
+          : Cat.formater(item.article.prix * item.qte)));
+        sup.appendChild(li);
+      });
+      bloc.appendChild(sup);
     }
 
     var pied = el('div', 'ligne-pied');
@@ -264,7 +281,7 @@
       alerte.appendChild(el('p', 'recap-alerte', probleme));
       suite.setAttribute('aria-disabled', 'true');
       suite.classList.add('btn-desactive');
-      suite.href = 'biscuits-personnalises.html#supplements';
+      suite.href = 'biscuits-personnalises.html#packages';
       suite.textContent = 'Compléter ma commande';
     } else {
       suite.removeAttribute('aria-disabled');

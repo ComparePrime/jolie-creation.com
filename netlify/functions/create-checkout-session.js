@@ -71,25 +71,14 @@ exports.handler = async (event) => {
 
   const lineItems = [];
   const aConfirmer = [];
-  let biscuitsPackage = 0;
-  let aDesSup = false;
 
-  for (const ligne of lignesRecues) {
-    const article = Catalogue.article(ligne && ligne.id);
-    if (!article) {
-      return reponse(400, { erreur: 'article_inconnu', message: 'Un article du panier n’existe plus.' });
-    }
-    const qte = Math.min(MAX_QTE, Math.max(1, parseInt(ligne.qte, 10) || 0));
-    if (article.categorie === 'package-biscuits') biscuitsPackage += (article.biscuits || 0) * qte;
-    if (article.categorie === 'biscuit-sup') aDesSup = true;
-
+  /* Ajoute un article au panier facturé, ou à la liste des montants
+     laissés à confirmer si son tarif est une fourchette. */
+  function porter(article, qte, description) {
     if (article.aConfirmer) {
-      // Tarif en fourchette : facturé après confirmation, jamais arrondi ici.
       aConfirmer.push(`${qte} × ${article.court} (${Catalogue.formater(article.prixMin)} à ${Catalogue.formater(article.prixMax)})`);
-      continue;
+      return;
     }
-
-    const description = [article.resume, resumeDetails(ligne.details)].filter(Boolean).join(' | ');
     lineItems.push({
       quantity: qte,
       price_data: {
@@ -97,18 +86,38 @@ exports.handler = async (event) => {
         unit_amount: article.prix,
         product_data: {
           name: article.nom + (article.aPartirDe ? ' (tarif de départ)' : ''),
-          description: description.slice(0, 500) || undefined
+          description: (description || '').slice(0, 500) || undefined
         }
       }
     });
   }
 
-  if (aDesSup && biscuitsPackage < Catalogue.MIN_BISCUITS) {
-    return reponse(400, {
-      erreur: 'minimum_biscuits',
-      message: `La commande de biscuits démarre à ${Catalogue.MIN_BISCUITS} biscuits : ajoutez un package.`
-    });
+  for (const ligne of lignesRecues) {
+    const article = Catalogue.article(ligne && ligne.id);
+    if (!article) {
+      return reponse(400, { erreur: 'article_inconnu', message: 'Un article du panier n’existe plus.' });
+    }
+    // Un biscuit supplémentaire ne se commande jamais seul : il n'arrive
+    // qu'attaché au package qui le porte.
+    if (article.categorie === 'biscuit-sup') {
+      return reponse(400, {
+        erreur: 'supplement_isole',
+        message: `Les biscuits supplémentaires s’ajoutent à un package : la commande démarre à ${Catalogue.MIN_BISCUITS} biscuits.`
+      });
+    }
+    const qte = Math.min(MAX_QTE, Math.max(1, parseInt(ligne.qte, 10) || 0));
+    porter(article, qte, [article.resume, resumeDetails(ligne.details)].filter(Boolean).join(' | '));
+
+    if (article.categorie !== 'package-biscuits') continue;
+    const supplements = (ligne.supplements && typeof ligne.supplements === 'object') ? ligne.supplements : {};
+    for (const idSup of Object.keys(supplements).slice(0, MAX_LIGNES)) {
+      const sup = Catalogue.article(idSup);
+      if (!sup || sup.categorie !== 'biscuit-sup') continue;
+      const qteSup = Math.min(MAX_QTE, Math.max(0, parseInt(supplements[idSup], 10) || 0)) * qte;
+      if (qteSup > 0) porter(sup, qteSup, 'Complément du package ' + article.court);
+    }
   }
+
   if (!lineItems.length) {
     return reponse(400, {
       erreur: 'rien_a_facturer',
