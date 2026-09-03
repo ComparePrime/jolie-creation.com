@@ -21,3 +21,25 @@
   from = "/api/*"
   to = "/.netlify/functions/:splat"
   status = 200
+
+# Anciennes adresses : redirections permanentes plutôt que de simples
+# pages de rafraîchissement, pour que les moteurs transfèrent vraiment
+# l'historique de l'URL. force = true fait passer la règle devant le
+# fichier statique de même nom, qui reste le repli hors Netlify.
+[[redirects]]
+  from = "/evenements.html"
+  to = "/mes-realisations.html"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/creations.html"
+  to = "/biscuits-personnalises.html"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/formules.html"
+  to = "/mini-scenographies.html"
+  status = 301
+  force = true
