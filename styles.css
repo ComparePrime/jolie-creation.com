@@ -584,6 +584,33 @@ body.page-accueil .hero-question{ margin-top: 40px; padding-top: 26px; }
 .univers-media .scallop-frame:first-child{ margin-top: 34px; }
 .univers-media .scallop-frame{ aspect-ratio: 3/3.6; }
 
+/* Titre de la section « expérience » : il reprend le filet doré des
+   sur-titres, mais en grand et en italique. Un seul niveau de texte,
+   une seule phrase : c'est la sobriété qui fait le haut de gamme ici,
+   pas l'accumulation. */
+.titre-experience{
+  display:flex; align-items:center; gap: 16px;
+  font-style: italic;
+  font-weight: 400;
+  font-size: clamp(27px, 3.6vw, 40px);
+  line-height: 1.2;
+  letter-spacing: .005em;
+  margin: 0 0 22px;
+}
+.titre-experience::before{
+  content:"";
+  flex: none;
+  width: 34px; height: 1px;
+  background: var(--gold-deep);
+}
+.univers-texte{
+  color: var(--ink-soft);
+  font-size: clamp(16.5px, 1.6vw, 18px);
+  line-height: 1.8;
+  max-width: 46ch;
+  margin: 0;
+}
+
 /* ---------- Galerie / créations ---------- */
 .filters{
   display:flex; flex-wrap:wrap; gap: 10px; margin-bottom: 40px;
@@ -683,6 +710,34 @@ body.page-accueil .hero-question{ margin-top: 40px; padding-top: 26px; }
   background: var(--gold);
 }
 .folio-set-head p{ color: var(--ink-soft); font-size: 15.5px; margin: 0; }
+
+/* ---------- Achat depuis la galerie ----------
+   Une réalisation dont le thème existe au catalogue peut être commandée
+   sur place. Le bloc reste discret : la page est une galerie d'abord,
+   une boutique ensuite. Il n'apparaît que sous les thèmes réellement
+   disponibles, jamais sous une création qui n'est plus au catalogue.
+
+   Le bouton porte le même attribut data-ajout-panier que la page
+   Biscuits : c'est boutique.js qui l'anime, il n'y a pas deux
+   mécaniques d'ajout au panier sur le site. */
+.folio-achat{
+  display:flex; align-items:center; flex-wrap: wrap; gap: 10px 16px;
+  margin-top: 16px; padding: 14px 18px;
+  border: 1px solid var(--line); border-radius: 16px;
+  background: var(--paper);
+}
+.folio-achat-texte{ font-size: 14px; color: var(--ink-soft); }
+.folio-achat-prix{
+  font-family: var(--font-display); font-size: 17px; color: var(--gold-deep);
+  white-space: nowrap;
+}
+/* Le bouton se cale à droite tant qu'il reste de la place, et repasse
+   à la ligne entière dès que la phrase occupe toute la largeur. */
+.folio-achat .btn{ margin-left: auto; }
+@media (max-width: 560px){
+  .folio-achat{ gap: 8px 12px; padding: 13px 15px; }
+  .folio-achat .btn{ margin-left: 0; width: 100%; text-align:center; justify-content:center; }
+}
 
 /* ---------- Galerie en rangées justifiées ----------
    Le multi-colonnes répartissait les photos par hauteur : dès que leur
@@ -986,13 +1041,59 @@ body.page-accueil .hero-question{ margin-top: 40px; padding-top: 26px; }
   transition: border-color .2s ease, background .2s ease, transform .2s ease;
 }
 .size-chip:hover{ border-color: var(--gold); background: var(--paper); transform: translateY(-2px); }
-.collection-note{ font-size: 13px; color: var(--ink-soft); margin: 20px 0 22px; }
+.collection-note{ font-size: 13px; color: var(--ink-soft); margin: 18px 0 0; }
 .collection-card .btn{ align-self:center; }
+
+/* Formats d'une collection : trois boutons d'achat, pas trois liens.
+   Chacun porte sa taille et son prix, l'un sous l'autre, pour que le
+   choix se fasse d'un coup d'œil sans lire une ligne de texte. */
+.format-boutons{ display:flex; flex-wrap:wrap; gap: 10px; justify-content:center; }
+.format-bouton{
+  flex: 1 1 96px;
+  display:flex; flex-direction:column; align-items:center; gap: 3px;
+  padding: 13px 10px; border-radius: 16px;
+  border: 1px solid var(--line); background: var(--cream);
+  font-family: inherit; color: var(--ink); cursor: pointer;
+  transition: border-color .2s ease, background .2s ease, transform .2s ease, box-shadow .2s ease;
+}
+.format-bouton:hover, .format-bouton:focus-visible{
+  border-color: var(--gold); background: var(--paper);
+  transform: translateY(-2px); box-shadow: 0 8px 20px rgba(58,44,30,.07);
+}
+.format-taille{ font-size: 13.5px; letter-spacing:.01em; }
+.format-prix{ font-family: var(--font-display); font-size: 18px; color: var(--gold-deep); }
+
 /* Sur petit écran, les trois formats tiennent sur une seule ligne :
    ils se lisent alors comme un choix de taille, pas comme trois liens. */
 @media (max-width: 430px){
   .collection-card{ padding-left: 20px; padding-right: 20px; }
   .size-chip{ padding: 10px 13px; font-size: 13px; }
+  .format-bouton{ flex-basis: 78px; padding: 11px 6px; }
+  .format-prix{ font-size: 16px; }
+}
+
+/* ---------- Passerelle vers la galerie ----------
+   Le texte à gauche, trois photos à droite : la section donne à voir
+   ce qu'elle propose d'aller voir. */
+.galerie-invite{
+  display:grid; gap: 30px; align-items:center;
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: 26px;
+  padding: 32px 26px;
+}
+@media (min-width: 860px){
+  .galerie-invite{ grid-template-columns: 1fr 1.05fr; gap: 46px; padding: 42px 44px; }
+}
+.galerie-invite h2{ font-size: clamp(25px, 3.2vw, 34px); margin: 14px 0 14px; text-wrap: balance; }
+.galerie-invite p{ color: var(--ink-soft); font-size: 16.5px; margin-bottom: 26px; }
+.galerie-invite-photos{ display:grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+.galerie-invite-photos .scallop-frame{ aspect-ratio: 3/4; }
+.galerie-invite-photos img{ width:100%; height:100%; object-fit: cover; }
+/* La photo du milieu descend un peu : trois cadres parfaitement alignés
+   font vignette de catalogue, ce décalage les fait respirer. */
+@media (min-width: 620px){
+  .galerie-invite-photos .scallop-frame:nth-child(2){ transform: translateY(18px); }
 }
 
 /* ---------- Événements ---------- */
@@ -1632,6 +1733,8 @@ body.modale-ouverte{ overflow: hidden; }
   font-size: 14.5px; color: var(--ink-soft);
 }
 .confirmation-lignes .montant{ font-family: var(--font-display); color: var(--ink); white-space: nowrap; }
+/* Les biscuits ajoutés sont décalés sous le package qui les porte. */
+.confirmation-lignes .confirmation-sous-ligne{ padding-left: 18px; font-size: 13.5px; color: var(--ink-soft); }
 .confirmation-total{
   display:flex; justify-content:space-between; align-items:baseline; gap: 16px;
   padding: 18px 0 0; font-size: 15px;
@@ -1664,8 +1767,49 @@ body.modale-ouverte{ overflow: hidden; }
 .form-boutique .form-grid{ display:grid; gap: 18px; }
 @media (min-width: 560px){
   .form-boutique .form-grid{ grid-template-columns: 1fr 1fr; }
+  /* La rue prend toute la largeur : un numéro de rue tient dans un
+     champ court, un nom de rue non. */
+  .form-boutique .form-grid .field-large{ grid-column: 1 / -1; }
 }
+.form-boutique > h2{ font-size: 20px; margin: 10px 0 0; }
+.form-boutique > h2:first-child{ margin-top: 0; }
 .form-boutique > .btn{ justify-self: stretch; }
+.form-boutique #pay-adresse{ display:grid; gap: 18px; }
+
+/* ---------- Livraison ou retrait ----------
+   Deux options présentées comme deux cartes plutôt qu'une liste
+   déroulante : le choix commande tout le reste du parcours (adresse,
+   paiement), il mérite d'être visible d'un coup d'œil. */
+.reception-choix{ border: 0; padding: 0; margin: 0; display:grid; gap: 12px; }
+@media (min-width: 620px){ .reception-choix{ grid-template-columns: 1fr 1fr; } }
+.reception-option{
+  display:flex; align-items:flex-start; gap: 12px;
+  padding: 16px 18px; border-radius: 18px;
+  border: 1px solid var(--line); background: var(--cream);
+  cursor: pointer;
+  transition: border-color .2s ease, background .2s ease, box-shadow .2s ease;
+}
+.reception-option:hover{ border-color: var(--gold); }
+.reception-option input{ margin: 3px 0 0; accent-color: var(--gold-deep); flex: none; }
+.reception-option:has(input:checked){
+  border-color: var(--gold-deep); background: var(--paper);
+  box-shadow: 0 8px 20px rgba(58,44,30,.07);
+}
+.reception-option:has(input:focus-visible){ outline: 2px solid var(--gold-deep); outline-offset: 2px; }
+.reception-corps{ display:block; }
+.reception-titre{ display:block; font-family: var(--font-display); font-size: 18px; color: var(--ink); }
+.reception-detail{ display:block; font-size: 13.5px; line-height:1.55; color: var(--ink-soft); margin-top: 4px; }
+
+/* Retrait : le paiement n'a pas lieu en ligne. L'encart le dit avant le
+   bouton, pas dans une note qu'on lirait après avoir cliqué. */
+.retrait-note{
+  border: 1px solid var(--gold);
+  background: var(--cream);
+  border-radius: 16px;
+  padding: 16px 18px;
+}
+.retrait-note strong{ display:block; color: var(--ink); font-size: 15.5px; }
+.retrait-note span{ display:block; font-size: 14px; line-height:1.6; color: var(--ink-soft); margin-top: 5px; }
 
 /* ---------- Biscuits ajoutés à un package ----------
    Dans la fenêtre d'ajout, puis rappelés sous la ligne du panier :

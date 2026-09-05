@@ -1,12 +1,13 @@
 # Configuration de déploiement Netlify — Jolie Création
 #
 # Le site est statique : rien à construire. Seules les fonctions
-# serverless sont bundlées, car elles seules ont besoin de la
-# dépendance Stripe et du fichier catalogue.js situé à la racine.
+# serverless sont bundlées, car elles seules ont besoin du fichier
+# catalogue.js situé à la racine.
 #
-# Variable d'environnement à renseigner dans Netlify
+# Variables d'environnement à renseigner dans Netlify
 # (Site settings -> Environment variables), jamais dans le dépôt :
-#   STRIPE_SECRET_KEY = sk_live_... (ou sk_test_... pour les essais)
+#   SUMUP_API_KEY       = sup_sk_... (tableau de bord SumUp -> Clés API)
+#   SUMUP_MERCHANT_CODE = le code marchand du compte SumUp
 
 [build]
   publish = "."
@@ -40,6 +41,12 @@
 
 [[redirects]]
   from = "/formules.html"
-  to = "/mini-scenographies.html"
+  to = "/micro-scenographies.html"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/mini-scenographies.html"
+  to = "/micro-scenographies.html"
   status = 301
   force = true

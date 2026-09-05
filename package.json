@@ -6,7 +6,5 @@
   "scripts": {
     "test": "node tests/catalogue.test.js"
   },
-  "dependencies": {
-    "stripe": "^17.5.0"
-  }
+  "dependencies": {}
 }

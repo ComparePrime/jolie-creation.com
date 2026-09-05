@@ -4,11 +4,11 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Biscuits personnalisés — packages &amp; collections | Jolie Création</title>
-<meta name="description" content="Biscuits décorés à la main : packages disponibles toute l'année, collections de saison et créations sur mesure. Atelier à Domdidier (Fribourg), livraison en Suisse.">
+<meta name="description" content="Biscuits décorés à la main : packages disponibles toute l'année, collections de saison et créations sur mesure. Atelier dans le canton de Fribourg, livraison en Suisse.">
 <link rel="canonical" href="https://jolie-creation.com/biscuits-personnalises.html">
 <meta property="og:type" content="website">
 <meta property="og:title" content="Biscuits personnalisés — packages &amp; collections | Jolie Création">
-<meta property="og:description" content="Biscuits décorés à la main : packages disponibles toute l'année, collections de saison et créations sur mesure. Atelier à Domdidier (Fribourg), livraison en Suisse.">
+<meta property="og:description" content="Biscuits décorés à la main : packages disponibles toute l'année, collections de saison et créations sur mesure. Atelier dans le canton de Fribourg, livraison en Suisse.">
 <meta property="og:image" content="https://jolie-creation.com/images/creations/prenom-giulia.jpg">
 <meta property="og:locale" content="fr_CH">
 <meta name="twitter:card" content="summary_large_image">
@@ -27,7 +27,7 @@
       <ul>
         <li><a href="index.html">Accueil</a></li>
         <li><a href="biscuits-personnalises.html" aria-current="page">Biscuits personnalisés</a></li>
-        <li><a href="mini-scenographies.html">Micro-scénographies</a></li>
+        <li><a href="micro-scenographies.html">Micro-scénographies</a></li>
         <li><a href="mes-realisations.html">Mes réalisations</a></li>
         <li><a href="a-propos.html">À propos de moi</a></li>
       </ul>
@@ -51,7 +51,7 @@
   <ul>
     <li><a href="index.html">Accueil</a></li>
     <li><a href="biscuits-personnalises.html">Biscuits personnalisés</a></li>
-    <li><a href="mini-scenographies.html">Micro-scénographies</a></li>
+    <li><a href="micro-scenographies.html">Micro-scénographies</a></li>
     <li><a href="mes-realisations.html">Mes réalisations</a></li>
     <li><a href="a-propos.html">À propos de moi</a></li>
   </ul>
@@ -64,14 +64,14 @@
       <div class="hero-copy">
         <span class="eyebrow">Biscuits décorés à la main</span>
         <h1>Des biscuits créés spécialement pour <span class="script">votre</span> événement</h1>
-        <p class="lead">Des packages disponibles toute l'année, des collections mises en avant au fil des saisons, et la possibilité de tout composer sur mesure. Chaque biscuit est décoré à la main dans mon atelier de Domdidier.</p>
+        <p class="lead">Des packages disponibles toute l'année, des collections mises en avant au fil des saisons, et la possibilité de tout composer sur mesure. Chaque biscuit est décoré à la main dans mon atelier, dans le canton de Fribourg.</p>
         <div class="hero-actions">
           <a href="#collections" class="btn btn-primary">Les collections du moment</a>
           <a href="#packages" class="btn btn-ghost">Voir les packages</a>
         </div>
         <div class="hero-trust">
           <div><strong>Livraison</strong>Suisse, France &amp; Europe</div>
-          <div><strong>Retrait</strong>Domdidier, canton de Fribourg</div>
+          <div><strong>Retrait</strong>Canton de Fribourg</div>
         </div>
       </div>
       <div class="hero-media">
@@ -83,18 +83,17 @@
   </section>
 
   <!-- ==========================================================
-       2. COLLECTIONS DU MOMENT
+       COLLECTIONS DU MOMENT
        Pour changer les collections mises en avant (Noël,
-       Saint-Valentin, Pâques…), il suffit de reprendre les blocs
-       <article class="collection-card"> ci-dessous et de modifier :
-         - le nom dans <h3>
-         - la phrase de description
-         - le nom repris dans les liens (theme=...) et dans le bouton
-       Les formats 12 / 18 / 24 pièces et la mise en page ne bougent pas.
-       Pour n'afficher qu'une seule collection, supprimer un <article> :
-       la carte restante se recentre automatiquement.
-       Quand les tarifs seront fixés, remplacer le texte de
-       <p class="collection-note"> par le prix de chaque format.
+       Saint-Valentin, Pâques…) :
+         1. dans catalogue.js, remplacer la clé et le nom passés à
+            collection('halloween', 'Halloween', …) ;
+         2. ici, reprendre le <h3>, la phrase de description et les
+            trois identifiants data-ajout-panier, qui suivent le
+            schéma collection-<clé>-<nombre de biscuits>.
+       Les formats 12 / 18 / 24 et la mise en page ne bougent pas.
+       Pour n'afficher qu'une seule collection, supprimer un
+       <article> : la carte restante se recentre automatiquement.
        ========================================================== -->
   <section id="collections" class="section-deep" aria-labelledby="collections-title">
     <div class="wrap">
@@ -102,7 +101,7 @@
         <div class="ornament"><i></i></div>
         <span class="eyebrow" style="justify-content:center;">En ce moment</span>
         <h2 id="collections-title">Collections du moment</h2>
-        <p class="narrow">Deux collections mises en avant en ce moment. Elles changent au fil des saisons et des fêtes. Chacune existe en trois formats.</p>
+        <p class="narrow">Deux collections mises en avant en ce moment. Elles changent au fil des saisons et des fêtes. Chacune existe en trois formats, à commander directement.</p>
       </div>
 
       <div class="collections-grid">
@@ -111,14 +110,22 @@
           <h3>Halloween</h3>
           <p>Une série de biscuits décorés aux couleurs d'Halloween, à partager le soir du 31 octobre ou à glisser dans les sacs des enfants.</p>
           <div class="collection-formats">
-            <span class="collection-formats-label">Formats disponibles</span>
-            <div class="size-chips">
-              <a class="size-chip" href="contact.html?formule=biscuits&amp;theme=Collection+Halloween&amp;quantite=12+pi%C3%A8ces">12 pièces</a>
-              <a class="size-chip" href="contact.html?formule=biscuits&amp;theme=Collection+Halloween&amp;quantite=18+pi%C3%A8ces">18 pièces</a>
-              <a class="size-chip" href="contact.html?formule=biscuits&amp;theme=Collection+Halloween&amp;quantite=24+pi%C3%A8ces">24 pièces</a>
+            <span class="collection-formats-label">Choisissez votre format</span>
+            <div class="format-boutons">
+              <button type="button" class="format-bouton" data-ajout-panier="collection-halloween-12">
+                <span class="format-taille">12 biscuits</span>
+                <span class="format-prix" data-prix-article="collection-halloween-12">69 CHF</span>
+              </button>
+              <button type="button" class="format-bouton" data-ajout-panier="collection-halloween-18">
+                <span class="format-taille">18 biscuits</span>
+                <span class="format-prix" data-prix-article="collection-halloween-18">99 CHF</span>
+              </button>
+              <button type="button" class="format-bouton" data-ajout-panier="collection-halloween-24">
+                <span class="format-taille">24 biscuits</span>
+                <span class="format-prix" data-prix-article="collection-halloween-24">129 CHF</span>
+              </button>
             </div>
-            <p class="collection-note">Tarif communiqué avec le devis, selon le format choisi.</p>
-            <a href="contact.html?formule=biscuits&amp;theme=Collection+Halloween" class="btn btn-primary btn-small">Commander la collection Halloween</a>
+            <p class="collection-note">Vous pouvez ajouter des biscuits supplémentaires au moment de la mise au panier.</p>
           </div>
         </article>
 
@@ -127,14 +134,22 @@
           <h3>Cocooning</h3>
           <p>Des biscuits doux à offrir ou à garder pour soi, pensés pour les soirées d'automne et d'hiver, avec un thé ou un chocolat chaud.</p>
           <div class="collection-formats">
-            <span class="collection-formats-label">Formats disponibles</span>
-            <div class="size-chips">
-              <a class="size-chip" href="contact.html?formule=biscuits&amp;theme=Collection+Cocooning&amp;quantite=12+pi%C3%A8ces">12 pièces</a>
-              <a class="size-chip" href="contact.html?formule=biscuits&amp;theme=Collection+Cocooning&amp;quantite=18+pi%C3%A8ces">18 pièces</a>
-              <a class="size-chip" href="contact.html?formule=biscuits&amp;theme=Collection+Cocooning&amp;quantite=24+pi%C3%A8ces">24 pièces</a>
+            <span class="collection-formats-label">Choisissez votre format</span>
+            <div class="format-boutons">
+              <button type="button" class="format-bouton" data-ajout-panier="collection-cocooning-12">
+                <span class="format-taille">12 biscuits</span>
+                <span class="format-prix" data-prix-article="collection-cocooning-12">69 CHF</span>
+              </button>
+              <button type="button" class="format-bouton" data-ajout-panier="collection-cocooning-18">
+                <span class="format-taille">18 biscuits</span>
+                <span class="format-prix" data-prix-article="collection-cocooning-18">99 CHF</span>
+              </button>
+              <button type="button" class="format-bouton" data-ajout-panier="collection-cocooning-24">
+                <span class="format-taille">24 biscuits</span>
+                <span class="format-prix" data-prix-article="collection-cocooning-24">129 CHF</span>
+              </button>
             </div>
-            <p class="collection-note">Tarif communiqué avec le devis, selon le format choisi.</p>
-            <a href="contact.html?formule=biscuits&amp;theme=Collection+Cocooning" class="btn btn-primary btn-small">Commander la collection Cocooning</a>
+            <p class="collection-note">Vous pouvez ajouter des biscuits supplémentaires au moment de la mise au panier.</p>
           </div>
         </article>
       </div>
@@ -151,7 +166,6 @@
     <div class="wrap">
       <div class="section-head center">
         <div class="ornament"><i></i></div>
-        <span class="eyebrow" style="justify-content:center;">Toute l'année</span>
         <h2 id="packages-title">Packages disponibles toute l'année</h2>
         <p class="narrow">Ces offres restent commandables en permanence, sans attendre une saison particulière. Chaque package contient 12 biscuits et se complète au moment de l'ajout au panier.</p>
       </div>
@@ -206,39 +220,31 @@
   </section>
 
   <!-- ==========================================================
-       BISCUITS SUPPLÉMENTAIRES
-       Ils ne s'achètent pas séparément : ils se choisissent dans la
-       fenêtre d'ajout d'un package. Cette section présente les
-       formats et les tarifs, elle ne vend rien à elle seule.
+       PASSERELLE VERS LA GALERIE
+       Placée juste après les packages : c'est là que se pose la
+       question « et si aucun thème ne me correspond ? ».
        ========================================================== -->
-  <section id="supplements" aria-labelledby="supplements-title">
+  <section aria-labelledby="realisations-title">
     <div class="wrap">
-      <div class="section-head center">
-        <div class="ornament"><i></i></div>
-        <span class="eyebrow" style="justify-content:center;">En complément</span>
-        <h2 id="supplements-title">Ajouter des biscuits à votre package</h2>
-        <p class="narrow">La commande de biscuits démarre à 12 biscuits, soit un package. Vous le complétez ensuite à l'unité, directement au moment de l'ajouter au panier.</p>
-      </div>
-
-      <div class="sup-grid">
-        <div class="sup-card">
-          <h3>Petit biscuit</h3>
-          <p class="sup-prix">4 CHF</p>
-          <p>Petit format avec décoration simple.</p>
+      <div class="galerie-invite">
+        <div class="galerie-invite-texte">
+          <span class="eyebrow">Mes réalisations</span>
+          <h2 id="realisations-title">Vous ne trouvez pas encore le thème qui vous correspond&nbsp;?</h2>
+          <p>Ces packages ne sont qu'une partie de ce que je décore. Anniversaires, baptêmes, naissances, entreprises : la galerie rassemble mes créations passées, classées par occasion et par thème. De quoi trouver l'idée, ou m'en confier une nouvelle.</p>
+          <a href="mes-realisations.html" class="btn btn-primary">Voir mes réalisations</a>
         </div>
-        <div class="sup-card">
-          <h3>Biscuit standard</h3>
-          <p class="sup-prix">5 à 6 CHF</p>
-          <p>Format classique. Le prix final dépend de la taille et du niveau de détail, il vous est confirmé avant la préparation.</p>
-        </div>
-        <div class="sup-card">
-          <h3>Grand biscuit</h3>
-          <p class="sup-prix">7 à 8 CHF</p>
-          <p>Grand format, idéal pour les pièces principales ou les créations plus élaborées. Le prix final dépend de la personnalisation.</p>
+        <div class="galerie-invite-photos">
+          <div class="scallop-frame">
+            <img src="images/creations/cheval-2.jpeg" alt="Biscuits sur le thème du cheval, cœur au prénom calligraphié et fer à cheval doré" width="1110" height="1600" loading="lazy" decoding="async">
+          </div>
+          <div class="scallop-frame">
+            <img src="images/creations/naissance-calendrier.jpg" alt="Biscuit en forme de calendrier doré pour une annonce de naissance" width="1196" height="1800" loading="lazy" decoding="async">
+          </div>
+          <div class="scallop-frame">
+            <img src="images/creations/anniversaire-ocean-etagere.jpg" alt="Biscuits décorés sur le thème de l'océan : baleine, tortue et étoiles de mer" width="1665" height="1800" loading="lazy" decoding="async">
+          </div>
         </div>
       </div>
-
-      <p class="sup-minimum" style="margin:34px 0 0;"><span><strong>Comment faire&nbsp;?</strong> Choisissez un package ci-dessus, puis indiquez le nombre de biscuits supplémentaires dans la fenêtre qui s'ouvre. Ils rejoignent la même ligne de commande.</span></p>
     </div>
   </section>
 
@@ -276,90 +282,15 @@
     </div>
   </section>
 
-  <section id="sur-mesure" aria-labelledby="sur-mesure-title">
-    <div class="wrap">
-      <div class="section-head center">
-        <div class="ornament"><i></i></div>
-        <span class="eyebrow" style="justify-content:center;">Toute l'année</span>
-        <h2 id="sur-mesure-title">Sur mesure, pour toute occasion</h2>
-        <p class="narrow">Rien ne correspond à votre projet ? Choisissez votre occasion : votre demande de devis s'ouvre avec l'événement déjà renseigné, il ne reste qu'à préciser vos envies.</p>
-      </div>
-      <div class="events-grid">
-        <a class="category-card value-card center" href="contact.html?formule=biscuits&amp;evenement=Anniversaire"><h3>Anniversaires</h3></a>
-        <a class="category-card value-card center" href="contact.html?formule=biscuits&amp;evenement=Bapt%C3%AAme"><h3>Baptêmes</h3></a>
-        <a class="category-card value-card center" href="contact.html?formule=biscuits&amp;evenement=Baby+shower"><h3>Baby shower</h3></a>
-        <a class="category-card value-card center" href="contact.html?formule=biscuits&amp;evenement=Gender+reveal"><h3>Gender reveal</h3></a>
-        <a class="category-card value-card center" href="contact.html?formule=biscuits&amp;evenement=Fin+d%27ann%C3%A9e+scolaire"><h3>Fin d'année scolaire</h3></a>
-        <a class="category-card value-card center" href="contact.html?formule=biscuits&amp;evenement=P%C3%A2ques"><h3>Pâques</h3></a>
-        <a class="category-card value-card center" href="contact.html?formule=biscuits&amp;evenement=F%C3%AAte+des+m%C3%A8res"><h3>Fête des mères</h3></a>
-        <a class="category-card value-card center" href="contact.html?formule=biscuits&amp;evenement=Halloween"><h3>Halloween</h3></a>
-        <a class="category-card value-card center" href="contact.html?formule=biscuits&amp;evenement=No%C3%ABl"><h3>Noël</h3></a>
-        <a class="category-card value-card center" href="contact.html?formule=biscuits&amp;evenement=Naissance"><h3>Naissance</h3></a>
-        <a class="category-card value-card center" href="contact.html?formule=biscuits&amp;evenement=Saint-Valentin"><h3>Saint-Valentin</h3></a>
-      </div>
-      <div class="themes-block">
-        <h3>Thèmes disponibles pour les anniversaires</h3>
-        <div class="themes-list">
-          <a class="theme-chip" href="contact.html?formule=biscuits&amp;evenement=Anniversaire&amp;theme=Oc%C3%A9an">Océan</a>
-          <a class="theme-chip" href="contact.html?formule=biscuits&amp;evenement=Anniversaire&amp;theme=Winnie">Winnie</a>
-          <a class="theme-chip" href="contact.html?formule=biscuits&amp;evenement=Anniversaire&amp;theme=Cheval">Cheval</a>
-          <a class="theme-chip" href="contact.html?formule=biscuits&amp;evenement=Anniversaire&amp;theme=Licorne+arc-en-ciel">Licorne arc-en-ciel</a>
-          <a class="theme-chip" href="contact.html?formule=biscuits&amp;evenement=Anniversaire&amp;theme=Chantier">Chantier</a>
-          <a class="theme-chip" href="contact.html?formule=biscuits&amp;evenement=Anniversaire&amp;theme=Super-h%C3%A9ros">Super-héros</a>
-          <a class="theme-chip" href="contact.html?formule=biscuits&amp;evenement=Anniversaire&amp;theme=Pierre+Lapin">Pierre Lapin</a>
-          <a class="theme-chip" href="contact.html?formule=biscuits&amp;evenement=Anniversaire&amp;theme=Bluey">Bluey</a>
-          <a class="theme-chip" href="contact.html?formule=biscuits&amp;evenement=Anniversaire&amp;theme=US+%28am%C3%A9ricain%29">US (américain)</a>
-          <a class="theme-chip" href="contact.html?formule=biscuits&amp;evenement=Anniversaire&amp;theme=Moto">Moto</a>
-          <a class="theme-chip" href="contact.html?formule=biscuits&amp;evenement=Anniversaire&amp;theme=Ourson">Ourson</a>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <section aria-labelledby="realisations-title">
-    <div class="wrap narrow center">
-      <span class="eyebrow" style="justify-content:center;">Mes réalisations</span>
-      <h2 id="realisations-title">Envie de voir mes créations ?</h2>
-      <p style="color:var(--ink-soft); font-size:16.5px;">Retrouvez l'ensemble de mes réalisations, classées par occasion et par thème.</p>
-      <div class="hero-actions" style="justify-content:center;">
-        <a href="mes-realisations.html" class="btn btn-primary">Découvrir mes réalisations</a>
-      </div>
-    </div>
-  </section>
-
-  <section class="section-deep">
+  <section>
     <div class="wrap">
       <div class="cta-final">
         <span class="eyebrow" style="color:var(--gold-light);">Envie d'un décor complet ?</span>
         <h2>Découvrez aussi mes <span class="script">micro-scénographies</span></h2>
         <p>Pour les événements qui méritent un petit décor en plus des biscuits, découvrez mes formules Mini Essentiel, Mini Signature et Mini Signature Plus.</p>
         <div class="hero-actions">
-          <a href="mini-scenographies.html" class="btn btn-primary">Voir les micro-scénographies</a>
+          <a href="micro-scenographies.html" class="btn btn-primary">Voir les micro-scénographies</a>
           <a href="contact.html" class="btn btn-ghost on-dark">Demander un devis pour mes biscuits</a>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <section aria-labelledby="livraison-title">
-    <div class="wrap">
-      <div class="section-head center">
-        <span class="eyebrow">Livraison &amp; retrait</span>
-        <h2 id="livraison-title">Livraison partout en Suisse et en Europe</h2>
-        <p class="narrow">Vos biscuits personnalisés peuvent être expédiés directement chez vous, en Suisse, en France et dans plusieurs pays européens. Les conditions et frais de livraison peuvent varier selon la destination.</p>
-      </div>
-      <div class="values-grid grid-2" style="max-width:820px; margin:0 auto;">
-        <div class="value-card">
-          <span class="ic"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><g class="ic-line"><path d="M3.2 7.4 12 3l8.8 4.4v9.2L12 21l-8.8-4.4z"/><path d="M3.2 7.4 12 11.9l8.8-4.5M12 11.9V21"/><path d="M7.6 5.2l8.8 4.5"/></g></svg></span>
-          <h3>Livraison</h3>
-          <p>J'envoie vos biscuits personnalisés en Suisse, en France et en Europe. Les frais et modalités dépendent de la destination.</p>
-          <a href="contact.html" class="btn btn-ghost btn-small" style="margin-top:16px; border-color:var(--ink);">Demander un devis</a>
-        </div>
-        <div class="value-card">
-          <span class="ic"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><g class="ic-line"><path d="M12 21.2s6.8-6.1 6.8-10.9a6.8 6.8 0 1 0-13.6 0c0 4.8 6.8 10.9 6.8 10.9z"/><circle cx="12" cy="10.1" r="2.6"/></g></svg></span>
-          <h3>Retrait sur place</h3>
-          <p>Vous êtes dans la région ? Le retrait de votre commande est possible à Domdidier, dans le canton de Fribourg.</p>
-          <a href="contact.html" class="btn btn-ghost btn-small" style="margin-top:16px; border-color:var(--ink);">Choisir le retrait sur place</a>
         </div>
       </div>
     </div>
@@ -391,7 +322,7 @@
         <h4>Mes offres</h4>
         <ul>
           <li><a href="biscuits-personnalises.html">Biscuits personnalisés</a></li>
-          <li><a href="mini-scenographies.html">Micro-scénographies</a></li>
+          <li><a href="micro-scenographies.html">Micro-scénographies</a></li>
           <li><a href="mes-realisations.html">Mes réalisations</a></li>
         </ul>
       </div>
@@ -399,7 +330,7 @@
         <h4>Biscuits personnalisés</h4>
         <ul>
           <li>Livraison Suisse &middot; France &middot; Europe</li>
-          <li>Retrait possible à Domdidier (FR)</li>
+          <li>Retrait possible dans le canton de Fribourg</li>
           <li><a href="a-propos.html">À propos de moi</a></li>
           <li><a href="mentions-legales.html">Mentions légales</a></li>
           <li><a href="confidentialite.html">Confidentialité</a></li>
