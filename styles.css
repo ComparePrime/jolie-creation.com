@@ -1041,7 +1041,7 @@ main > section:first-of-type + section { padding-top: 80px; }
 .site-footer{ background: var(--ink); color: rgba(255,253,249,.82); padding: 70px 0 30px; }
 .footer-grid{ display:grid; gap: 40px; grid-template-columns: 1fr; margin-bottom: 50px; }
 @media (min-width:820px){ .footer-grid{ grid-template-columns: 1.4fr 1fr 1fr 1.2fr; } }
-.footer-grid img{ height: 42px; margin-bottom: 14px; filter: brightness(0) invert(1); opacity:.92; }
+.footer-grid img{ height: 52px; margin-bottom: 14px; }
 .footer-grid h4{ color:#fff; font-family: var(--font-body); font-size: 13.5px; letter-spacing:.08em; text-transform:uppercase; margin-bottom: 18px; font-weight:600; }
 .footer-grid ul li{ margin-bottom: 10px; font-size: 14.5px; }
 .footer-grid ul a:hover{ color: var(--gold-light); }
