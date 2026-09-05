@@ -396,7 +396,6 @@ main > section:first-of-type + section { padding-top: 80px; }
     rgba(252,241,235,0) 92%);
 }
 .hero-solo .hero-copy > *:last-child{ margin-bottom: 0; }
-.hero-solo + section{ padding-top: 46px; }
 
 .hero-solo .eyebrow{
   margin-bottom: 0;
@@ -461,20 +460,40 @@ main > section:first-of-type + section { padding-top: 80px; }
   text-wrap: balance; /* lignes de longueurs proches */
 }
 
-.hero-transition{
-  font-size: 15.5px;
-  line-height: 1.75;
-  color: var(--ink-soft);
-  max-width: 48ch;
-  margin: 46px auto 0;
-}
-
 @media (max-width: 640px){
   .hero-solo{ padding-top: 44px; padding-bottom: 26px; }
   .hero-solo h1{ max-width: 13ch; margin-top: 18px; }
   .hero-intro{ margin-top: 22px; line-height: 1.7; }
   .hero-question{ margin-top: 44px; padding-top: 28px; }
-  .hero-transition{ margin-top: 34px; font-size: 15px; }
+}
+
+/* ---------- Rythme vertical de la page d'accueil ----------
+   L'accueil n'a que quatre sections courtes : les respirations de 114 à
+   142 px héritées du gabarit général y creusaient des blancs que rien ne
+   venait remplir. Elles sont resserrées ici seulement, les autres pages
+   gardant leur rythme.
+
+   Ces sélecteurs partent tous de body.page-accueil, et pas de la seule
+   classe .page-accueil : il leur faut au moins la spécificité de
+   « main > section:first-of-type + section » plus haut, sans quoi ils
+   seraient ignorés en silence. */
+body.page-accueil main > section{ padding-top: 44px; padding-bottom: 44px; }
+body.page-accueil main > .hero-solo{ padding-top: 56px; padding-bottom: 26px; }
+body.page-accueil main > .hero-solo + section{ padding-top: 52px; }
+
+/* Les trois niveaux du hero se suivent de plus près : le filet doré au-dessus
+   de la question suffit à marquer la rupture, la distance faisait double
+   emploi avec lui. */
+body.page-accueil .hero-solo h1{ margin-top: 20px; }
+body.page-accueil .hero-intro{ margin-top: 22px; }
+body.page-accueil .hero-question{ margin-top: 40px; padding-top: 26px; }
+
+@media (max-width: 640px){
+  body.page-accueil main > section{ padding-top: 38px; padding-bottom: 38px; }
+  body.page-accueil main > .hero-solo{ padding-top: 40px; padding-bottom: 22px; }
+  body.page-accueil main > .hero-solo + section{ padding-top: 42px; }
+  body.page-accueil .hero-intro{ margin-top: 18px; }
+  body.page-accueil .hero-question{ margin-top: 32px; padding-top: 22px; }
 }
 
 /* ---------- Univers / valeurs ---------- */
