@@ -39,25 +39,80 @@ Puis redéployer le site pour que les fonctions voient les variables.
 > des paiements : une clé publiée est une clé compromise, à révoquer
 > immédiatement depuis le tableau de bord SumUp.
 
-### 3. Activer la réception des commandes
-
-Les commandes arrivent par **Netlify Forms**, sous le nom `commande`.
-Cette réception doit être activée une fois :
-
-**Site configuration → Forms → Enable form detection**, puis redéployer.
-Les notifications par e-mail se règlent au même endroit.
-
-C'est indispensable pour les deux modes : SumUp ne transporte qu'un
-montant, ni l'adresse de livraison ni le détail des articles n'y
-voyagent. Sans cette activation, une commande peut être payée sans que
-son adresse arrive jamais.
-
-### 4. Vérifier
+### 3. Vérifier
 
 Passer une commande de bout en bout, dans les deux modes. Le retrait ne
-déclenche aucun paiement : la commande doit apparaître dans Netlify
-Forms. La livraison doit en plus apparaître dans le tableau de bord
-SumUp, avec la même référence `JC-AAAAMMJJ-XXXXXX`.
+déclenche aucun paiement : la commande doit arriver par e-mail (voir la
+section suivante). La livraison doit en plus apparaître dans le tableau
+de bord SumUp, avec la même référence `JC-AAAAMMJJ-XXXXXX`.
+
+---
+
+## Recevoir les demandes de devis et les commandes
+
+Tout arrive par e-mail à **info@jolie-creation.com**, par le même
+chemin :
+
+```
+formulaire → netlify/functions/envoyer-message.js → Nodemailer
+           → SMTP Infomaniak → info@jolie-creation.com
+```
+
+Un seul chemin pour les deux : les demandes de devis (page Contact,
+qu'on y arrive depuis une formule de micro-scénographie, un package ou
+directement) et les commandes de la boutique. Netlify Forms n'est pas
+utilisé.
+
+### Les variables à renseigner
+
+**Site settings → Environment variables**, jamais dans le dépôt :
+
+| Nom             | Valeur                                        |
+| --------------- | --------------------------------------------- |
+| `SMTP_USER`     | `info@jolie-creation.com`                     |
+| `SMTP_PASSWORD` | le mot de passe de cette boîte                |
+| `SMTP_HOST`     | `mail.infomaniak.com` *(valeur par défaut)*   |
+| `SMTP_PORT`     | `465` *(valeur par défaut, SSL)*              |
+
+`SMTP_HOST` et `SMTP_PORT` peuvent être omis : la fonction retient ces
+valeurs. `SMTP_USER` et `SMTP_PASSWORD` sont obligatoires. Le port 465
+chiffre d'emblée ; le port 587 bascule automatiquement sur STARTTLS.
+
+> Infomaniak refuse d'expédier au nom d'une adresse qui n'appartient pas
+> au compte authentifié. `SMTP_USER` doit donc bien être la boîte
+> `info@jolie-creation.com`, qui est aussi l'adresse d'expédition.
+
+Tant que ces variables manquent, le formulaire ne dit pas « merci » : il
+annonce que l'envoi n'est pas activé et propose l'e-mail et WhatsApp. Un
+« merci » affiché sur une demande perdue serait pire que l'absence de
+formulaire.
+
+### Ce que contient l'e-mail
+
+Tous les champs remplis, dans un ordre lisible, plus l'image
+d'inspiration en pièce jointe si le client en a joint une (3 Mo au
+plus). Le champ **Répondre à** porte l'adresse du client : répondre à
+l'e-mail lui répond directement.
+
+La liste des champs transmis vit dans `envoyer-message.js`, constante
+`CHAMPS`. Ajouter un champ au formulaire demande de l'ajouter là aussi,
+sans quoi il n'est pas transmis. C'est volontaire : une liste ouverte
+laisserait n'importe quoi entrer dans le courrier.
+
+### Anti-spam
+
+Trois filtres, du plus fiable au moins fiable :
+
+1. **Un pot de miel**, champ invisible que seul un robot remplit. La
+   demande est alors jetée, mais le robot reçoit « envoyé » : celui qui
+   croit avoir réussi ne réessaie pas.
+2. **Un délai de saisie minimum** de trois secondes.
+3. **Une limite de cinq envois par adresse IP** sur dix minutes. Elle
+   vit en mémoire, donc dans un seul conteneur : deux envois peuvent
+   tomber sur deux conteneurs différents et y échapper. C'est un
+   garde-fou contre l'envoi en rafale, pas une protection sérieuse. Si
+   le spam devient un vrai problème, c'est un service dédié qu'il
+   faudra brancher.
 
 ---
 
@@ -72,9 +127,6 @@ SumUp, avec la même référence `JC-AAAAMMJJ-XXXXXX`.
   n'existent pas encore sur le site.
 - **Frais de livraison.** Ils ne sont pas facturés en ligne : le site
   indique qu'ils sont confirmés séparément selon la destination.
-- **Formulaire de devis.** Il affiche un message de succès mais
-  n'envoie rien nulle part. Le brancher sur Netlify Forms, comme les
-  commandes, demande une seule ligne d'attribut.
 
 ---
 
@@ -89,7 +141,9 @@ SumUp, avec la même référence `JC-AAAAMMJJ-XXXXXX`.
 | `commande-confirmee.html`                      | Relit l'état réel du paiement auprès de SumUp.               |
 | `netlify/functions/create-checkout.js`         | Crée la session de paiement. Seul endroit où vit la clé.     |
 | `netlify/functions/get-order.js`               | Relit l'état d'un paiement.                                  |
+| `netlify/functions/envoyer-message.js`         | Envoie devis et commandes par e-mail. Seul endroit où vivent les identifiants SMTP. |
 | `tests/catalogue.test.js`                      | Tests de la fonction de paiement (`npm test`).               |
+| `tests/envoi.test.js`                          | Tests de la fonction d'envoi (`npm test`).                   |
 | `outils-galerie.py`                            | Recompose la galerie de « Mes réalisations » en rangées.     |
 | `images/fond-rayures.png`                      | Les rayures du fond, seules.                                 |
 | `images/filigrane-logo.webp`                   | Le médaillon du logo, en filigrane par-dessus les rayures.   |
@@ -109,9 +163,11 @@ toujours par produire un `72.49999999` quelque part.
 
 **La commande et le paiement voyagent séparément.** SumUp ne transporte
 qu'un montant : ni l'adresse, ni le détail des articles. La commande part
-donc vers Netlify Forms *avant* le départ vers le paiement, sous la même
+donc par e-mail *avant* le départ vers le paiement, sous la même
 référence `JC-AAAAMMJJ-XXXXXX`. C'est elle qui fait le lien entre les deux
-enregistrements.
+enregistrements. Si cet envoi échoue, le client n'est pas emmené vers le
+paiement : encaisser une commande qui n'arriverait jamais serait pire que
+de la refuser.
 
 **Les biscuits supplémentaires n'existent pas seuls.** Ils se choisissent
 dans la fenêtre qui s'ouvre à l'ajout d'un package ou d'une collection, et voyagent attachés à

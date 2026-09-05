@@ -136,26 +136,6 @@
         </aside>
       </div>
 
-      <!-- ==========================================================
-           Déclaration du formulaire pour Netlify Forms.
-           Netlify repère les formulaires en analysant le HTML publié :
-           il lui faut cette version statique, avec tous les champs.
-           Elle n'est jamais affichée ni remplie — c'est le script en
-           bas de page qui envoie la commande. Sans elle, Netlify
-           ignorerait l'envoi et la commande se perdrait.
-           ========================================================== -->
-      <form name="commande" data-netlify="true" netlify-honeypot="bot-field" hidden>
-        <input type="hidden" name="form-name" value="commande">
-        <input type="text" name="bot-field">
-        <input type="text" name="reference"><input type="text" name="reception">
-        <input type="text" name="prenom"><input type="text" name="nom">
-        <input type="email" name="email"><input type="tel" name="telephone">
-        <input type="text" name="rue"><input type="text" name="numero">
-        <input type="text" name="npa"><input type="text" name="ville"><input type="text" name="pays">
-        <input type="text" name="total"><input type="text" name="paiement">
-        <textarea name="articles"></textarea><textarea name="message"></textarea>
-      </form>
-
       <div class="panier-vide" id="paiement-vide" hidden>
         <div class="ornament"><i></i></div>
         <h2>Rien à payer pour l’instant</h2>
@@ -370,12 +350,12 @@
 
   /* ---------- Enregistrement de la commande ----------
      SumUp ne transporte qu'un montant : ni l'adresse, ni le détail des
-     articles n'y voyagent. La commande est donc envoyée séparément à
-     Netlify Forms, sous la même référence, AVANT le départ vers le
-     paiement — sinon une commande payée pourrait arriver sans adresse. */
+     articles n'y voyagent. La commande part donc par e-mail, sous la même
+     référence, AVANT le départ vers le paiement — sinon une commande
+     payée pourrait arriver sans adresse. C'est la même fonction d'envoi
+     que les demandes de devis : un seul chemin à surveiller. */
   function enregistrerCommande(reference, mode, resume) {
     var champs = {
-      'form-name': 'commande',
       reference: reference,
       reception: mode === 'livraison' ? 'Livraison' : 'Retrait dans le canton de Fribourg',
       prenom: valeur('pay-prenom'),
@@ -393,14 +373,17 @@
       Cat.CHAMPS_LIVRAISON.forEach(function (c) { champs[c.cle] = valeur('pay-' + c.cle); });
     }
 
-    var corps = Object.keys(champs).map(function (k) {
-      return encodeURIComponent(k) + '=' + encodeURIComponent(champs[k]);
-    }).join('&');
-
-    return fetch('/', {
+    return fetch('/.netlify/functions/envoyer-message', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-      body: corps
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        type: 'commande',
+        donnees: champs,
+        piege: '',
+        // La commande a déjà demandé du temps au client : le délai
+        // minimum de saisie n'a pas de sens ici.
+        dureeSaisie: -1
+      })
     });
   }
 
@@ -440,7 +423,11 @@
     message('');
 
     enregistrerCommande(reference, mode, resume).then(function (r) {
-      if (!r.ok) throw new Error('enregistrement');
+      // Une commande qui n'arrive pas jusqu'à Julie n'est pas une commande :
+      // on refuse d'aller plus loin plutôt que d'encaisser dans le vide.
+      if (r.ok) return;
+      if (r.status === 503 || r.status === 404) throw new Error('envoi_non_configure');
+      throw new Error('enregistrement');
     }).then(function () {
       Panier.memoriserCommande(resume);
 
@@ -490,9 +477,17 @@
         }
         reactiverBouton();
       });
-    }).catch(function () {
-      message('Votre commande n’a pas pu être enregistrée. Vérifiez votre connexion et réessayez, ' +
-        'ou écrivez-moi à <a href="mailto:info@jolie-creation.com">info@jolie-creation.com</a>.', true);
+    }).catch(function (err) {
+      if (err && err.message === 'envoi_non_configure') {
+        message('La prise de commande en ligne n’est pas encore activée sur ce site. ' +
+          'Envoyez-moi votre commande directement : ' +
+          '<a href="https://api.whatsapp.com/send/?phone=41783127545&amp;text&amp;type=phone_number&amp;app_absent=0" target="_blank" rel="noopener">par WhatsApp</a> ' +
+          'ou à <a href="mailto:info@jolie-creation.com">info@jolie-creation.com</a>. ' +
+          'Gardez cette page ouverte, votre panier y est enregistré.', true);
+      } else {
+        message('Votre commande n’a pas pu être enregistrée. Vérifiez votre connexion et réessayez, ' +
+          'ou écrivez-moi à <a href="mailto:info@jolie-creation.com">info@jolie-creation.com</a>.', true);
+      }
       reactiverBouton();
     });
   });

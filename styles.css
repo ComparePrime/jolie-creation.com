@@ -1333,11 +1333,49 @@ form.devis-form{
 }
 .field textarea{ resize: vertical; min-height: 110px; }
 .form-note{ font-size: 12.5px; color: var(--ink-soft); }
+/* Confirmation d'envoi : elle reprend l'ornement doré du site plutôt
+   que le bandeau vert des formulaires génériques. C'est le dernier
+   écran que voit le client, il mérite d'être de la maison. */
 .form-success{
-  display:none; background: #EFF6EA; border: 1px solid #cfe4c2; color:#3c5a2c;
-  padding: 14px 16px; border-radius: 12px; font-size: 14px;
+  display:none;
+  background: var(--paper);
+  border: 1px solid var(--gold);
+  border-radius: 18px;
+  padding: 26px 24px;
+  text-align: center;
 }
 .form-success.show{ display:block; }
+.form-success .ornament{ margin: 0 auto 14px; }
+.form-success strong{
+  display:block;
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-size: clamp(20px, 2.6vw, 25px);
+  color: var(--ink);
+}
+.form-success span{
+  display:block;
+  margin-top: 7px;
+  font-size: 15.5px;
+  color: var(--ink-soft);
+}
+
+.form-erreur{
+  display:none;
+  background: #FBEDE9; border: 1px solid #E7C4B8; color: #7A3B29;
+  padding: 14px 16px; border-radius: 12px; font-size: 14.5px; line-height:1.6;
+}
+.form-erreur.show{ display:block; }
+.form-erreur a{ color: inherit; text-decoration: underline; }
+
+/* Pot de miel : retiré de l'affichage sans display:none, que certains
+   robots savent repérer, et sorti du parcours au clavier. */
+.pot-de-miel{
+  position: absolute;
+  left: -9999px;
+  width: 1px; height: 1px;
+  overflow: hidden;
+}
 
 #mondial-relay-widget-zone{
   width: 100%;
