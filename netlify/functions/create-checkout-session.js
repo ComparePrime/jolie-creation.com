@@ -127,7 +127,7 @@ exports.handler = async (event) => {
 
   const client = charge.client || {};
   const origine = process.env.URL || process.env.DEPLOY_PRIME_URL ||
-    (event.headers && event.headers.origin) || 'https://www.jolie-creation.com';
+    (event.headers && event.headers.origin) || 'https://jolie-creation.com';
 
   const metadata = {
     reception: texte(client.reception, 40),

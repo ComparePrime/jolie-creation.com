@@ -196,13 +196,19 @@ p{ margin:0 0 1em; overflow-wrap: break-word; }
   display:flex;
   align-items:center;
   justify-content: space-between;
-  padding-top:14px; padding-bottom:14px;
+  padding-top:12px; padding-bottom:12px;
   gap: 20px;
 }
 /* flex:none — sinon le logo se fait comprimer par le menu sur les
    largeurs intermédiaires et se retrouve déformé. */
 .brand{ display:flex; align-items:center; gap:12px; flex: none; }
-.brand img{ height: 46px; width:auto; }
+/* Le médaillon rond a besoin de plus de hauteur que l'ancien lettrage
+   pour que « Jolie Création » se lise. Il grandit avec la largeur
+   d'écran : à 1024 px le menu ne dispose que de 71 px de marge, et la
+   marque en consomme autant qu'elle grandit. */
+.brand img{ height: 60px; width:auto; }
+@media (min-width: 700px){ .brand img{ height: 68px; } }
+@media (min-width: 1024px){ .brand img{ height: 76px; } }
 .brand-text{ display:none; }
 
 .nav-desktop{ display:none; }
@@ -244,7 +250,7 @@ p{ margin:0 0 1em; overflow-wrap: break-word; }
 }
 .mobile-nav.open{ display:block; }
 .mobile-nav-top{ display:flex; justify-content:space-between; align-items:center; margin-bottom: 40px; }
-.mobile-nav-top img{ height:40px; }
+.mobile-nav-top img{ height:56px; }
 .mobile-nav-close{ background:none; border:none; font-size: 28px; line-height:1; cursor:pointer; color: var(--ink); }
 .mobile-nav ul{ display:flex; flex-direction:column; gap: 6px; }
 .mobile-nav ul a{
@@ -619,8 +625,12 @@ main > section:first-of-type + section { padding-top: 80px; }
 }
 .folio-nav a:hover{ border-color: var(--gold); color: var(--ink); }
 
-/* Décalage sous le header collant lors des sauts d'ancre. */
-.folio-group{ scroll-margin-top: 104px; }
+/* Décalage sous le header collant lors des sauts d'ancre : il suit la
+   hauteur réelle du bandeau, 85 px sur mobile jusqu'à 101 px au-delà de
+   1024 px, plus une respiration. */
+.folio-group{ scroll-margin-top: 105px; }
+@media (min-width: 700px){ .folio-group{ scroll-margin-top: 113px; } }
+@media (min-width: 1024px){ .folio-group{ scroll-margin-top: 121px; } }
 .folio-group + .folio-group{ margin-top: 72px; }
 .folio-group-head{ max-width: 760px; margin-bottom: 32px; }
 .folio-group-head h3{
@@ -1041,7 +1051,7 @@ main > section:first-of-type + section { padding-top: 80px; }
 .site-footer{ background: var(--ink); color: rgba(255,253,249,.82); padding: 70px 0 30px; }
 .footer-grid{ display:grid; gap: 40px; grid-template-columns: 1fr; margin-bottom: 50px; }
 @media (min-width:820px){ .footer-grid{ grid-template-columns: 1.4fr 1fr 1fr 1.2fr; } }
-.footer-grid img{ height: 42px; margin-bottom: 14px; filter: brightness(0) invert(1); opacity:.92; }
+.footer-grid img{ height: 52px; margin-bottom: 14px; }
 .footer-grid h4{ color:#fff; font-family: var(--font-body); font-size: 13.5px; letter-spacing:.08em; text-transform:uppercase; margin-bottom: 18px; font-weight:600; }
 .footer-grid ul li{ margin-bottom: 10px; font-size: 14.5px; }
 .footer-grid ul a:hover{ color: var(--gold-light); }
@@ -1397,7 +1407,7 @@ body.modale-ouverte{ overflow: hidden; }
   padding: 28px 24px;
   box-shadow: var(--shadow-soft);
 }
-@media (min-width: 940px){ .panier-recap{ position: sticky; top: 96px; } }
+@media (min-width: 940px){ .panier-recap{ position: sticky; top: 113px; } }
 .panier-recap h2{ font-size: 21px; margin-bottom: 20px; }
 .recap-ligne{
   display:flex; justify-content:space-between; gap: 14px;
