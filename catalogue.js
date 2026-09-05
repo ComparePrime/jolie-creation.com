@@ -70,8 +70,8 @@
     /* ---------- Packages disponibles toute l'année (12 biscuits) ---------- */
     {
       id: 'pack-ocean',
-      nom: 'Package biscuits — Thème Océan',
-      court: 'Thème Océan',
+      nom: 'Package biscuits — Océan',
+      court: 'Océan',
       categorie: 'package-biscuits',
       prix: 6900,
       aPartirDe: false,

@@ -711,6 +711,34 @@ body.page-accueil .hero-question{ margin-top: 40px; padding-top: 26px; }
 }
 .folio-set-head p{ color: var(--ink-soft); font-size: 15.5px; margin: 0; }
 
+/* ---------- Achat depuis la galerie ----------
+   Une réalisation dont le thème existe au catalogue peut être commandée
+   sur place. Le bloc reste discret : la page est une galerie d'abord,
+   une boutique ensuite. Il n'apparaît que sous les thèmes réellement
+   disponibles, jamais sous une création qui n'est plus au catalogue.
+
+   Le bouton porte le même attribut data-ajout-panier que la page
+   Biscuits : c'est boutique.js qui l'anime, il n'y a pas deux
+   mécaniques d'ajout au panier sur le site. */
+.folio-achat{
+  display:flex; align-items:center; flex-wrap: wrap; gap: 10px 16px;
+  margin-top: 16px; padding: 14px 18px;
+  border: 1px solid var(--line); border-radius: 16px;
+  background: var(--paper);
+}
+.folio-achat-texte{ font-size: 14px; color: var(--ink-soft); }
+.folio-achat-prix{
+  font-family: var(--font-display); font-size: 17px; color: var(--gold-deep);
+  white-space: nowrap;
+}
+/* Le bouton se cale à droite tant qu'il reste de la place, et repasse
+   à la ligne entière dès que la phrase occupe toute la largeur. */
+.folio-achat .btn{ margin-left: auto; }
+@media (max-width: 560px){
+  .folio-achat{ gap: 8px 12px; padding: 13px 15px; }
+  .folio-achat .btn{ margin-left: 0; width: 100%; text-align:center; justify-content:center; }
+}
+
 /* ---------- Galerie en rangées justifiées ----------
    Le multi-colonnes répartissait les photos par hauteur : dès que leur
    nombre ne tombait pas juste, une ou deux colonnes restaient à moitié
