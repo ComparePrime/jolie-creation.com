@@ -87,8 +87,18 @@ body{
    Un calque position:fixed (plutôt que background-attachment:fixed) se
    dimensionne toujours sur la fenêtre visible, jamais sur la hauteur totale
    de la page, et évite les soucis de performance historiques de
-   background-attachment:fixed sur mobile. Voile crème pour garantir la
-   lisibilité du texte quel que soit l'endroit du motif révélé. */
+   background-attachment:fixed sur mobile.
+
+   Trois couches, de la plus haute à la plus basse :
+     1. le voile crème, qui garantit la lisibilité du texte quel que soit
+        l'endroit du motif révélé, et qui atténue aussi le médaillon ;
+     2. le médaillon du logo, en filigrane ;
+     3. les rayures.
+   Le médaillon est une couche à part, et non une incrustation dans l'image
+   de fond : « cover » cadre les rayures sur la hauteur de la fenêtre et
+   déborde sur les côtés, ce qui rognait le médaillon sur mobile. Ici sa
+   taille se calcule sur la fenêtre : la moitié de sa hauteur, sans jamais
+   dépasser 78 % de sa largeur ni 620 px. Il reste donc entier partout. */
 body::before{
   content: "";
   position: fixed;
@@ -96,9 +106,10 @@ body::before{
   z-index: -1;
   background-image:
     linear-gradient(rgba(252, 241, 235, 0.9), rgba(252, 241, 235, 0.9)),
-    url('images/fond-jolie-creation.jpg');
-  background-size: cover;
-  background-position: center top;
+    url('images/filigrane-logo.webp'),
+    url('images/fond-rayures.png');
+  background-size: cover, min(50vh, 78vw, 620px) auto, cover;
+  background-position: center, center center, center top;
   background-repeat: no-repeat;
 }
 

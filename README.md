@@ -78,6 +78,8 @@ afficher le montant réellement payé.
 | `netlify/functions/get-order.js`               | Relit une commande payée.                                    |
 | `tests/catalogue.test.js`                      | Tests de la fonction de paiement (`npm test`).               |
 | `outils-galerie.py`                            | Recompose la galerie de « Mes réalisations » en rangées.     |
+| `images/fond-rayures.png`                      | Les rayures du fond, seules.                                 |
+| `images/filigrane-logo.webp`                   | Le médaillon du logo, en filigrane par-dessus les rayures.   |
 
 ### Deux principes du code de paiement
 
@@ -114,6 +116,25 @@ en rangées et écrit le résultat dans la page. Chaque rangée occupe
 exactement la largeur et toutes ses photos y ont la même hauteur, sans
 aucun recadrage. Le script est idempotent : le relancer deux fois donne
 le même résultat.
+
+---
+
+## Le fond du site
+
+Le fond est empilé en trois couches par `body::before`, dans `styles.css` :
+le voile crème, puis le médaillon du logo, puis les rayures.
+
+Le médaillon est un fichier séparé, et non une incrustation dans l'image de
+fond. Les rayures sont cadrées en `cover` : sur un écran étroit, l'image est
+mise à l'échelle sur la hauteur de la fenêtre et déborde largement sur les
+côtés. Un médaillon incrusté y serait rogné. En couche à part, sa taille se
+calcule sur la fenêtre — `min(50vh, 78vw, 620px)` — et il reste entier de
+320 px à 1920 px de large.
+
+Pour changer la discrétion du filigrane, agir sur l'opacité du voile crème
+(`rgba(252, 241, 235, 0.9)`) : elle atténue le médaillon en même temps que
+les rayures. Le texte garde un contraste d'au moins 5,2 pour 1 sur le point
+le plus sombre du médaillon, au-dessus du seuil d'accessibilité AA.
 
 ---
 
