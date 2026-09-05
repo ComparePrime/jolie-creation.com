@@ -6,8 +6,16 @@
 #
 # Variables d'environnement à renseigner dans Netlify
 # (Site settings -> Environment variables), jamais dans le dépôt :
+#
+#   Paiement en ligne
 #   SUMUP_API_KEY       = sup_sk_... (tableau de bord SumUp -> Clés API)
 #   SUMUP_MERCHANT_CODE = le code marchand du compte SumUp
+#
+#   Envoi des devis et des commandes (SMTP Infomaniak)
+#   SMTP_USER     = info@jolie-creation.com
+#   SMTP_PASSWORD = le mot de passe de cette boîte
+#   SMTP_HOST     = mail.infomaniak.com   (facultatif, valeur par défaut)
+#   SMTP_PORT     = 465                   (facultatif, valeur par défaut)
 
 [build]
   publish = "."

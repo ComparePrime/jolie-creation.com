@@ -244,16 +244,132 @@ document.addEventListener('DOMContentLoaded', function () {
       });
     }
 
+    /* --- Envoi de la demande de devis ---
+       La demande part vers une fonction Netlify qui l'envoie par e-mail.
+       Rien n'est annoncé comme envoyé avant que le serveur l'ait confirmé :
+       un « merci » affiché sur une demande perdue serait pire que
+       l'absence de formulaire. */
+    var succes = document.querySelector('.form-success');
+    var echec = document.querySelector('.form-erreur');
+    var bouton = form.querySelector('button[type=submit]');
+    var libelleBouton = bouton ? bouton.textContent : '';
+    var ouvertureFormulaire = Date.now();
+    var MAX_IMAGE = 3 * 1024 * 1024;
+
+    function afficherEchec(texte, html) {
+      if (!echec) return;
+      if (html) echec.innerHTML = texte; else echec.textContent = texte;
+      echec.classList.add('show');
+      echec.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+
+    /* Les champs du formulaire, tels quels. La fonction serveur ne
+       retient que ceux qu'elle attend : inutile de trier ici. */
+    function releverChamps() {
+      var donnees = {};
+      Array.prototype.forEach.call(form.elements, function (champ) {
+        if (!champ.name || champ.type === 'file' || champ.type === 'submit') return;
+        if (champ.closest('[hidden]')) return;   // un champ masqué n'a pas été rempli
+        var v = (champ.value || '').trim();
+        if (v) donnees[champ.name] = v;
+      });
+      return donnees;
+    }
+
+    /* L'image d'inspiration voyage en base64 avec la demande. */
+    function lireImage() {
+      var champ = document.getElementById('inspiration');
+      var fichier = champ && champ.files && champ.files[0];
+      if (!fichier) return Promise.resolve(null);
+      if (fichier.size > MAX_IMAGE) {
+        return Promise.reject(new Error('image_trop_lourde'));
+      }
+      return new Promise(function (resoudre) {
+        var lecteur = new FileReader();
+        lecteur.onload = function () {
+          var brut = String(lecteur.result);
+          resoudre({ nom: fichier.name, type: fichier.type, contenu: brut.slice(brut.indexOf(',') + 1) });
+        };
+        lecteur.onerror = function () { resoudre(null); };
+        lecteur.readAsDataURL(fichier);
+      });
+    }
+
     form.addEventListener('submit', function (e) {
       e.preventDefault();
-      var success = document.querySelector('.form-success');
-      if (success) {
-        success.classList.add('show');
-        success.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      if (succes) succes.classList.remove('show');
+      if (echec) echec.classList.remove('show');
+
+      var manquants = [];
+      [['prenom', 'Prénom'], ['nom', 'Nom'], ['email', 'E-mail'], ['message', 'Votre message']]
+        .forEach(function (paire) {
+          var champ = document.getElementById(paire[0]);
+          if (champ && !champ.value.trim()) manquants.push(paire[1]);
+        });
+      var evenement = document.getElementById('type-evenement');
+      if (evenement && !evenement.value) manquants.push("Type d'événement");
+      var courriel = document.getElementById('email');
+      if (courriel && courriel.value.trim() && !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(courriel.value.trim())) {
+        manquants.push('une adresse e-mail valide');
       }
-      form.reset();
-      updateCascade();
-      updateThemeAnniversaire();
+      if (manquants.length) {
+        afficherEchec('Merci de renseigner : ' + manquants.join(', ') + '.');
+        return;
+      }
+
+      if (bouton) { bouton.disabled = true; bouton.textContent = 'Envoi en cours…'; }
+
+      lireImage().then(function (fichier) {
+        return fetch('/.netlify/functions/envoyer-message', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            type: 'devis',
+            donnees: releverChamps(),
+            fichier: fichier,
+            piege: (form.elements['site-web'] || {}).value || '',
+            dureeSaisie: Date.now() - ouvertureFormulaire
+          })
+        });
+      }).then(function (r) {
+        // Une réponse illisible (page 404 d'un hébergeur sans fonctions,
+        // par exemple) ne doit pas être annoncée comme un succès.
+        return r.text().then(function (txt) {
+          var data = {};
+          try { data = JSON.parse(txt); } catch (err) { data = { erreur: 'smtp_non_configure' }; }
+          return { ok: r.ok, statut: r.status, data: data };
+        });
+      }).then(function (res) {
+        if (bouton) { bouton.disabled = false; bouton.textContent = libelleBouton; }
+
+        if (res.ok && res.data.ok) {
+          if (succes) {
+            succes.classList.add('show');
+            succes.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          }
+          form.reset();
+          ouvertureFormulaire = Date.now();
+          updateCascade();
+          updateThemeAnniversaire();
+          return;
+        }
+
+        if (res.statut === 503 || res.statut === 404 || res.data.erreur === 'smtp_non_configure') {
+          afficherEchec('L’envoi automatique n’est pas encore activé. Écrivez-moi directement à ' +
+            '<a href="mailto:info@jolie-creation.com">info@jolie-creation.com</a> ou ' +
+            '<a href="https://api.whatsapp.com/send/?phone=41783127545&amp;text&amp;type=phone_number&amp;app_absent=0" target="_blank" rel="noopener">sur WhatsApp</a>.', true);
+        } else {
+          afficherEchec(res.data.message || 'Votre demande n’a pas pu être envoyée. Merci de réessayer.');
+        }
+      }).catch(function (err) {
+        if (bouton) { bouton.disabled = false; bouton.textContent = libelleBouton; }
+        if (err && err.message === 'image_trop_lourde') {
+          afficherEchec('Votre image dépasse 3 Mo. Choisissez-en une plus légère, ou envoyez-la-moi séparément.');
+          return;
+        }
+        afficherEchec('Connexion impossible. Vérifiez votre connexion et réessayez, ou écrivez-moi à ' +
+          '<a href="mailto:info@jolie-creation.com">info@jolie-creation.com</a>.', true);
+      });
     });
   }
 
