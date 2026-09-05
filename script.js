@@ -138,8 +138,23 @@ document.addEventListener('DOMContentLoaded', function () {
       var quantiteParam = params.get('quantite');
       if (!formuleParam && !evenementParam && !themeParam && !quantiteParam) return;
 
-      if (formuleParam === 'biscuits' && formuleSelect) {
-        formuleSelect.value = 'Biscuits personnalis\u00e9s (sans mise en sc\u00e8ne)';
+      /* La formule arrive soit sous le mot-cl\u00e9 \u00ab biscuits \u00bb, soit sous le
+         nom d'une micro-sc\u00e9nographie (\u00ab Mini Signature \u00bb). Dans les deux
+         cas on cherche l'option qui commence par ce nom, plut\u00f4t que de
+         recopier ici des libell\u00e9s qui portent aussi un prix : le jour o\u00f9
+         un tarif change, la liste reste seule \u00e0 modifier. */
+      var formuleRetenue = null;
+      if (formuleParam && formuleSelect) {
+        var vise = formuleParam === 'biscuits'
+          ? 'Biscuits personnalis\u00e9s (sans mise en sc\u00e8ne)'
+          : formuleParam;
+        Array.prototype.forEach.call(formuleSelect.options, function (o) {
+          if (formuleRetenue) return;
+          if (o.value === vise || o.value.indexOf(vise + ' \u2014 ') === 0) {
+            formuleSelect.value = o.value;
+            formuleRetenue = o.value;
+          }
+        });
         updateCascade();
       }
 
@@ -154,7 +169,10 @@ document.addEventListener('DOMContentLoaded', function () {
         }
       }
 
-      // Un th\u00e8me d'anniversaire va dans la liste d\u00e9roulante, sinon en texte libre.
+      /* Un th\u00e8me d'anniversaire va dans sa liste d\u00e9roulante. Les autres
+         th\u00e8mes ouvrent le message : le champ \u00ab Th\u00e8me / couleurs \u00bb a \u00e9t\u00e9
+         retir\u00e9 du formulaire, et un th\u00e8me perdu vaudrait moins qu'un
+         message d\u00e9j\u00e0 amorc\u00e9. */
       var themeRetenu = null;
       if (themeParam) {
         var placeDansListe = false;
@@ -166,8 +184,10 @@ document.addEventListener('DOMContentLoaded', function () {
           }
         }
         if (!placeDansListe) {
-          var themeField = document.getElementById('theme');
-          if (themeField) themeField.value = themeParam;
+          var messageField = document.getElementById('message');
+          if (messageField && !messageField.value) {
+            messageField.value = 'Th\u00e8me souhait\u00e9 : ' + themeParam + '.\n';
+          }
         }
         themeRetenu = themeParam;
       }
@@ -176,11 +196,13 @@ document.addEventListener('DOMContentLoaded', function () {
       if (quantiteParam && quantiteField) quantiteField.value = quantiteParam;
 
       var note = document.getElementById('prefill-note');
-      if (note && (evenementRetenu || themeRetenu)) {
-        var libelle = evenementRetenu || '';
-        if (themeRetenu) libelle += (libelle ? ' \u2014 th\u00e8me ' : 'Th\u00e8me ') + themeRetenu;
-        note.textContent = 'Votre demande pour \u00ab\u00a0' + libelle +
-          '\u00a0\u00bb a \u00e9t\u00e9 pr\u00e9-remplie ci-dessous. Vous pouvez la modifier avant l\u2019envoi.';
+      if (note && (evenementRetenu || themeRetenu || formuleRetenue)) {
+        var morceaux = [];
+        if (formuleRetenue) morceaux.push('Formule s\u00e9lectionn\u00e9e : ' + formuleRetenue.split(' \u2014 ')[0]);
+        if (evenementRetenu) morceaux.push(evenementRetenu);
+        if (themeRetenu) morceaux.push('th\u00e8me ' + themeRetenu);
+        note.textContent = morceaux.join(' \u2014 ') +
+          '. Votre demande a \u00e9t\u00e9 pr\u00e9-remplie ci-dessous, vous pouvez la modifier avant l\u2019envoi.';
         note.hidden = false;
       }
     })();

@@ -23,7 +23,7 @@
       <ul>
         <li><a href="index.html">Accueil</a></li>
         <li><a href="biscuits-personnalises.html">Biscuits personnalisés</a></li>
-        <li><a href="mini-scenographies.html">Micro-scénographies</a></li>
+        <li><a href="micro-scenographies.html">Micro-scénographies</a></li>
         <li><a href="mes-realisations.html">Mes réalisations</a></li>
         <li><a href="a-propos.html">À propos de moi</a></li>
       </ul>
@@ -47,7 +47,7 @@
   <ul>
     <li><a href="index.html">Accueil</a></li>
     <li><a href="biscuits-personnalises.html">Biscuits personnalisés</a></li>
-    <li><a href="mini-scenographies.html">Micro-scénographies</a></li>
+    <li><a href="micro-scenographies.html">Micro-scénographies</a></li>
     <li><a href="mes-realisations.html">Mes réalisations</a></li>
     <li><a href="a-propos.html">À propos de moi</a></li>
   </ul>
@@ -57,10 +57,10 @@
 <main>
   <div class="page-intro">
     <div class="wrap">
-      <p class="breadcrumb"><a href="index.html">Accueil</a> / <a href="panier.html">Mon panier</a> / Paiement</p>
+      <p class="breadcrumb"><a href="index.html">Accueil</a> / <a href="panier.html">Mon panier</a> / Livraison ou retrait</p>
       <ol class="etapes">
         <li class="faite">Panier</li>
-        <li class="courante" aria-current="step">Paiement</li>
+        <li class="courante" aria-current="step">Livraison ou retrait</li>
         <li class="">Confirmation</li>
       </ol>
       <h1>Finaliser ma commande</h1>
@@ -72,35 +72,54 @@
       <div class="paiement-layout" id="paiement-contenu" hidden>
         <div class="paiement-form">
           <div id="paiement-message"></div>
-          <h2>Vos coordonnées</h2>
           <form id="form-paiement" class="form-boutique" novalidate>
+            <h2>Comment souhaitez-vous recevoir votre commande&nbsp;?</h2>
+            <fieldset class="reception-choix">
+              <legend class="sr-seulement">Réception de la commande</legend>
+              <label class="reception-option">
+                <input type="radio" name="reception" value="livraison" id="pay-livraison">
+                <span class="reception-corps">
+                  <span class="reception-titre">Livraison</span>
+                  <span class="reception-detail">Vos biscuits sont expédiés à l’adresse de votre choix. Le paiement se fait en ligne.</span>
+                </span>
+              </label>
+              <label class="reception-option">
+                <input type="radio" name="reception" value="retrait" id="pay-retrait">
+                <span class="reception-corps">
+                  <span class="reception-titre">Retrait</span>
+                  <span class="reception-detail">Vous venez chercher votre commande dans le canton de Fribourg. Paiement sur place, en espèces ou par TWINT.</span>
+                </span>
+              </label>
+            </fieldset>
+
+            <h2>Vos coordonnées</h2>
             <div class="form-grid">
               <div class="field"><label for="pay-prenom">Prénom <span class="req">*</span></label><input id="pay-prenom" name="prenom" type="text" autocomplete="given-name" required></div>
               <div class="field"><label for="pay-nom">Nom <span class="req">*</span></label><input id="pay-nom" name="nom" type="text" autocomplete="family-name" required></div>
               <div class="field"><label for="pay-email">E-mail <span class="req">*</span></label><input id="pay-email" name="email" type="email" autocomplete="email" required></div>
               <div class="field"><label for="pay-tel">Téléphone</label><input id="pay-tel" name="telephone" type="tel" autocomplete="tel"></div>
             </div>
-            <div class="field">
-              <label for="pay-reception">Réception de la commande <span class="req">*</span></label>
-              <select id="pay-reception" name="reception" required>
-                <option value="">Sélectionner…</option>
-                <option value="retrait">Retrait à Domdidier (Fribourg)</option>
-                <option value="livraison">Livraison</option>
-              </select>
+
+            <!-- Adresse : construite depuis catalogue.js pour que les champs
+                 attendus par le serveur et ceux affichés ici ne divergent
+                 jamais. Masquée tant que la livraison n'est pas choisie. -->
+            <div id="pay-adresse" hidden>
+              <h2>Adresse de livraison</h2>
+              <div class="form-grid" id="pay-adresse-champs"></div>
             </div>
-            <div class="field" id="pay-pays-champ" hidden>
-              <label for="pay-pays">Pays de livraison</label>
-              <select id="pay-pays" name="pays">
-                <option value="Suisse">Suisse</option>
-                <option value="France">France</option>
-                <option value="Autre pays d’Europe">Autre pays d’Europe</option>
-              </select>
+
+            <!-- Retrait : le paiement n'a pas lieu en ligne, il faut le dire
+                 avant le bouton, pas après. -->
+            <div id="pay-retrait-note" class="retrait-note" hidden>
+              <strong>Paiement sur place, en espèces ou par TWINT.</strong>
+              <span>Je vous confirme le lieu et l’horaire de retrait, dans le canton de Fribourg, dès réception de votre commande. Rien n’est débité en ligne.</span>
             </div>
+
             <div class="field"><label for="pay-message">Précisions sur votre commande</label><textarea id="pay-message" name="message" placeholder="Date souhaitée, prénom à inscrire, couleurs…"></textarea></div>
             <p class="form-note">Les champs marqués d’un <span class="req">*</span> sont obligatoires. Vos coordonnées servent uniquement à traiter votre commande.</p>
-            <button type="submit" class="btn btn-primary" id="pay-bouton">Payer en toute sécurité</button>
-            <p class="paiement-note">Le paiement est traité par Stripe sur une page sécurisée. Aucune donnée bancaire ne transite par ce site.</p>
-            <ul class="moyens-paiement">
+            <button type="submit" class="btn btn-primary" id="pay-bouton">Continuer</button>
+            <p class="paiement-note" id="pay-note"></p>
+            <ul class="moyens-paiement" id="pay-moyens" hidden>
               <li>Carte bancaire</li><li>TWINT</li><li>Apple&nbsp;Pay</li><li>Google&nbsp;Pay</li>
             </ul>
           </form>
@@ -109,13 +128,33 @@
           <h2 id="pay-recap-titre">Votre commande</h2>
           <div id="pay-recap-lignes"></div>
           <div class="recap-total">
-            <strong>Total à payer</strong>
+            <strong id="pay-total-libelle">Total</strong>
             <span class="montant" id="pay-total">0 CHF</span>
           </div>
           <p class="recap-mention" id="pay-mention"></p>
           <a href="panier.html" class="btn btn-ghost btn-small" style="width:100%; margin-top:16px;">Modifier mon panier</a>
         </aside>
       </div>
+
+      <!-- ==========================================================
+           Déclaration du formulaire pour Netlify Forms.
+           Netlify repère les formulaires en analysant le HTML publié :
+           il lui faut cette version statique, avec tous les champs.
+           Elle n'est jamais affichée ni remplie — c'est le script en
+           bas de page qui envoie la commande. Sans elle, Netlify
+           ignorerait l'envoi et la commande se perdrait.
+           ========================================================== -->
+      <form name="commande" data-netlify="true" netlify-honeypot="bot-field" hidden>
+        <input type="hidden" name="form-name" value="commande">
+        <input type="text" name="bot-field">
+        <input type="text" name="reference"><input type="text" name="reception">
+        <input type="text" name="prenom"><input type="text" name="nom">
+        <input type="email" name="email"><input type="tel" name="telephone">
+        <input type="text" name="rue"><input type="text" name="numero">
+        <input type="text" name="npa"><input type="text" name="ville"><input type="text" name="pays">
+        <input type="text" name="total"><input type="text" name="paiement">
+        <textarea name="articles"></textarea><textarea name="message"></textarea>
+      </form>
 
       <div class="panier-vide" id="paiement-vide" hidden>
         <div class="ornament"><i></i></div>
@@ -145,7 +184,7 @@
         <h4>Mes offres</h4>
         <ul>
           <li><a href="biscuits-personnalises.html">Biscuits personnalisés</a></li>
-          <li><a href="mini-scenographies.html">Micro-scénographies</a></li>
+          <li><a href="micro-scenographies.html">Micro-scénographies</a></li>
           <li><a href="mes-realisations.html">Mes réalisations</a></li>
         </ul>
       </div>
@@ -153,7 +192,7 @@
         <h4>Biscuits personnalisés</h4>
         <ul>
           <li>Livraison Suisse &middot; France &middot; Europe</li>
-          <li>Retrait possible à Domdidier (FR)</li>
+          <li>Retrait possible dans le canton de Fribourg</li>
           <li><a href="a-propos.html">À propos de moi</a></li>
           <li><a href="mentions-legales.html">Mentions légales</a></li>
           <li><a href="confidentialite.html">Confidentialité</a></li>
@@ -188,8 +227,18 @@
   var form = document.getElementById('form-paiement');
   var bouton = document.getElementById('pay-bouton');
   var zoneMessage = document.getElementById('paiement-message');
-  var receptionSel = document.getElementById('pay-reception');
-  var paysChamp = document.getElementById('pay-pays-champ');
+  var blocAdresse = document.getElementById('pay-adresse');
+  var champsAdresse = document.getElementById('pay-adresse-champs');
+  var noteRetrait = document.getElementById('pay-retrait-note');
+  var note = document.getElementById('pay-note');
+  var moyens = document.getElementById('pay-moyens');
+  var totalLibelle = document.getElementById('pay-total-libelle');
+  var radios = form.querySelectorAll('input[name="reception"]');
+
+  function modeChoisi() {
+    for (var i = 0; i < radios.length; i++) if (radios[i].checked) return radios[i].value;
+    return '';
+  }
 
   function message(texte, html) {
     zoneMessage.innerHTML = '';
@@ -201,6 +250,67 @@
     zoneMessage.scrollIntoView({ block: 'nearest' });
   }
 
+  /* ---------- Adresse de livraison ----------
+     Les champs viennent du catalogue : le serveur et la page lisent
+     la même liste, elles ne peuvent pas diverger. */
+  Cat.CHAMPS_LIVRAISON.forEach(function (champ) {
+    var bloc = document.createElement('div');
+    bloc.className = 'field' + (champ.largeur === 'large' ? ' field-large' : '');
+    var label = document.createElement('label');
+    label.setAttribute('for', 'pay-' + champ.cle);
+    label.textContent = champ.libelle;
+    if (champ.requis) {
+      var etoile = document.createElement('span');
+      etoile.className = 'req';
+      etoile.textContent = ' *';
+      label.appendChild(etoile);
+    }
+    var saisie;
+    if (champ.type === 'select') {
+      saisie = document.createElement('select');
+      (champ.options || []).forEach(function (valeur) {
+        var o = document.createElement('option');
+        o.value = valeur;
+        o.textContent = valeur;
+        saisie.appendChild(o);
+      });
+    } else {
+      saisie = document.createElement('input');
+      saisie.type = champ.type;
+    }
+    saisie.id = 'pay-' + champ.cle;
+    saisie.name = champ.cle;
+    if (champ.auto) saisie.autocomplete = champ.auto;
+    bloc.appendChild(label);
+    bloc.appendChild(saisie);
+    champsAdresse.appendChild(bloc);
+  });
+
+  /* ---------- Bascule livraison / retrait ---------- */
+  function majMode() {
+    var mode = modeChoisi();
+    blocAdresse.hidden = mode !== 'livraison';
+    noteRetrait.hidden = mode !== 'retrait';
+    moyens.hidden = mode !== 'livraison';
+
+    if (mode === 'livraison') {
+      bouton.textContent = 'Payer en toute sécurité';
+      note.textContent = 'Le paiement est traité par SumUp sur une page sécurisée. Aucune donnée bancaire ne transite par ce site.';
+      totalLibelle.textContent = 'Total à payer';
+    } else if (mode === 'retrait') {
+      bouton.textContent = 'Confirmer ma commande';
+      note.textContent = 'Vous réglez sur place au moment du retrait, en espèces ou par TWINT.';
+      totalLibelle.textContent = 'Total à régler sur place';
+    } else {
+      bouton.textContent = 'Continuer';
+      note.textContent = '';
+      totalLibelle.textContent = 'Total';
+    }
+  }
+
+  for (var i = 0; i < radios.length; i++) radios[i].addEventListener('change', majMode);
+
+  /* ---------- Récapitulatif ---------- */
   function rendreRecap() {
     var t = Panier.totaux();
     var utilisable = t.lignes.length > 0 && !Panier.blocage();
@@ -226,95 +336,169 @@
       rangRecap(l.qte + ' × ' + a.court, Cat.formater(a.prix * l.qte));
       // Les biscuits ajoutés apparaissent sous leur package, décalés.
       r.supplements.forEach(function (item) {
-        rangRecap(item.qte + ' × ' + item.article.court, item.article.aConfirmer
-          ? Cat.formater(item.article.prixMin * item.qte) + ' à ' + Cat.formater(item.article.prixMax * item.qte)
-          : Cat.formater(item.article.prix * item.qte), 'recap-sous-ligne');
+        rangRecap(item.qte + ' × ' + item.article.court, Cat.formater(item.article.prix * item.qte), 'recap-sous-ligne');
       });
     });
     document.getElementById('pay-total').textContent = Cat.formater(t.payable);
-
-    var mentions = [];
-    if (t.aConfirmerMax > 0) {
-      mentions.push('Les biscuits au tarif variable (' + Cat.formater(t.aConfirmerMin) + ' à ' +
-        Cat.formater(t.aConfirmerMax) + ') ne sont pas inclus dans ce paiement : leur montant est confirmé avant la préparation.');
-    }
-    mentions.push('Frais de livraison éventuels confirmés séparément.');
-    document.getElementById('pay-mention').textContent = mentions.join(' ');
+    document.getElementById('pay-mention').textContent =
+      'Frais de livraison éventuels confirmés séparément.';
   }
-
-  receptionSel.addEventListener('change', function () {
-    paysChamp.hidden = receptionSel.value !== 'livraison';
-  });
 
   if (new URLSearchParams(location.search).get('annule')) {
     message('Le paiement a été interrompu. Votre panier est intact, vous pouvez réessayer.');
   }
 
+  /* ---------- Référence de commande ----------
+     Forgée ici parce qu'elle doit être connue AVANT le départ vers
+     SumUp : c'est elle qui relie la commande enregistrée au paiement
+     encaissé. Le serveur en vérifie le format. */
+  function nouvelleReference() {
+    var d = new Date();
+    var jour = d.getFullYear() +
+      ('0' + (d.getMonth() + 1)).slice(-2) +
+      ('0' + d.getDate()).slice(-2);
+    var lettres = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+    var alea = '';
+    for (var i = 0; i < 6; i++) alea += lettres.charAt(Math.floor(Math.random() * lettres.length));
+    return 'JC-' + jour + '-' + alea;
+  }
+
+  function valeur(id) {
+    var el = document.getElementById(id);
+    return el ? el.value.trim() : '';
+  }
+
+  /* ---------- Enregistrement de la commande ----------
+     SumUp ne transporte qu'un montant : ni l'adresse, ni le détail des
+     articles n'y voyagent. La commande est donc envoyée séparément à
+     Netlify Forms, sous la même référence, AVANT le départ vers le
+     paiement — sinon une commande payée pourrait arriver sans adresse. */
+  function enregistrerCommande(reference, mode, resume) {
+    var champs = {
+      'form-name': 'commande',
+      reference: reference,
+      reception: mode === 'livraison' ? 'Livraison' : 'Retrait dans le canton de Fribourg',
+      prenom: valeur('pay-prenom'),
+      nom: valeur('pay-nom'),
+      email: valeur('pay-email'),
+      telephone: valeur('pay-tel'),
+      total: Cat.formater(resume.total),
+      paiement: mode === 'livraison' ? 'En ligne (SumUp)' : 'Sur place, espèces ou TWINT',
+      articles: resume.lignes.map(function (l) {
+        return (l.sous ? '  + ' : '') + l.qte + ' × ' + l.nom + ' — ' + Cat.formater(l.montant);
+      }).join('\n'),
+      message: valeur('pay-message')
+    };
+    if (mode === 'livraison') {
+      Cat.CHAMPS_LIVRAISON.forEach(function (c) { champs[c.cle] = valeur('pay-' + c.cle); });
+    }
+
+    var corps = Object.keys(champs).map(function (k) {
+      return encodeURIComponent(k) + '=' + encodeURIComponent(champs[k]);
+    }).join('&');
+
+    return fetch('/', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: corps
+    });
+  }
+
+  function reactiverBouton() {
+    bouton.disabled = false;
+    majMode();
+  }
+
   form.addEventListener('submit', function (e) {
     e.preventDefault();
+    var mode = modeChoisi();
+    if (!mode) { message('Merci de choisir la livraison ou le retrait.'); return; }
+
     var manquants = [];
-    ['pay-prenom', 'pay-nom', 'pay-email', 'pay-reception'].forEach(function (id) {
-      var champ = document.getElementById(id);
-      if (!champ.value.trim()) manquants.push(champ.previousElementSibling.textContent.replace(' *', '').trim());
+    [['pay-prenom', 'Prénom'], ['pay-nom', 'Nom'], ['pay-email', 'E-mail']].forEach(function (paire) {
+      if (!valeur(paire[0])) manquants.push(paire[1]);
     });
-    var email = document.getElementById('pay-email').value.trim();
+    if (mode === 'livraison') {
+      Cat.CHAMPS_LIVRAISON.forEach(function (c) {
+        if (c.requis && !valeur('pay-' + c.cle)) manquants.push(c.libelle);
+      });
+    }
+    var email = valeur('pay-email');
     if (email && !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) manquants.push('une adresse e-mail valide');
     if (manquants.length) { message('Merci de renseigner : ' + manquants.join(', ') + '.'); return; }
 
     var probleme = Panier.blocage();
     if (probleme) { message(probleme); return; }
 
-    var charge = {
-      lignes: Panier.lire().map(function (l) { return { id: l.id, qte: l.qte, details: l.details, supplements: l.supplements }; }),
-      client: {
-        nom: document.getElementById('pay-prenom').value.trim() + ' ' + document.getElementById('pay-nom').value.trim(),
-        email: email,
-        telephone: document.getElementById('pay-tel').value.trim(),
-        reception: receptionSel.value,
-        pays: receptionSel.value === 'livraison' ? document.getElementById('pay-pays').value : '',
-        message: document.getElementById('pay-message').value.trim()
-      }
-    };
+    var reference = nouvelleReference();
+    var resume = Panier.resumeCommande();
+    resume.reference = reference;
+    resume.reception = mode;
 
     bouton.disabled = true;
-    bouton.textContent = 'Redirection vers le paiement…';
+    bouton.textContent = mode === 'livraison' ? 'Redirection vers le paiement…' : 'Enregistrement…';
     message('');
 
-    fetch('/.netlify/functions/create-checkout-session', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(charge)
-    }).then(function (r) {
-      // Une réponse illisible (page 404 HTML d'un hébergeur sans fonctions,
-      // par exemple) ne doit pas être annoncée comme un problème de réseau.
-      return r.text().then(function (txt) {
-        var data = {};
-        try { data = JSON.parse(txt); } catch (e) { data = { erreur: 'stripe_non_configure' }; }
-        return { ok: r.ok, statut: r.status, data: data };
-      });
-    }).then(function (res) {
-      if (res.ok && res.data.url) { window.location.href = res.data.url; return; }
-      // Aucun paiement simulé : si Stripe n'est pas encore branché, on
-      // le dit et on propose la commande par message.
-      if (res.statut === 503 || res.statut === 404 || res.data.erreur === 'stripe_non_configure') {
-        message('Le paiement en ligne n’est pas encore activé sur ce site. ' +
-          'Votre commande peut être finalisée directement : ' +
-          '<a href="https://api.whatsapp.com/send/?phone=41783127545&amp;text&amp;type=phone_number&amp;app_absent=0" target="_blank" rel="noopener">par WhatsApp</a> ' +
-          'ou à <a href="mailto:info@jolie-creation.com">info@jolie-creation.com</a>. ' +
-          'Gardez cette page ouverte, votre panier y est enregistré.', true);
-      } else {
-        message(res.data.message || 'Le paiement n’a pas pu être lancé. Merci de réessayer.');
+    enregistrerCommande(reference, mode, resume).then(function (r) {
+      if (!r.ok) throw new Error('enregistrement');
+    }).then(function () {
+      Panier.memoriserCommande(resume);
+
+      /* Retrait : rien à débiter. La commande est enregistrée, on va
+         directement à la confirmation. */
+      if (mode === 'retrait') {
+        window.location.href = 'commande-confirmee.html?retrait=1&ref=' + encodeURIComponent(reference);
+        return null;
       }
-      bouton.disabled = false;
-      bouton.textContent = 'Payer en toute sécurité';
+
+      return fetch('/.netlify/functions/create-checkout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          reference: reference,
+          lignes: Panier.lire().map(function (l) {
+            return { id: l.id, qte: l.qte, supplements: l.supplements };
+          }),
+          client: { reception: mode }
+        })
+      }).then(function (r) {
+        // Une réponse illisible (page 404 d'un hébergeur sans fonctions,
+        // par exemple) ne doit pas être annoncée comme un problème de réseau.
+        return r.text().then(function (txt) {
+          var data = {};
+          try { data = JSON.parse(txt); } catch (e) { data = { erreur: 'sumup_non_configure' }; }
+          return { ok: r.ok, statut: r.status, data: data };
+        });
+      }).then(function (res) {
+        if (res.ok && res.data.url) {
+          resume.checkoutId = res.data.id;
+          Panier.memoriserCommande(resume);
+          window.location.href = res.data.url;
+          return;
+        }
+        // Aucun paiement simulé : si SumUp n'est pas encore branché, on le
+        // dit et on propose la commande par message.
+        if (res.statut === 503 || res.statut === 404 || res.data.erreur === 'sumup_non_configure') {
+          message('Le paiement en ligne n’est pas encore activé sur ce site. ' +
+            'Votre commande peut être finalisée directement : ' +
+            '<a href="https://api.whatsapp.com/send/?phone=41783127545&amp;text&amp;type=phone_number&amp;app_absent=0" target="_blank" rel="noopener">par WhatsApp</a> ' +
+            'ou à <a href="mailto:info@jolie-creation.com">info@jolie-creation.com</a>. ' +
+            'Vous pouvez aussi choisir le retrait, qui se règle sur place. ' +
+            'Gardez cette page ouverte, votre panier y est enregistré.', true);
+        } else {
+          message(res.data.message || 'Le paiement n’a pas pu être lancé. Merci de réessayer.');
+        }
+        reactiverBouton();
+      });
     }).catch(function () {
-      message('Connexion impossible au service de paiement. Vérifiez votre connexion et réessayez.');
-      bouton.disabled = false;
-      bouton.textContent = 'Payer en toute sécurité';
+      message('Votre commande n’a pas pu être enregistrée. Vérifiez votre connexion et réessayez, ' +
+        'ou écrivez-moi à <a href="mailto:info@jolie-creation.com">info@jolie-creation.com</a>.', true);
+      reactiverBouton();
     });
   });
 
   document.addEventListener('panier:maj', rendreRecap);
+  majMode();
   rendreRecap();
 })();
 

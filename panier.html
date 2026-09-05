@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Mon panier | Jolie Création</title>
-<meta name="description" content="Votre panier Jolie Création : packages de biscuits personnalisés et micro-scénographies.">
+<meta name="description" content="Votre panier Jolie Création : collections du moment et packages de biscuits personnalisés.">
 <meta name="robots" content="noindex, nofollow">
 <link rel="canonical" href="https://jolie-creation.com/panier.html">
 <meta property="og:locale" content="fr_CH">
@@ -23,7 +23,7 @@
       <ul>
         <li><a href="index.html">Accueil</a></li>
         <li><a href="biscuits-personnalises.html">Biscuits personnalisés</a></li>
-        <li><a href="mini-scenographies.html">Micro-scénographies</a></li>
+        <li><a href="micro-scenographies.html">Micro-scénographies</a></li>
         <li><a href="mes-realisations.html">Mes réalisations</a></li>
         <li><a href="a-propos.html">À propos de moi</a></li>
       </ul>
@@ -47,7 +47,7 @@
   <ul>
     <li><a href="index.html">Accueil</a></li>
     <li><a href="biscuits-personnalises.html">Biscuits personnalisés</a></li>
-    <li><a href="mini-scenographies.html">Micro-scénographies</a></li>
+    <li><a href="micro-scenographies.html">Micro-scénographies</a></li>
     <li><a href="mes-realisations.html">Mes réalisations</a></li>
     <li><a href="a-propos.html">À propos de moi</a></li>
   </ul>
@@ -60,7 +60,7 @@
       <p class="breadcrumb"><a href="index.html">Accueil</a> / Mon panier</p>
       <ol class="etapes">
         <li class="courante" aria-current="step">Panier</li>
-        <li class="">Paiement</li>
+        <li class="">Livraison ou retrait</li>
         <li class="">Confirmation</li>
       </ol>
       <h1>Mon panier</h1>
@@ -77,22 +77,22 @@
           <h2 id="recap-titre">Récapitulatif</h2>
           <div id="recap-detail"></div>
           <div class="recap-total">
-            <strong>Total à payer</strong>
+            <strong>Total</strong>
             <span class="montant" id="recap-total">0 CHF</span>
           </div>
           <p class="recap-mention" id="recap-mention"></p>
           <div id="recap-alerte"></div>
-          <a href="paiement.html" class="btn btn-primary" id="recap-suite">Passer au paiement</a>
+          <a href="paiement.html" class="btn btn-primary" id="recap-suite">Livraison ou retrait</a>
         </aside>
       </div>
 
       <div class="panier-vide" id="panier-vide" hidden>
         <div class="ornament"><i></i></div>
         <h2>Votre panier est vide</h2>
-        <p>Découvrez les packages de biscuits disponibles toute l'année et les trois formules de micro-scénographie.</p>
+        <p>Découvrez les collections du moment et les packages de biscuits disponibles toute l'année. Les micro-scénographies, elles, se construisent avec vous sur devis.</p>
         <div class="hero-actions" style="justify-content:center;">
           <a href="biscuits-personnalises.html" class="btn btn-primary">Voir les biscuits</a>
-          <a href="mini-scenographies.html" class="btn btn-ghost">Voir les micro-scénographies</a>
+          <a href="micro-scenographies.html" class="btn btn-ghost">Voir les micro-scénographies</a>
         </div>
       </div>
     </div>
@@ -115,7 +115,7 @@
         <h4>Mes offres</h4>
         <ul>
           <li><a href="biscuits-personnalises.html">Biscuits personnalisés</a></li>
-          <li><a href="mini-scenographies.html">Micro-scénographies</a></li>
+          <li><a href="micro-scenographies.html">Micro-scénographies</a></li>
           <li><a href="mes-realisations.html">Mes réalisations</a></li>
         </ul>
       </div>
@@ -123,7 +123,7 @@
         <h4>Biscuits personnalisés</h4>
         <ul>
           <li>Livraison Suisse &middot; France &middot; Europe</li>
-          <li>Retrait possible à Domdidier (FR)</li>
+          <li>Retrait possible dans le canton de Fribourg</li>
           <li><a href="a-propos.html">À propos de moi</a></li>
           <li><a href="mentions-legales.html">Mentions légales</a></li>
           <li><a href="confidentialite.html">Confidentialité</a></li>
@@ -204,9 +204,7 @@
       r.supplements.forEach(function (item) {
         var li = el('li');
         li.appendChild(el('span', null, item.qte + ' × ' + item.article.court));
-        li.appendChild(el('span', 'montant', item.article.aConfirmer
-          ? Cat.formater(item.article.prixMin * item.qte) + ' à ' + Cat.formater(item.article.prixMax * item.qte)
-          : Cat.formater(item.article.prix * item.qte)));
+        li.appendChild(el('span', 'montant', Cat.formater(item.article.prix * item.qte)));
         sup.appendChild(li);
       });
       bloc.appendChild(sup);
@@ -261,18 +259,12 @@
       detail.appendChild(d);
     }
     recapLigne('Articles', String(t.nbArticles));
-    recapLigne('Payable en ligne', Cat.formater(t.payable));
-    if (t.aConfirmerMax > 0) {
-      recapLigne('À confirmer', Cat.formater(t.aConfirmerMin) + ' à ' + Cat.formater(t.aConfirmerMax));
-    }
+    recapLigne('Biscuits', String(t.biscuits));
     document.getElementById('recap-total').textContent = Cat.formater(t.payable);
 
-    var mentions = [];
-    if (t.aConfirmerMax > 0) {
-      mentions.push('Les biscuits au tarif variable ne sont pas facturés en ligne : leur montant exact dépend de la taille et du niveau de détail, et vous est confirmé avant la préparation.');
-    }
-    mentions.push('Les frais de livraison éventuels sont confirmés séparément selon la destination.');
-    document.getElementById('recap-mention').textContent = mentions.join(' ');
+    document.getElementById('recap-mention').textContent =
+      'Vous choisissez la livraison ou le retrait à l’étape suivante. ' +
+      'Les frais de livraison éventuels sont confirmés séparément selon la destination.';
 
     var alerte = document.getElementById('recap-alerte');
     alerte.innerHTML = '';
@@ -288,7 +280,7 @@
       suite.removeAttribute('aria-disabled');
       suite.classList.remove('btn-desactive');
       suite.href = 'paiement.html';
-      suite.textContent = 'Passer au paiement';
+      suite.textContent = 'Livraison ou retrait';
     }
   }
 

@@ -103,23 +103,16 @@
   function vider() { ecrire([]); }
 
   /* ---------- Totaux ----------
-     Deux montants séparés : ce qui part chez Stripe, et ce qui reste
-     à confirmer parce que son tarif est une fourchette. */
+     Tous les tarifs sont fixes : un seul montant, calculable en
+     entier, payable en entier. */
   function totauxLigne(ligne) {
     var a = Cat.article(ligne.id);
-    var r = { payable: 0, confirmerMin: 0, confirmerMax: 0, biscuits: 0, supplements: [] };
-    r.payable = a.prix * ligne.qte;
-    r.biscuits = (a.biscuits || 0) * ligne.qte;
+    var r = { payable: a.prix * ligne.qte, biscuits: (a.biscuits || 0) * ligne.qte, supplements: [] };
     Object.keys(ligne.supplements || {}).forEach(function (id) {
       var s = Cat.article(id);
       if (!s) return;
       var q = ligne.supplements[id] * ligne.qte;
-      if (s.aConfirmer) {
-        r.confirmerMin += s.prixMin * q;
-        r.confirmerMax += s.prixMax * q;
-      } else {
-        r.payable += s.prix * q;
-      }
+      r.payable += s.prix * q;
       r.biscuits += q;
       r.supplements.push({ article: s, qte: q, parUnite: ligne.supplements[id] });
     });
@@ -128,13 +121,11 @@
 
   function totaux() {
     var lignes = lire();
-    var t = { lignes: lignes, nbArticles: 0, payable: 0, aConfirmerMin: 0, aConfirmerMax: 0, biscuits: 0 };
+    var t = { lignes: lignes, nbArticles: 0, payable: 0, biscuits: 0 };
     lignes.forEach(function (l) {
       var r = totauxLigne(l);
       t.nbArticles += l.qte;
       t.payable += r.payable;
-      t.aConfirmerMin += r.confirmerMin;
-      t.aConfirmerMax += r.confirmerMax;
       t.biscuits += r.biscuits;
     });
     return t;
@@ -144,7 +135,7 @@
     var t = totaux();
     if (!t.lignes.length) return 'Votre panier est vide.';
     if (t.payable <= 0) {
-      return 'Votre panier ne contient aucun article payable en ligne. ' +
+      return 'Votre panier ne contient aucun article facturable. ' +
         'Contactez-moi directement pour finaliser cette commande.';
     }
     return null;
@@ -187,6 +178,18 @@
     minuteur = setTimeout(function () { zone.classList.remove('visible'); }, 5000);
   }
 
+  /* ---------- Prix affichés dans les pages ----------
+     Les cartes portent le prix en dur pour rester lisibles sans
+     JavaScript, mais c'est le catalogue qui tranche : une valeur
+     oubliée dans le HTML serait corrigée ici plutôt que d'annoncer
+     un montant que le panier ne pratique pas. */
+  function majPrixAffiches() {
+    document.querySelectorAll('[data-prix-article]').forEach(function (el) {
+      var a = Cat.article(el.getAttribute('data-prix-article'));
+      if (a) el.textContent = Cat.formaterPrix(a);
+    });
+  }
+
   /* ---------- Boutons « Ajouter au panier » ---------- */
   function brancherBoutons() {
     document.querySelectorAll('[data-ajout-panier]').forEach(function (bouton) {
@@ -204,8 +207,10 @@
   }
 
   /* ---------- Modale d'ajout ----------
-     Deux variantes : les informations de l'événement pour une
-     micro-scénographie, les biscuits supplémentaires pour un package. */
+     Une seule variante depuis que les micro-scénographies passent par
+     le devis : la personnalisation du package et les biscuits à y
+     ajouter. Les collections du moment l'utilisent aussi, ce sont des
+     packages comme les autres. */
   var dialogue = null;
   var dernierDeclencheur = null;
 
@@ -270,21 +275,18 @@
   function ouvrirModale(a) {
     var d = construireDialogue();
     dernierDeclencheur = document.activeElement;
-    var estPackage = a.modale === 'package';
 
-    d.querySelector('[data-modale-sur-titre]').textContent = estPackage ? 'Votre package' : 'Votre événement';
+    d.querySelector('[data-modale-sur-titre]').textContent = a.collection ? 'Votre collection' : 'Votre package';
     d.querySelector('[data-modale-titre]').textContent = a.court;
-    d.querySelector('[data-modale-intro]').textContent = estPackage
-      ? a.resume
-      : 'Ces informations accompagnent votre commande. Elles me permettent de préparer votre décor.';
+    d.querySelector('[data-modale-intro]').textContent = a.resume;
 
     var form = d.querySelector('.details-form');
     form.innerHTML = '';
-    var champs = estPackage ? [Cat.CHAMP_PACKAGE] : Cat.CHAMPS_SCENOGRAPHIE;
+    var champs = [Cat.CHAMP_PACKAGE];
     champs.forEach(function (champ) { form.appendChild(champHTML(champ)); });
 
     var saisiesSup = {};
-    if (estPackage) form.appendChild(blocSupplements(a, saisiesSup));
+    form.appendChild(blocSupplements(a, saisiesSup));
 
     var erreur = document.createElement('p');
     erreur.className = 'details-erreur';
@@ -302,30 +304,16 @@
     form.appendChild(valider);
 
     function majRappel() {
-      if (!estPackage) {
-        rappel.textContent = a.aPartirDe
-          ? 'Tarif de départ : ' + Cat.formater(a.prix) + '. Un éventuel complément lié à vos options vous est confirmé avant l’événement.'
-          : Cat.formater(a.prix);
-        return;
-      }
-      var payable = a.prix, min = 0, max = 0, biscuits = a.biscuits || 0;
+      var payable = a.prix, biscuits = a.biscuits || 0;
       Cat.SUPPLEMENTS.forEach(function (id) {
-        var s = Cat.article(id);
         var q = parseInt(saisiesSup[id].value, 10) || 0;
         biscuits += q;
-        if (s.aConfirmer) { min += s.prixMin * q; max += s.prixMax * q; }
-        else payable += s.prix * q;
+        payable += Cat.article(id).prix * q;
       });
       rappel.innerHTML = '';
       var ligne = document.createElement('strong');
       ligne.textContent = (a.aPartirDe ? 'Dès ' : '') + Cat.formater(payable) + ' · ' + biscuits + ' biscuits';
       rappel.appendChild(ligne);
-      if (max > 0) {
-        var comp = document.createElement('span');
-        comp.textContent = ' + ' + Cat.formater(min) + ' à ' + Cat.formater(max) +
-          ' de biscuits au tarif variable, confirmés avant la préparation.';
-        rappel.appendChild(comp);
-      }
     }
 
     Object.keys(saisiesSup).forEach(function (id) {
@@ -349,14 +337,11 @@
         return;
       }
       erreur.hidden = true;
-      var supplements = null;
-      if (estPackage) {
-        supplements = {};
-        Cat.SUPPLEMENTS.forEach(function (id) {
-          var q = parseInt(saisiesSup[id].value, 10) || 0;
-          if (q > 0) supplements[id] = q;
-        });
-      }
+      var supplements = {};
+      Cat.SUPPLEMENTS.forEach(function (id) {
+        var q = parseInt(saisiesSup[id].value, 10) || 0;
+        if (q > 0) supplements[id] = q;
+      });
       ajouter(a.id, 1, Object.keys(details).length ? details : null, supplements);
       fermerDialogue();
       annoncer(a.court + ' ajouté au panier.');
@@ -380,8 +365,9 @@
 
     var intro = document.createElement('p');
     intro.className = 'sup-modale-intro';
-    intro.textContent = 'Ce package contient déjà ' + (a.biscuits || Cat.MIN_BISCUITS) +
-      ' biscuits. Vous pouvez le compléter à l’unité.';
+    intro.textContent = a.collection
+      ? 'Cette collection contient déjà ' + (a.biscuits || Cat.MIN_BISCUITS) + ' biscuits. Vous pouvez la compléter à l’unité.'
+      : 'Ce package contient déjà ' + (a.biscuits || Cat.MIN_BISCUITS) + ' biscuits. Vous pouvez le compléter à l’unité.';
     bloc.appendChild(intro);
 
     Cat.SUPPLEMENTS.forEach(function (id) {
@@ -395,7 +381,7 @@
       nom.textContent = s.court;
       var prix = document.createElement('span');
       prix.className = 'sup-rang-prix';
-      prix.textContent = Cat.formaterFourchette(s) + (s.aConfirmer ? ' · confirmé avant préparation' : '');
+      prix.textContent = Cat.formater(s.prix) + ' pièce';
       texte.appendChild(nom);
       texte.appendChild(prix);
 
@@ -421,6 +407,49 @@
     return bloc;
   }
 
+  /* ---------- Commande en cours ----------
+     SumUp ne connaît qu'un montant et un libellé : la page de
+     confirmation ne peut donc pas lui redemander le détail de la
+     commande. On en garde une copie au moment de partir payer, et
+     c'est elle qui est affichée au retour. Le montant et l'état du
+     paiement, eux, restent relus auprès de SumUp : la copie décrit
+     la commande, elle ne prouve pas le paiement. */
+  var CLE_COMMANDE = 'jc-commande-v1';
+
+  function memoriserCommande(commande) {
+    try { window.localStorage.setItem(CLE_COMMANDE, JSON.stringify(commande)); } catch (e) { /* mémoire seule */ }
+  }
+
+  function commandeMemorisee(reference) {
+    try {
+      var c = JSON.parse(window.localStorage.getItem(CLE_COMMANDE) || 'null');
+      if (!c || (reference && c.reference !== reference)) return null;
+      return c;
+    } catch (e) {
+      return null;
+    }
+  }
+
+  function oublierCommande() {
+    try { window.localStorage.removeItem(CLE_COMMANDE); } catch (e) { /* mémoire seule */ }
+  }
+
+  /* Photographie du panier, lisible telle quelle par la page de
+     confirmation : elle n'a plus besoin du catalogue. */
+  function resumeCommande() {
+    var t = totaux();
+    var lignes = [];
+    t.lignes.forEach(function (l) {
+      var a = Cat.article(l.id);
+      var r = totauxLigne(l);
+      lignes.push({ nom: a.court, qte: l.qte, montant: a.prix * l.qte });
+      r.supplements.forEach(function (s) {
+        lignes.push({ nom: s.article.court, qte: s.qte, montant: s.article.prix * s.qte, sous: true });
+      });
+    });
+    return { lignes: lignes, total: t.payable, biscuits: t.biscuits, devise: Cat.DEVISE };
+  }
+
   window.JCPanier = {
     lire: lire,
     ajouter: ajouter,
@@ -430,11 +459,16 @@
     totaux: totaux,
     totauxLigne: totauxLigne,
     blocage: blocage,
-    majCompteurs: majCompteurs
+    majCompteurs: majCompteurs,
+    memoriserCommande: memoriserCommande,
+    commandeMemorisee: commandeMemorisee,
+    oublierCommande: oublierCommande,
+    resumeCommande: resumeCommande
   };
 
   document.addEventListener('DOMContentLoaded', function () {
     majCompteurs();
+    majPrixAffiches();
     brancherBoutons();
   });
 })();

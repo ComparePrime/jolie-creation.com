@@ -23,7 +23,7 @@
       <ul>
         <li><a href="index.html">Accueil</a></li>
         <li><a href="biscuits-personnalises.html">Biscuits personnalisés</a></li>
-        <li><a href="mini-scenographies.html">Micro-scénographies</a></li>
+        <li><a href="micro-scenographies.html">Micro-scénographies</a></li>
         <li><a href="mes-realisations.html">Mes réalisations</a></li>
         <li><a href="a-propos.html">À propos de moi</a></li>
       </ul>
@@ -47,7 +47,7 @@
   <ul>
     <li><a href="index.html">Accueil</a></li>
     <li><a href="biscuits-personnalises.html">Biscuits personnalisés</a></li>
-    <li><a href="mini-scenographies.html">Micro-scénographies</a></li>
+    <li><a href="micro-scenographies.html">Micro-scénographies</a></li>
     <li><a href="mes-realisations.html">Mes réalisations</a></li>
     <li><a href="a-propos.html">À propos de moi</a></li>
   </ul>
@@ -60,7 +60,7 @@
       <p class="breadcrumb"><a href="index.html">Accueil</a> / Commande</p>
       <ol class="etapes">
         <li class="faite">Panier</li>
-        <li class="faite">Paiement</li>
+        <li class="faite">Livraison ou retrait</li>
         <li class="courante" aria-current="step">Confirmation</li>
       </ol>
     </div>
@@ -98,7 +98,7 @@
         <h4>Mes offres</h4>
         <ul>
           <li><a href="biscuits-personnalises.html">Biscuits personnalisés</a></li>
-          <li><a href="mini-scenographies.html">Micro-scénographies</a></li>
+          <li><a href="micro-scenographies.html">Micro-scénographies</a></li>
           <li><a href="mes-realisations.html">Mes réalisations</a></li>
         </ul>
       </div>
@@ -106,7 +106,7 @@
         <h4>Biscuits personnalisés</h4>
         <ul>
           <li>Livraison Suisse &middot; France &middot; Europe</li>
-          <li>Retrait possible à Domdidier (FR)</li>
+          <li>Retrait possible dans le canton de Fribourg</li>
           <li><a href="a-propos.html">À propos de moi</a></li>
           <li><a href="mentions-legales.html">Mentions légales</a></li>
           <li><a href="confidentialite.html">Confidentialité</a></li>
@@ -139,81 +139,111 @@
 (function () {
   var Panier = window.JCPanier;
   var params = new URLSearchParams(location.search);
-  var session = params.get('session_id');
+  var reference = params.get('ref');
+  var estRetrait = params.get('retrait') === '1';
   var titre = document.getElementById('conf-titre');
   var texte = document.getElementById('conf-texte');
   var detail = document.getElementById('conf-detail');
+
+  var commande = Panier.commandeMemorisee(reference);
 
   function franc(centimes, devise) {
     var f = centimes / 100;
     return (f % 1 === 0 ? String(f) : f.toFixed(2)) + ' ' + (devise || 'CHF');
   }
 
-  if (!session) {
-    titre.textContent = 'Aucune commande à afficher';
-    texte.textContent = 'Cette page confirme une commande après paiement. Si vous venez de payer, ouvrez le lien reçu par e-mail.';
+  /* Le détail des articles vient de la copie gardée par le navigateur :
+     SumUp ne connaît qu'un montant global. Le montant et l'état du
+     paiement, eux, restent relus auprès de SumUp. */
+  function afficherDetail(total, devise) {
+    detail.innerHTML = '';
+    if (reference) {
+      var ref = document.createElement('span');
+      ref.className = 'confirmation-ref';
+      ref.textContent = 'Référence ' + reference;
+      detail.appendChild(ref);
+    }
+    if (!commande || !commande.lignes || !commande.lignes.length) return;
+
+    var ul = document.createElement('ul');
+    ul.className = 'confirmation-lignes';
+    commande.lignes.forEach(function (a) {
+      var li = document.createElement('li');
+      if (a.sous) li.className = 'confirmation-sous-ligne';
+      var g = document.createElement('span');
+      g.textContent = a.qte + ' × ' + a.nom;
+      var d = document.createElement('span');
+      d.className = 'montant';
+      d.textContent = franc(a.montant, devise);
+      li.appendChild(g); li.appendChild(d);
+      ul.appendChild(li);
+    });
+    detail.appendChild(ul);
+
+    var bloc = document.createElement('div');
+    bloc.className = 'confirmation-total';
+    var lt = document.createElement('strong');
+    lt.textContent = estRetrait ? 'Total à régler sur place' : 'Total payé';
+    var mt = document.createElement('span');
+    mt.className = 'montant';
+    mt.textContent = franc(typeof total === 'number' ? total : commande.total, devise);
+    bloc.appendChild(lt); bloc.appendChild(mt);
+    detail.appendChild(bloc);
+  }
+
+  /* ---------- Retrait : rien n'a été débité ---------- */
+  if (estRetrait) {
+    Panier.vider();
+    Panier.oublierCommande();
+    titre.textContent = 'Merci, votre commande est enregistrée';
+    texte.textContent = 'Je vous confirme par e-mail le lieu et l’horaire de retrait, dans le canton de Fribourg. ' +
+      'Le règlement se fait sur place, en espèces ou par TWINT.';
+    afficherDetail(commande ? commande.total : 0, 'CHF');
     return;
   }
 
-  fetch('/.netlify/functions/get-order?session_id=' + encodeURIComponent(session))
+  /* ---------- Livraison : on demande à SumUp ---------- */
+  var checkoutId = commande && commande.checkoutId;
+  if (!checkoutId) {
+    titre.textContent = 'Aucune commande à afficher';
+    texte.textContent = 'Cette page confirme une commande après paiement. Si vous venez de payer, ' +
+      'ouvrez le lien reçu par e-mail ou contactez-moi avec votre référence.';
+    afficherDetail(undefined, 'CHF');
+    return;
+  }
+
+  fetch('/.netlify/functions/get-order?id=' + encodeURIComponent(checkoutId))
     .then(function (r) { return r.json().then(function (d) { return { ok: r.ok, data: d }; }); })
     .then(function (res) {
       if (!res.ok) {
         titre.textContent = 'Commande en cours de vérification';
-        texte.textContent = 'Le détail de votre commande n’a pas pu être relu. Si votre paiement a été débité, vous recevez la confirmation par e-mail ; sinon, contactez-moi.';
+        texte.textContent = 'Le détail de votre paiement n’a pas pu être relu. Si votre carte a été débitée, ' +
+          'vous recevez la confirmation par e-mail ; sinon, contactez-moi.';
+        afficherDetail(undefined, 'CHF');
         return;
       }
       var c = res.data;
-      // Le panier n'est vidé que si Stripe confirme le paiement.
-      if (c.statut === 'paid') {
+      // Le panier n'est vidé que si SumUp confirme le paiement.
+      if (c.paye) {
         Panier.vider();
         titre.textContent = 'Merci, votre commande est confirmée';
-        texte.textContent = c.email
-          ? 'Un justificatif vient de partir à ' + c.email + '. Je vous recontacte rapidement pour la suite.'
-          : 'Je vous recontacte rapidement pour la suite.';
+        texte.textContent = 'Votre paiement est bien enregistré. Je vous recontacte rapidement pour la suite.';
+      } else if (c.statut === 'PENDING') {
+        titre.textContent = 'Paiement en cours de traitement';
+        texte.textContent = 'Votre paiement n’est pas encore confirmé par la banque. Votre panier est conservé ; ' +
+          'rechargez cette page dans quelques instants.';
       } else {
         titre.textContent = 'Paiement non finalisé';
         texte.textContent = 'Votre paiement n’apparaît pas comme abouti. Votre panier est conservé, vous pouvez réessayer.';
       }
-
-      var ref = document.createElement('span');
-      ref.className = 'confirmation-ref';
-      ref.textContent = 'Référence ' + c.reference;
-      detail.appendChild(ref);
-
-      if (c.articles && c.articles.length) {
-        var ul = document.createElement('ul');
-        ul.className = 'confirmation-lignes';
-        c.articles.forEach(function (a) {
-          var li = document.createElement('li');
-          var g = document.createElement('span');
-          g.textContent = a.qte + ' × ' + a.nom;
-          var d = document.createElement('span');
-          d.className = 'montant';
-          d.textContent = franc(a.montant, c.devise);
-          li.appendChild(g); li.appendChild(d);
-          ul.appendChild(li);
-        });
-        detail.appendChild(ul);
-        var total = document.createElement('div');
-        total.className = 'confirmation-total';
-        var lt = document.createElement('strong'); lt.textContent = 'Total payé';
-        var mt = document.createElement('span'); mt.className = 'montant';
-        mt.textContent = franc(c.total, c.devise);
-        total.appendChild(lt); total.appendChild(mt);
-        detail.appendChild(total);
-      }
-
-      if (c.aConfirmer) {
-        var p = document.createElement('p');
-        p.className = 'paiement-note';
-        p.textContent = 'À confirmer ensemble avant la préparation : ' + c.aConfirmer + '.';
-        detail.appendChild(p);
-      }
+      afficherDetail(c.paye ? c.total : undefined, c.devise);
+      if (c.paye) Panier.oublierCommande();
     })
     .catch(function () {
       titre.textContent = 'Commande en cours de vérification';
-      texte.textContent = 'Impossible de joindre le service de paiement pour relire votre commande. Contactez-moi si vous avez un doute.';
+      texte.textContent = 'Impossible de joindre le service de paiement pour relire votre commande. ' +
+        'Contactez-moi si vous avez un doute.';
+      afficherDetail(undefined, 'CHF');
     });
 })();
 
