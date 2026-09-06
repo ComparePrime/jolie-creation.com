@@ -1497,6 +1497,98 @@ form.devis-form{
 .center{ text-align:center; }
 .narrow{ max-width: 720px; margin-left:auto; margin-right:auto; }
 
+/* ---------- Pages légales ----------
+   Mentions légales et politique de confidentialité. Un texte long qu'on
+   ne lit pas d'une traite : on y cherche un point précis. La mise en
+   page sert donc le repérage — titres numérotés bien détachés, sommaire
+   cliquable, blocs d'identité isolés — plutôt que l'agrément de
+   lecture. */
+.legal{ color: var(--ink-soft); font-size: 15.5px; line-height: 1.8; }
+.legal p{ margin: 0 0 1em; }
+.legal a{ color: var(--gold-deep); text-decoration: underline; text-underline-offset: 2px; }
+.legal a:hover{ color: var(--ink); }
+
+.legal-date{ font-size: 13px; letter-spacing: .04em; color: var(--ink-soft); opacity: .8; }
+.legal-chapeau{ font-size: 17px; line-height: 1.75; color: var(--ink); }
+
+.legal h2{
+  font-size: 19px;
+  line-height: 1.4;
+  color: var(--ink);
+  margin: 2.4em 0 .8em;
+  padding-top: 1.1em;
+  border-top: 1px solid var(--line);
+  /* Le sommaire mène ici : le titre visé ne doit pas se retrouver
+     sous l'en-tête fixe. */
+  scroll-margin-top: 105px;
+}
+@media (min-width: 700px){ .legal h2{ scroll-margin-top: 113px; } }
+@media (min-width: 1024px){ .legal h2{ scroll-margin-top: 121px; } }
+/* Le numéro reste dans la marge sur grand écran : le titre garde son
+   alignement avec le texte. */
+.legal-num{ color: var(--gold-deep); font-family: var(--font-body); font-weight: 500; margin-right: 10px; }
+@media (min-width: 900px){
+  .legal h2{ position: relative; }
+  .legal-num{ position: absolute; left: -46px; margin: 0; }
+}
+
+.legal ul{ margin: 0 0 1em; padding-left: 20px; list-style: none; }
+.legal ul li{ position: relative; margin-bottom: .45em; }
+.legal ul li::before{
+  content: ""; position: absolute; left: -16px; top: .78em;
+  width: 5px; height: 1px; background: var(--gold);
+}
+
+/* Coordonnées de l'éditeur : isolées du texte courant, ce sont elles
+   qu'on vient chercher en premier sur ces pages. */
+.legal-bloc{
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  padding: 20px 22px;
+  line-height: 1.9;
+  color: var(--ink);
+}
+
+.legal-sommaire{
+  background: var(--cream-deep);
+  border-radius: 18px;
+  padding: 22px 26px 24px;
+  margin: 32px 0 8px;
+}
+.legal-sommaire p{
+  margin: 0 0 12px;
+  font-size: 11.5px; letter-spacing: .18em; text-transform: uppercase;
+  color: var(--gold-deep);
+}
+.legal-sommaire ol{
+  margin: 0; padding: 0; list-style: none;
+  counter-reset: sommaire;
+  columns: 1;
+}
+@media (min-width: 620px){ .legal-sommaire ol{ columns: 2; column-gap: 30px; } }
+.legal-sommaire li{ counter-increment: sommaire; margin-bottom: 7px; break-inside: avoid; }
+.legal-sommaire li::before{
+  content: counter(sommaire) ". ";
+  color: var(--gold-deep);
+}
+.legal-sommaire a{ text-decoration: none; font-size: 14.5px; }
+.legal-sommaire a:hover{ text-decoration: underline; }
+
+.legal-lien{ margin-top: 2.6em; padding-top: 1.4em; border-top: 1px solid var(--line); }
+
+/* Valeur qui reste à renseigner. Elle est marquée pour qu'on ne
+   l'oublie pas : une page légale incomplète est un manquement, pas un
+   détail de rédaction. À retirer une fois les valeurs saisies. */
+.a-completer{
+  background: rgba(212, 165, 92, .16);
+  border-bottom: 1px dashed var(--gold-deep);
+  padding: 0 4px;
+  border-radius: 3px;
+  color: var(--ink);
+  font-style: italic;
+}
+
 /* ============================================================
    BOUTIQUE — panier, paiement, confirmation
    ============================================================ */
