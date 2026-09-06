@@ -1072,6 +1072,91 @@ body.page-accueil .hero-question{ margin-top: 40px; padding-top: 26px; }
   .format-prix{ font-size: 16px; }
 }
 
+/* ---------- Avis clients ----------
+   Des cartes claires posées sur le fond rayé du site, sans photo ni
+   étoile : ce sont les mots qui portent la section, le reste ne doit
+   pas leur faire concurrence.
+
+   Deux mises en page, une par usage. Sur grand écran, des colonnes :
+   les avis n'ont pas tous la même longueur, une grille rigide
+   laisserait des cartes à moitié vides et une dernière rangée
+   bancale. Sur mobile, un carrousel qui défile au doigt, en CSS pur
+   (scroll-snap) : pas une ligne de JavaScript pour faire glisser
+   huit paragraphes. */
+.avis-liste{ margin-top: 8px; }
+
+.avis-carte{
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  padding: 24px 24px 26px;
+  margin: 0;
+}
+.avis-carte figcaption{ margin-bottom: 12px; }
+/* La mention reste en retrait : elle situe l'encadré, elle ne
+   s'annonce pas. */
+.avis-mention{
+  display: block;
+  font-size: 10.5px;
+  letter-spacing: .2em;
+  text-transform: uppercase;
+  color: var(--gold-deep);
+  opacity: .75;
+  margin-bottom: 7px;
+}
+.avis-nom{
+  display: block;
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-size: 18px;
+  color: var(--ink);
+}
+.avis-carte blockquote{ margin: 0; }
+.avis-carte blockquote p{
+  margin: 0;
+  font-size: 15.5px;
+  line-height: 1.75;
+  color: var(--ink-soft);
+}
+/* Guillemets français, posés par le CSS : le texte des avis reste
+   ainsi lisible tel quel dans le HTML. */
+.avis-carte blockquote p::before{ content: "\00AB\00A0"; }
+.avis-carte blockquote p::after{ content: "\00A0\00BB"; }
+
+@media (max-width: 699px){
+  .avis-liste{
+    display: flex;
+    gap: 14px;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    /* Le carrousel sort des marges du conteneur pour que les cartes
+       viennent effleurer les bords de l'écran : c'est ce débord qui
+       fait comprendre qu'il y a une suite. Le padding compense la
+       marge négative, la première carte reste donc alignée sur le
+       reste de la page. */
+    margin-inline: -20px;
+    padding: 4px 20px 8px;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior-x: contain;
+  }
+  .avis-liste::-webkit-scrollbar{ display: none; }
+  .avis-carte{
+    flex: 0 0 78%;
+    scroll-snap-align: center;
+    padding: 22px 20px 24px;
+  }
+}
+
+@media (min-width: 700px){
+  .avis-liste{ column-count: 2; column-gap: 20px; }
+  .avis-carte{ break-inside: avoid; margin-bottom: 20px; }
+}
+@media (min-width: 1040px){
+  .avis-liste{ column-count: 3; column-gap: 22px; }
+  .avis-carte{ margin-bottom: 22px; }
+}
+
 /* ---------- Passerelle vers la galerie ----------
    Le texte à gauche, trois photos à droite : la section donne à voir
    ce qu'elle propose d'aller voir. */
