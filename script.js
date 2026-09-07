@@ -138,16 +138,21 @@ document.addEventListener('DOMContentLoaded', function () {
       var quantiteParam = params.get('quantite');
       if (!formuleParam && !evenementParam && !themeParam && !quantiteParam) return;
 
-      /* La formule arrive soit sous le mot-cl\u00e9 \u00ab biscuits \u00bb, soit sous le
-         nom d'une micro-sc\u00e9nographie (\u00ab Mini Signature \u00bb). Dans les deux
-         cas on cherche l'option qui commence par ce nom, plut\u00f4t que de
-         recopier ici des libell\u00e9s qui portent aussi un prix : le jour o\u00f9
-         un tarif change, la liste reste seule \u00e0 modifier. */
+      /* La formule arrive sous un mot-cl\u00e9 court, stable, qui ne change pas
+         quand un tarif bouge. On ne garde ici que le d\u00e9but du libell\u00e9 :
+         l'option du formulaire porte aussi le prix, et c'est elle qui
+         fait foi. Le jour o\u00f9 un tarif change, seule la liste d\u00e9roulante
+         de contact.html est \u00e0 modifier. */
+      var FORMULES = {
+        'biscuits': 'Biscuits personnalis\u00e9s (sans mise en sc\u00e8ne)',
+        'micro-scenographie': 'Micro-sc\u00e9nographie',
+        'micro-scenographie-biscuits': 'Micro-sc\u00e9nographie & Biscuits',
+        'experience': 'L\u2019Exp\u00e9rience Jolie Cr\u00e9ation'
+      };
       var formuleRetenue = null;
       if (formuleParam && formuleSelect) {
-        var vise = formuleParam === 'biscuits'
-          ? 'Biscuits personnalis\u00e9s (sans mise en sc\u00e8ne)'
-          : formuleParam;
+        // Un mot-cl\u00e9 connu, sinon le nom tel qu'il a \u00e9t\u00e9 pass\u00e9.
+        var vise = FORMULES[formuleParam] || formuleParam;
         Array.prototype.forEach.call(formuleSelect.options, function (o) {
           if (formuleRetenue) return;
           if (o.value === vise || o.value.indexOf(vise + ' \u2014 ') === 0) {

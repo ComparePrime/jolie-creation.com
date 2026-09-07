@@ -39,7 +39,7 @@ const SANS_SMTP = { SMTP_USER: '', SMTP_PASSWORD: '' };
 
 const DEVIS = {
   prenom: 'Camille', nom: 'Berset', email: 'camille@example.ch',
-  'type-evenement': 'Anniversaire', formule: 'Mini Signature — dès 590 CHF',
+  'type-evenement': 'Anniversaire', formule: 'Micro-scénographie & Biscuits — dès 560 CHF',
   message: 'Un décor sur le thème licorne.'
 };
 
@@ -131,11 +131,11 @@ const DEVIS = {
     // Un client venu de /micro-scenographies arrive avec sa formule
     // pré-remplie : elle doit se retrouver dans l'e-mail.
     const lignes = fonction.construireCorps('devis', {
-      prenom: 'Camille', formule: 'Mini Signature — dès 590 CHF',
+      prenom: 'Camille', formule: 'Micro-scénographie & Biscuits — dès 560 CHF',
       'type-evenement': 'Anniversaire', 'theme-anniversaire': 'Licorne arc-en-ciel'
     });
     const dico = Object.fromEntries(lignes);
-    assert.strictEqual(dico['Formule souhaitée'], 'Mini Signature — dès 590 CHF');
+    assert.strictEqual(dico['Formule souhaitée'], 'Micro-scénographie & Biscuits — dès 560 CHF');
     assert.strictEqual(dico['Thème'], 'Licorne arc-en-ciel');
   });
 

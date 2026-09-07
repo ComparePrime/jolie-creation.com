@@ -906,12 +906,40 @@ body.page-accueil .hero-question{ margin-top: 40px; padding-top: 26px; }
   margin-top: 0;
   color: var(--ink);
 }
+/* Numéro de formule : il donne l'ordre de lecture des trois cartes sans
+   alourdir le titre, qui reste le nom de la prestation. */
+.formule-rang{
+  display: block;
+  font-size: 11px;
+  letter-spacing: .2em;
+  text-transform: uppercase;
+  color: var(--gold-deep);
+  opacity: .8;
+  margin-bottom: 8px;
+}
 .formule-card .price{
   font-family: var(--font-display);
   color: var(--gold-deep);
   font-size: 18px;
   font-weight: 600;
   margin-bottom: 16px;
+}
+/* Les frais de déplacement font partie du tarif, mais pas du montant :
+   plus petits et sur leur propre ligne dès qu'ils ne tiennent plus,
+   pour ne pas donner à lire « 470 CHF + frais » d'un seul bloc. */
+.price-suite{
+  display: inline-block;
+  font-family: var(--font-body);
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--ink-soft);
+}
+.formule-inclus{
+  font-size: 12px;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  margin: 0 0 12px;
 }
 .formule-card p.desc{
   color: var(--ink-soft);
@@ -958,6 +986,35 @@ body.page-accueil .hero-question{ margin-top: 40px; padding-top: 26px; }
 .formule-card .btn-primary:hover{
   filter: brightness(0.95);
 }
+
+/* ---------- Composer autrement ----------
+   Posé sous les trois cartes : la formule sur mesure n'est pas une
+   quatrième offre, c'est la porte de sortie pour qui ne se reconnaît
+   dans aucune des trois. D'où le bloc large et sobre, sans prix. */
+.formules-autrement{
+  margin-top: 34px;
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: 22px;
+  padding: 30px 28px;
+  text-align: center;
+}
+@media (min-width: 760px){ .formules-autrement{ padding: 36px 44px; } }
+.formules-autrement h3{
+  font-size: clamp(20px, 2.6vw, 26px);
+  margin: 0 0 14px;
+  color: var(--ink);
+  text-wrap: balance;
+}
+.formules-autrement p{
+  color: var(--ink-soft);
+  font-size: 15.5px;
+  line-height: 1.7;
+  max-width: 58ch;
+  margin: 0 auto 12px;
+}
+.formules-autrement p:last-of-type{ margin-bottom: 24px; }
+.formules-autrement .btn{ display: inline-block; }
 .formule-card .btn-ghost{
   border: 1.5px solid var(--ink-soft);
   color: var(--ink);
