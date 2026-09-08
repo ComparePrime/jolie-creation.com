@@ -1216,9 +1216,12 @@ body.page-accueil .hero-question{ margin-top: 40px; padding-top: 26px; }
 /* La photo occupe le haut de la carte. Tant qu'un fichier n'a pas été
    déposé, boutique.js retire l'image et le cadre affiche le nom de la
    collection : une carte sans photo reste une carte, pas une erreur. */
+/* Cadre carré : les photos fournies sont pour les deux tiers en portrait
+   et pour un tiers en paysage. Le carré est le seul format qui les rogne
+   modérément des deux côtés au lieu d'en amputer la moitié. */
 .collection-photo{
   position: relative;
-  aspect-ratio: 4/3;
+  aspect-ratio: 1/1;
   background: linear-gradient(150deg, var(--cream-deep), var(--cream));
   overflow: hidden;
 }

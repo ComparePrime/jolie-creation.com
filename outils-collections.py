@@ -128,7 +128,7 @@ def main():
     if manquantes:
         print(f'\n{len(manquantes)} photo(s) encore attendue(s) dans images/collections/ :')
         for i in manquantes:
-            print('  ' + i + '.png')
+            print('  ' + i + '.webp')
         print('En attendant, ces cartes affichent le nom de la collection.')
 
 
