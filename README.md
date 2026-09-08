@@ -118,10 +118,6 @@ Trois filtres, du plus fiable au moins fiable :
 
 ## Ce qui reste à faire avant l'ouverture de la boutique
 
-- **Photos des collections.** Les vingt cartes attendent un fichier
-  `images/collections/<id>.png`. Tant qu'il manque, la carte affiche un
-  cadre sobre au nom de la collection : rien ne casse, mais la page
-  gagnera beaucoup à être illustrée.
 - **Conditions générales de vente.** Une boutique en ligne suisse doit
   les publier et y renvoyer depuis le tunnel de commande. Elles
   n'existent pas encore sur le site.
@@ -146,6 +142,8 @@ Trois filtres, du plus fiable au moins fiable :
 | `tests/envoi.test.js`                          | Tests de la fonction d'envoi (`npm test`).                   |
 | `outils-galerie.py`                            | Recompose la galerie de « Mes réalisations » en rangées.     |
 | `outils-collections.py`                        | Régénère les cartes de collection depuis `catalogue.js`.     |
+| `outils-photos.py`                             | Convertit les photos de collection en WebP allégé.           |
+| `images/collections/<id>.webp`                 | La photo de chaque collection, une par carte.                |
 | `images/fond-rayures.png`                      | Les rayures du fond, seules.                                 |
 | `images/filigrane-logo.webp`                   | Le médaillon du logo, en filigrane par-dessus les rayures.   |
 
@@ -234,12 +232,18 @@ Tout se passe dans `catalogue.js`, tableau `COLLECTIONS`. Un bloc suffit :
 }
 ```
 
-Puis déposer l'image dans `images/collections/ma-collection.png` et
-régénérer les cartes de la page :
+Puis déposer la photo dans `images/collections/`, sous le nom de la
+collection (`ma-collection.jpg`), et lancer les deux outils :
 
 ```bash
-python3 outils-collections.py
+python3 outils-photos.py        # la photo devient ma-collection.webp
+python3 outils-collections.py   # la carte apparaît sur la page
 ```
+
+La page charge les vingt photos d'un coup : c'est ce qui impose le WebP
+réduit à 800 px. Les vingt originaux pesaient 5,7 Mo, les WebP 0,9 Mo,
+pour une différence invisible à l'écran. Tant qu'une photo manque, sa
+carte affiche un cadre sobre au nom de la collection : rien ne casse.
 
 Trois règles à connaître :
 
@@ -265,6 +269,7 @@ npx http-server -p 8080 -s      # le site, sans les fonctions
 npm test                        # tests de la fonction de paiement
 ```
 
-Pour tester le paiement de bout en bout en local, il faut la CLI Netlify
-(`netlify dev`) et un fichier `.env` contenant `STRIPE_SECRET_KEY`. Ce
-fichier est ignoré par git.
+Pour tester le paiement et les e-mails de bout en bout en local, il faut
+la CLI Netlify (`netlify dev`) et un fichier `.env` contenant
+`SUMUP_API_KEY`, `SUMUP_MERCHANT_CODE`, `SMTP_USER` et `SMTP_PASSWORD`.
+Ce fichier est ignoré par git et ne doit jamais y entrer.

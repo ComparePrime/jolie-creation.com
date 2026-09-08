@@ -159,7 +159,7 @@ const PRIX_TEMOINS = {
 
   await cas('chaque collection annonce son image et son texte alternatif', () => {
     Catalogue.COLLECTIONS.forEach((c) => {
-      assert.strictEqual(c.image, 'images/collections/' + c.id + '.png', c.id);
+      assert.strictEqual(c.image, 'images/collections/' + c.id + '.webp', c.id);
       assert.ok(c.alt && c.alt.length > 20, c.id + ' : texte alternatif trop court');
       assert.ok(c.description && c.description.length > 60, c.id + ' : description trop courte');
     });

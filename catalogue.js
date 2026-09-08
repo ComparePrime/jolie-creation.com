@@ -35,9 +35,10 @@
         relie un panier enregistré à son article.
      3. Le prix est en centimes. « perso » liste les informations à
         demander au client, parmi les clés de CHAMPS.
-     4. Déposer l'image dans images/collections/<id>.png. Si le
-        fichier manque, la carte affiche un cadre sobre à la place :
-        rien ne casse.
+     4. Déposer la photo dans images/collections/<id>.webp. Un PNG ou
+        un JPEG déposé à la place se convertit avec
+        outils-collections.py. Si le fichier manque, la carte affiche
+        un cadre sobre : rien ne casse.
      Le reste — page, modale, panier, paiement — suit tout seul.
      ------------------------------------------------------------ */
 
@@ -379,7 +380,7 @@
      ------------------------------------------------------------ */
   var ARTICLES = [];
   COLLECTIONS.forEach(function (c) {
-    c.image = 'images/collections/' + c.id + '.png';
+    c.image = 'images/collections/' + c.id + '.webp';
     c.produits.forEach(function (p) {
       p.id = c.id + '-' + p.ref;
       p.collectionId = c.id;
