@@ -23,7 +23,9 @@
 const Catalogue = require('../../catalogue.js');
 
 const SUMUP = 'https://api.sumup.com/v0.1/checkouts';
-const MAX_LIGNES = 30;
+// Chaque modèle de biscuit est une ligne : un panier riche en compte vite
+// plusieurs dizaines.
+const MAX_LIGNES = 120;
 const MAX_QTE = 99;
 const MAX_DESCRIPTION = 250;
 
@@ -94,7 +96,9 @@ exports.handler = async (event) => {
     });
   }
 
-  /* ---------- Retarification intégrale depuis le catalogue ---------- */
+  /* ---------- Retarification intégrale depuis le catalogue ----------
+     Le navigateur n'envoie que des identifiants, des quantités et
+     l'option de personnalisation. Les prix sont relus ici. */
   let centimes = 0;
   let biscuits = 0;
   const libelles = [];
@@ -104,30 +108,23 @@ exports.handler = async (event) => {
     if (!article) {
       return reponse(400, { erreur: 'article_inconnu', message: 'Un article du panier n’existe plus.' });
     }
-    // Un biscuit supplémentaire ne se commande jamais seul : il n'arrive
-    // qu'attaché au package qui le porte.
-    if (article.categorie === 'biscuit-sup') {
-      return reponse(400, {
-        erreur: 'supplement_isole',
-        message: `Les biscuits supplémentaires s’ajoutent à un package : la commande démarre à ${Catalogue.MIN_BISCUITS} biscuits.`
-      });
-    }
-
     const qte = Math.min(MAX_QTE, Math.max(1, parseInt(ligne.qte, 10) || 0));
-    centimes += article.prix * qte;
+    // L'option n'existe que si le catalogue la prévoit pour cet article :
+    // la cocher sur un biscuit qui n'en a pas ne change rien au montant.
+    const avecOption = !!(ligne.option && article.option);
+    centimes += Catalogue.prixUnitaire(article, avecOption) * qte;
     biscuits += (article.biscuits || 0) * qte;
     libelles.push(qte + '× ' + article.court);
+  }
 
-    const supplements = (ligne.supplements && typeof ligne.supplements === 'object') ? ligne.supplements : {};
-    for (const idSup of Object.keys(supplements).slice(0, MAX_LIGNES)) {
-      const sup = Catalogue.article(idSup);
-      if (!sup || sup.categorie !== 'biscuit-sup') continue;
-      const qteSup = Math.min(MAX_QTE, Math.max(0, parseInt(supplements[idSup], 10) || 0)) * qte;
-      if (qteSup <= 0) continue;
-      centimes += sup.prix * qteSup;
-      biscuits += qteSup;
-      libelles.push(qteSup + '× ' + sup.court);
-    }
+  /* Le minimum porte sur le total, toutes collections confondues.
+     Le panier le fait déjà respecter ; on le revérifie ici parce que
+     c'est ici que l'argent change de main. */
+  if (biscuits < Catalogue.MIN_BISCUITS) {
+    return reponse(400, {
+      erreur: 'minimum_biscuits',
+      message: `La commande démarre à ${Catalogue.MIN_BISCUITS} biscuits, toutes collections confondues.`
+    });
   }
 
   if (centimes <= 0) {

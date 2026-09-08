@@ -80,8 +80,8 @@
             <strong>Total</strong>
             <span class="montant" id="recap-total">0 CHF</span>
           </div>
+          <p class="recap-minimum" id="recap-minimum"></p>
           <p class="recap-mention" id="recap-mention"></p>
-          <div id="recap-alerte"></div>
           <a href="paiement.html" class="btn btn-primary" id="recap-suite">Livraison ou retrait</a>
         </aside>
       </div>
@@ -89,7 +89,7 @@
       <div class="panier-vide" id="panier-vide" hidden>
         <div class="ornament"><i></i></div>
         <h2>Votre panier est vide</h2>
-        <p>Découvrez les collections du moment et les packages de biscuits disponibles toute l'année. Les micro-scénographies, elles, se construisent avec vous sur devis.</p>
+        <p>Composez votre assortiment parmi les collections de biscuits personnalisés. Vous pouvez mélanger librement les collections ; la commande démarre à 12 biscuits au total.</p>
         <div class="hero-actions" style="justify-content:center;">
           <a href="biscuits-personnalises.html" class="btn btn-primary">Voir les biscuits</a>
           <a href="micro-scenographies.html" class="btn btn-ghost">Voir les micro-scénographies</a>
@@ -155,8 +155,6 @@
 
 (function () {
   var Cat = window.JCCatalogue, Panier = window.JCPanier;
-  var LIBELLES = { personnalisation: 'Personnalisation', date: 'Date', lieu: 'Lieu',
-                   theme: 'Thème', options: 'Options', demandes: 'Demandes' };
 
   function el(balise, classe, texte) {
     var n = document.createElement(balise);
@@ -165,69 +163,40 @@
     return n;
   }
 
+  /* Une ligne de panier : le modèle, sa personnalisation, son prix
+     unitaire, sa quantité et son sous-total. */
   function ligneHTML(ligne) {
     var a = Cat.article(ligne.id);
-    var bloc = el('article', 'panier-ligne');
-
-    var tete = el('div');
-    tete.appendChild(el('h3', null, a.nom));
-    if (a.resume) tete.appendChild(el('p', 'ligne-resume', a.resume));
-    bloc.appendChild(tete);
-
     var r = Panier.totauxLigne(ligne);
-    var prix = el('div', 'ligne-prix');
-    prix.textContent = (a.aPartirDe ? 'Dès ' : '') + Cat.formater(r.payable);
-    if (r.confirmerMax > 0) {
-      prix.appendChild(el('small', null, '+ ' + Cat.formater(r.confirmerMin) + ' à ' +
-        Cat.formater(r.confirmerMax) + ' à confirmer'));
-    } else if (a.aPartirDe) {
-      prix.appendChild(el('small', null, 'tarif de départ'));
-    }
-    bloc.appendChild(prix);
+    var bloc = el('div', 'panier-ligne');
 
-    if (ligne.details) {
-      var dl = el('dl', 'ligne-details');
-      Object.keys(LIBELLES).forEach(function (cle) {
-        if (!ligne.details[cle]) return;
-        var d = el('div');
-        d.appendChild(el('dt', null, LIBELLES[cle]));
-        d.appendChild(el('dd', null, ligne.details[cle]));
-        dl.appendChild(d);
-      });
-      if (dl.children.length) bloc.appendChild(dl);
-    }
-
-    if (r.supplements.length) {
-      var sup = el('ul', 'ligne-supplements');
-      sup.appendChild(el('li', 'ligne-supplements-titre',
-        'Biscuits ajoutés à ce package (' + r.biscuits + ' biscuits au total)'));
-      r.supplements.forEach(function (item) {
-        var li = el('li');
-        li.appendChild(el('span', null, item.qte + ' × ' + item.article.court));
-        li.appendChild(el('span', 'montant', Cat.formater(item.article.prix * item.qte)));
-        sup.appendChild(li);
-      });
-      bloc.appendChild(sup);
-    }
+    var haut = el('div', 'ligne-haut');
+    var titre = el('div');
+    titre.appendChild(el('h3', null, a.nom + (ligne.option ? ' (personnalisé)' : '')));
+    var perso = Panier.resumeDetails(ligne);
+    if (perso) titre.appendChild(el('p', 'ligne-perso', perso));
+    titre.appendChild(el('p', 'ligne-unitaire', Cat.formater(r.unitaire) + ' l’unité'));
+    haut.appendChild(titre);
+    haut.appendChild(el('span', 'ligne-montant', Cat.formater(r.payable)));
+    bloc.appendChild(haut);
 
     var pied = el('div', 'ligne-pied');
     var pas = el('div', 'qte-stepper');
     var moins = el('button', null, '−');
     moins.type = 'button';
-    moins.setAttribute('aria-label', 'Retirer un ' + a.court);
+    moins.setAttribute('aria-label', 'Retirer un ' + a.nom);
     moins.disabled = ligne.qte <= 1;
     var champ = el('input');
     champ.type = 'number'; champ.min = '1'; champ.max = '99';
     champ.value = ligne.qte;
-    champ.setAttribute('aria-label', 'Quantité pour ' + a.court);
+    champ.setAttribute('aria-label', 'Quantité pour ' + a.nom);
     var plus = el('button', null, '+');
     plus.type = 'button';
-    plus.setAttribute('aria-label', 'Ajouter un ' + a.court);
+    plus.setAttribute('aria-label', 'Ajouter un ' + a.nom);
     moins.onclick = function () { Panier.definirQuantite(ligne.cle, ligne.qte - 1); };
     plus.onclick = function () { Panier.definirQuantite(ligne.cle, ligne.qte + 1); };
     champ.onchange = function () {
-      var v = Math.min(99, Math.max(1, parseInt(champ.value, 10) || 1));
-      Panier.definirQuantite(ligne.cle, v);
+      Panier.definirQuantite(ligne.cle, Math.min(99, Math.max(1, parseInt(champ.value, 10) || 1)));
     };
     pas.appendChild(moins); pas.appendChild(champ); pas.appendChild(plus);
 
@@ -246,9 +215,20 @@
     document.getElementById('panier-vide').hidden = t.lignes.length > 0;
     if (!t.lignes.length) return;
 
+    /* Le panier est présenté collection par collection : c'est ainsi
+       qu'il a été composé, et cela rend le mélange lisible. */
     var zone = document.getElementById('panier-lignes');
     zone.innerHTML = '';
-    t.lignes.forEach(function (l) { zone.appendChild(ligneHTML(l)); });
+    Panier.parCollection().forEach(function (g) {
+      var groupe = el('section', 'panier-groupe');
+      var entete = el('div', 'panier-groupe-tete');
+      entete.appendChild(el('h2', null, g.nom));
+      entete.appendChild(el('span', null, g.biscuits + ' biscuit' + (g.biscuits > 1 ? 's' : '') +
+        ' · ' + Cat.formater(g.total)));
+      groupe.appendChild(entete);
+      g.lignes.forEach(function (l) { groupe.appendChild(ligneHTML(l)); });
+      zone.appendChild(groupe);
+    });
 
     var detail = document.getElementById('recap-detail');
     detail.innerHTML = '';
@@ -258,29 +238,34 @@
       d.appendChild(el('span', null, valeur));
       detail.appendChild(d);
     }
-    recapLigne('Articles', String(t.nbArticles));
     recapLigne('Biscuits', String(t.biscuits));
+    recapLigne('Modèles', String(t.lignes.length));
     document.getElementById('recap-total').textContent = Cat.formater(t.payable);
+
+    /* Compteur du minimum : il porte sur l'ensemble du panier, toutes
+       collections confondues. */
+    var jauge = document.getElementById('recap-minimum');
+    var atteint = t.manquants === 0;
+    jauge.textContent = Panier.messageMinimum();
+    jauge.className = 'recap-minimum' + (atteint ? ' atteint' : '');
 
     document.getElementById('recap-mention').textContent =
       'Vous choisissez la livraison ou le retrait à l’étape suivante. ' +
       'Les frais de livraison éventuels sont confirmés séparément selon la destination.';
 
-    var alerte = document.getElementById('recap-alerte');
-    alerte.innerHTML = '';
     var suite = document.getElementById('recap-suite');
-    var probleme = Panier.blocage();
-    if (probleme) {
-      alerte.appendChild(el('p', 'recap-alerte', probleme));
-      suite.setAttribute('aria-disabled', 'true');
-      suite.classList.add('btn-desactive');
-      suite.href = 'biscuits-personnalises.html#packages';
-      suite.textContent = 'Compléter ma commande';
-    } else {
+    if (atteint) {
       suite.removeAttribute('aria-disabled');
       suite.classList.remove('btn-desactive');
       suite.href = 'paiement.html';
       suite.textContent = 'Livraison ou retrait';
+    } else {
+      // Tant que le compte n'y est pas, le bouton renvoie aux collections
+      // plutôt que vers une étape qui refuserait de toute façon.
+      suite.setAttribute('aria-disabled', 'true');
+      suite.classList.add('btn-desactive');
+      suite.href = 'biscuits-personnalises.html#collections';
+      suite.textContent = 'Compléter ma commande';
     }
   }
 

@@ -138,10 +138,11 @@
 
       <div class="panier-vide" id="paiement-vide" hidden>
         <div class="ornament"><i></i></div>
-        <h2>Rien à payer pour l’instant</h2>
-        <p>Votre panier est vide, ou son contenu doit être complété avant le paiement.</p>
+        <h2 id="vide-titre">Votre commande n’est pas encore complète</h2>
+        <p id="vide-texte">Votre panier est vide.</p>
         <div class="hero-actions" style="justify-content:center;">
-          <a href="panier.html" class="btn btn-primary">Retour au panier</a>
+          <a href="biscuits-personnalises.html#collections" class="btn btn-primary">Choisir mes biscuits</a>
+          <a href="panier.html" class="btn btn-ghost">Voir mon panier</a>
         </div>
       </div>
     </div>
@@ -293,10 +294,16 @@
   /* ---------- Récapitulatif ---------- */
   function rendreRecap() {
     var t = Panier.totaux();
-    var utilisable = t.lignes.length > 0 && !Panier.blocage();
+    var probleme = Panier.blocage();
+    var utilisable = t.lignes.length > 0 && !probleme;
     document.getElementById('paiement-contenu').hidden = !utilisable;
     document.getElementById('paiement-vide').hidden = utilisable;
-    if (!utilisable) return;
+    if (!utilisable) {
+      // Dire ce qui manque, plutôt que « rien à payer » : sous le minimum,
+      // le client doit savoir combien de biscuits il lui reste à choisir.
+      document.getElementById('vide-texte').textContent = probleme || 'Votre panier est vide.';
+      return;
+    }
 
     var zone = document.getElementById('pay-recap-lignes');
     zone.innerHTML = '';
@@ -310,18 +317,19 @@
       d.appendChild(g); d.appendChild(dr);
       zone.appendChild(d);
     }
-    t.lignes.forEach(function (l) {
-      var a = Cat.article(l.id);
-      var r = Panier.totauxLigne(l);
-      rangRecap(l.qte + ' × ' + a.court, Cat.formater(a.prix * l.qte));
-      // Les biscuits ajoutés apparaissent sous leur package, décalés.
-      r.supplements.forEach(function (item) {
-        rangRecap(item.qte + ' × ' + item.article.court, Cat.formater(item.article.prix * item.qte), 'recap-sous-ligne');
+    // Le récapitulatif suit le panier : une entête par collection, puis
+    // les modèles retenus.
+    Panier.parCollection().forEach(function (g) {
+      rangRecap(g.nom, g.biscuits + ' biscuit' + (g.biscuits > 1 ? 's' : ''), 'recap-entete');
+      g.lignes.forEach(function (l) {
+        var a = Cat.article(l.id);
+        var r = Panier.totauxLigne(l);
+        rangRecap(l.qte + ' × ' + a.court, Cat.formater(r.payable), 'recap-sous-ligne');
       });
     });
     document.getElementById('pay-total').textContent = Cat.formater(t.payable);
     document.getElementById('pay-mention').textContent =
-      'Frais de livraison éventuels confirmés séparément.';
+      t.biscuits + ' biscuits au total. Frais de livraison éventuels confirmés séparément.';
   }
 
   if (new URLSearchParams(location.search).get('annule')) {
@@ -364,8 +372,12 @@
       telephone: valeur('pay-tel'),
       total: Cat.formater(resume.total),
       paiement: mode === 'livraison' ? 'En ligne (SumUp)' : 'Sur place, espèces ou TWINT',
+      // Une ligne par biscuit, sous le nom de sa collection. Les entêtes
+      // n'ont ni quantité ni montant : elles ouvrent un groupe.
       articles: resume.lignes.map(function (l) {
-        return (l.sous ? '  + ' : '') + l.qte + ' × ' + l.nom + ' — ' + Cat.formater(l.montant);
+        if (l.entete) return l.nom;
+        return '  ' + l.qte + ' × ' + l.nom + ' — ' + Cat.formater(l.unitaire) + ' l’unité — ' +
+          Cat.formater(l.montant) + (l.details ? '\n     ' + l.details : '');
       }).join('\n'),
       message: valeur('pay-message')
     };
@@ -410,6 +422,8 @@
     if (email && !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) manquants.push('une adresse e-mail valide');
     if (manquants.length) { message('Merci de renseigner : ' + manquants.join(', ') + '.'); return; }
 
+    // Le minimum de biscuits est revérifié ici : on ne part pas payer
+    // une commande que le serveur refusera.
     var probleme = Panier.blocage();
     if (probleme) { message(probleme); return; }
 
@@ -444,7 +458,7 @@
         body: JSON.stringify({
           reference: reference,
           lignes: Panier.lire().map(function (l) {
-            return { id: l.id, qte: l.qte, supplements: l.supplements };
+            return { id: l.id, qte: l.qte, option: l.option };
           }),
           client: { reception: mode }
         })
