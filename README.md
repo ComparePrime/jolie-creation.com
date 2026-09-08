@@ -59,8 +59,8 @@ formulaire → netlify/functions/envoyer-message.js → Nodemailer
 ```
 
 Un seul chemin pour les deux : les demandes de devis (page Contact,
-qu'on y arrive depuis une formule de micro-scénographie, un package ou
-directement) et les commandes de la boutique. Netlify Forms n'est pas
+qu'on y arrive depuis une formule de micro-scénographie, une collection
+ou directement) et les commandes de la boutique. Netlify Forms n'est pas
 utilisé.
 
 ### Les variables à renseigner
@@ -118,10 +118,10 @@ Trois filtres, du plus fiable au moins fiable :
 
 ## Ce qui reste à faire avant l'ouverture de la boutique
 
-- **Tarifs des collections du moment.** Halloween et Cocooning sont
-  vendues à des montants d'attente (69 / 99 / 129 CHF). Ils sont
-  regroupés dans `catalogue.js`, constante `PRIX_COLLECTION`. À
-  remplacer avant d'encaisser quoi que ce soit.
+- **Photos des collections.** Les vingt cartes attendent un fichier
+  `images/collections/<id>.png`. Tant qu'il manque, la carte affiche un
+  cadre sobre au nom de la collection : rien ne casse, mais la page
+  gagnera beaucoup à être illustrée.
 - **Conditions générales de vente.** Une boutique en ligne suisse doit
   les publier et y renvoyer depuis le tunnel de commande. Elles
   n'existent pas encore sur le site.
@@ -135,7 +135,7 @@ Trois filtres, du plus fiable au moins fiable :
 | Fichier / dossier                              | Rôle                                                        |
 | ---------------------------------------------- | ----------------------------------------------------------- |
 | `catalogue.js`                                 | Prix et articles achetables. Source unique, navigateur + serveur. |
-| `boutique.js`                                  | Panier (localStorage), boutons d'ajout, formulaire de détails. |
+| `boutique.js`                                  | Panier (localStorage), modale de sélection, minimum de 12 biscuits. |
 | `panier.html`                                  | Récapitulatif, quantités, totaux.                            |
 | `paiement.html`                                | Livraison ou retrait, coordonnées, puis départ vers SumUp.   |
 | `commande-confirmee.html`                      | Relit l'état réel du paiement auprès de SumUp.               |
@@ -145,6 +145,7 @@ Trois filtres, du plus fiable au moins fiable :
 | `tests/catalogue.test.js`                      | Tests de la fonction de paiement (`npm test`).               |
 | `tests/envoi.test.js`                          | Tests de la fonction d'envoi (`npm test`).                   |
 | `outils-galerie.py`                            | Recompose la galerie de « Mes réalisations » en rangées.     |
+| `outils-collections.py`                        | Régénère les cartes de collection depuis `catalogue.js`.     |
 | `images/fond-rayures.png`                      | Les rayures du fond, seules.                                 |
 | `images/filigrane-logo.webp`                   | Le médaillon du logo, en filigrane par-dessus les rayures.   |
 
@@ -169,11 +170,12 @@ enregistrements. Si cet envoi échoue, le client n'est pas emmené vers le
 paiement : encaisser une commande qui n'arriverait jamais serait pire que
 de la refuser.
 
-**Les biscuits supplémentaires n'existent pas seuls.** Ils se choisissent
-dans la fenêtre qui s'ouvre à l'ajout d'un package ou d'une collection, et voyagent attachés à
-sa ligne de panier (`ligne.supplements`). Le minimum de 12 biscuits est donc
-garanti par la structure des données, pas par une règle vérifiée après coup ;
-la fonction serveur refuse quand même un supplément qui arriverait isolé.
+**Le minimum de douze biscuits porte sur le panier entier.** Chaque
+biscuit se commande à l'unité, à son prix, et les collections se
+mélangent librement : cinq Petit Océan et sept Rêve de Licorne font une
+commande valable. La règle vit dans `JCPanier.blocage()`, le panier et la
+page de paiement s'y réfèrent tous les deux, et la fonction serveur la
+revérifie avant d'encaisser — c'est là que l'argent change de main.
 
 ---
 
@@ -214,19 +216,45 @@ le plus sombre du médaillon, au-dessus du seuil d'accessibilité AA.
 
 ---
 
-## Modifier le catalogue
+## Ajouter une collection de biscuits
 
-Tout se passe dans `catalogue.js`. Ajouter un package revient à ajouter une
-entrée au tableau `ARTICLES`, puis à poser un bouton dans la page :
+Tout se passe dans `catalogue.js`, tableau `COLLECTIONS`. Un bloc suffit :
 
-```html
-<button type="button" class="btn btn-primary" data-ajout-panier="pack-nouveau">
-  Ajouter au panier
-</button>
+```js
+{
+  "id": "ma-collection",
+  "nom": "Ma collection",
+  "occasion": "Anniversaire",
+  "description": "Une phrase ou deux, lisibles et utiles au référencement.",
+  "alt": "Biscuits personnalisés thème …",
+  "produits": [
+    { "ref": "petit-modele", "nom": "Petit modèle", "prix": 500 },
+    { "ref": "prenom", "nom": "Biscuit prénom", "prix": 650, "perso": ["prenom"] }
+  ]
+}
 ```
 
-Les montants sont **en centimes** : `7250` pour 72.50 CHF. Manipuler des
-francs en virgule flottante finit toujours par produire un `72.49999999`.
+Puis déposer l'image dans `images/collections/ma-collection.png` et
+régénérer les cartes de la page :
+
+```bash
+python3 outils-collections.py
+```
+
+Trois règles à connaître :
+
+- Les montants sont **en centimes** : `650` pour 6.50 CHF. Manipuler des
+  francs en virgule flottante finit toujours par produire un `6.49999999`.
+- La `ref` d'un produit ne se renomme jamais une fois en ligne :
+  l'identifiant complet `<id collection>-<ref>` est ce qui relie un panier
+  déjà enregistré à son article.
+- `perso` ne liste que ce qui est réellement demandé au client, parmi les
+  clés de `CHAMPS` (prénom, âge, texte, date, initiale, coloris). Un
+  biscuit sans `perso` ne demande rien.
+
+Le reste suit tout seul : la modale de sélection, le panier, le
+récapitulatif de paiement, l'e-mail de commande et la retarification
+serveur lisent tous la même structure.
 
 ---
 
