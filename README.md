@@ -118,6 +118,13 @@ Trois filtres, du plus fiable au moins fiable :
 
 ## Ce qui reste à faire avant l'ouverture de la boutique
 
+- **Les modèles et les prix de la collection Automne.** La collection est
+  publiée, illustrée de ses sept photos et mise en avant, mais sa liste de
+  biscuits n'a pas encore été fournie. Tant que `produits` est vide dans
+  `catalogue.js`, la carte annonce que les modèles arrivent et renvoie
+  vers le devis : aucun prix n'est supposé. Remplir le tableau suffit à
+  faire apparaître le bouton, la modale et l'achat, sans toucher à
+  quoi que ce soit d'autre.
 - **Conditions générales de vente.** Une boutique en ligne suisse doit
   les publier et y renvoyer depuis le tunnel de commande. Elles
   n'existent pas encore sur le site.
@@ -144,6 +151,7 @@ Trois filtres, du plus fiable au moins fiable :
 | `outils-collections.py`                        | Régénère les cartes de collection depuis `catalogue.js`.     |
 | `outils-photos.py`                             | Convertit les photos de collection en WebP allégé.           |
 | `images/collections/<id>.webp`                 | La photo de chaque collection, une par carte.                |
+| `images/collections/<id>-1.webp`…              | Les vues de galerie d'une collection du moment.              |
 | `images/fond-rayures.png`                      | Les rayures du fond, seules.                                 |
 | `images/filigrane-logo.webp`                   | Le médaillon du logo, en filigrane par-dessus les rayures.   |
 
@@ -240,8 +248,8 @@ python3 outils-photos.py        # la photo devient ma-collection.webp
 python3 outils-collections.py   # la carte apparaît sur la page
 ```
 
-La page charge les vingt photos d'un coup : c'est ce qui impose le WebP
-réduit à 800 px. Les vingt originaux pesaient 5,7 Mo, les WebP 0,9 Mo,
+La page charge toutes les photos d'un coup : c'est ce qui impose le WebP
+réduit. Les vingt premiers originaux pesaient 5,7 Mo, les WebP 0,9 Mo,
 pour une différence invisible à l'écran. Tant qu'une photo manque, sa
 carte affiche un cadre sobre au nom de la collection : rien ne casse.
 
@@ -259,6 +267,38 @@ Trois règles à connaître :
 Le reste suit tout seul : la modale de sélection, le panier, le
 récapitulatif de paiement, l'e-mail de commande et la retarification
 serveur lisent tous la même structure.
+
+### Une collection pas encore tarifée
+
+`"produits": []` est un état valable. La collection s'affiche, avec sa
+photo et son texte, mais la carte remplace le bouton d'achat par un
+renvoi vers le devis et annonce que les modèles sont en préparation. Les
+données structurées omettent alors l'offre : une fourchette de prix
+inventée serait un prix faux, et Google la confronte à la page.
+
+Le jour où les modèles arrivent, il suffit de remplir le tableau.
+
+### Mettre une collection en avant
+
+`"saison": true` fait remonter la collection dans « Les collections du
+moment », en tête de page, dans une carte pleine largeur. Retirer le
+drapeau la fait redescendre parmi les autres : rien d'autre à changer,
+et elle reste achetable dans les deux cas.
+
+Une collection du moment peut porter une galerie, quand une seule photo
+ne rend pas justice à l'assortiment :
+
+```js
+"galerie": [
+  { "fichier": "ma-collection-1.webp", "alt": "…" },
+  { "fichier": "ma-collection-2.webp", "alt": "…" }
+]
+```
+
+Les fichiers se déposent dans `images/collections/` comme les autres ;
+`outils-photos.py` reconnaît le suffixe numérique et les réduit à 600 px
+au lieu de 800, puisqu'ils s'affichent par trois ou par six dans la
+carte.
 
 ---
 

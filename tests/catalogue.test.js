@@ -44,9 +44,9 @@ const PANIER_MIXTE = [
   { id: 'reve-licorne-noeud-dore', qte: 7 }
 ];
 
-/* Les vingt collections attendues, dans l'ordre annoncé. */
+/* Les collections attendues, dans l'ordre annoncé. */
 const COLLECTIONS_ATTENDUES = [
-  'Magie de Noël', 'Frissons d’Halloween', 'Douceurs de Pâques',
+  'Automne', 'Magie de Noël', 'Frissons d’Halloween', 'Douceurs de Pâques',
   'Merci Maîtresse – Bonnes Vacances', 'Bonne fête Maman', 'Baptême Douceur',
   'Annonce de grossesse', 'Douceur personnalisée', 'Girls Club – EVJF',
   'American Road Trip', 'Petit Chantier', 'Passion Cheval', 'Petit Océan',
@@ -56,6 +56,9 @@ const COLLECTIONS_ATTENDUES = [
 
 /* Nombre de modèles par collection, relu sur la liste fournie. */
 const MODELES_ATTENDUS = {
+  // Automne est publiée mais pas encore tarifée : ses modèles et leurs
+  // prix n'ont pas été fournis, et rien ne doit les inventer.
+  'automne': 0,
   'magie-noel': 16, 'frissons-halloween': 8, 'douceurs-paques': 9,
   'merci-maitresse': 4, 'bonne-fete-maman': 2, 'bapteme-douceur': 1,
   'annonce-grossesse': 5, 'douceur-personnalisee': 2, 'girls-club': 1,
@@ -92,7 +95,7 @@ const PRIX_TEMOINS = {
 
 (async () => {
   /* ---------- Le catalogue ---------- */
-  await cas('les vingt collections sont là, dans l’ordre', () => {
+  await cas('les vingt et une collections sont là, dans l’ordre', () => {
     assert.deepStrictEqual(Catalogue.COLLECTIONS.map((c) => c.nom), COLLECTIONS_ATTENDUES);
   });
 
@@ -167,6 +170,29 @@ const PRIX_TEMOINS = {
 
   await cas('le minimum de commande est de douze biscuits', () => {
     assert.strictEqual(Catalogue.MIN_BISCUITS, 12);
+  });
+
+  await cas('deux collections du moment, Automne puis Halloween', () => {
+    const saison = Catalogue.COLLECTIONS.filter((c) => c.saison).map((c) => c.id);
+    assert.deepStrictEqual(saison, ['automne', 'frissons-halloween']);
+  });
+
+  await cas('la galerie d’Automne compte six vues décrites', () => {
+    const a = Catalogue.collection('automne');
+    assert.strictEqual(a.galerie.length, 6);
+    const vus = new Set();
+    a.galerie.forEach((v, i) => {
+      assert.strictEqual(v.image, 'images/collections/automne-' + (i + 1) + '.webp');
+      assert.ok(v.alt && v.alt.length > 25, v.image + ' : texte alternatif trop court');
+      assert.ok(!vus.has(v.alt), 'texte alternatif en double : ' + v.alt);
+      vus.add(v.alt);
+    });
+  });
+
+  await cas('une collection sans modèle n’ajoute aucun article achetable', () => {
+    const orphelins = Catalogue.ARTICLES.filter((a) => a.collectionId === 'automne');
+    assert.strictEqual(orphelins.length, 0);
+    assert.strictEqual(Catalogue.article('automne-citrouille'), null);
   });
 
   /* ---------- La fonction de paiement ---------- */
