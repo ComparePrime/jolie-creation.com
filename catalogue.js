@@ -37,9 +37,18 @@
         demander au client, parmi les clés de CHAMPS.
      4. Déposer la photo dans images/collections/<id>.webp. Un PNG ou
         un JPEG déposé à la place se convertit avec
-        outils-collections.py. Si le fichier manque, la carte affiche
+        outils-photos.py. Si le fichier manque, la carte affiche
         un cadre sobre : rien ne casse.
+     5. « saison: true » remonte la collection dans « Les collections
+        du moment », en tête de page. À retirer quand la saison passe :
+        la collection redescend alors parmi les autres, sans rien
+        perdre. Une collection du moment peut porter une « galerie »,
+        qui montre plusieurs vues de l'assortiment sous la carte.
      Le reste — page, modale, panier, paiement — suit tout seul.
+
+     Une collection dont « produits » est vide s'affiche mais ne
+     s'achète pas : la page annonce que les modèles arrivent et
+     renvoie vers le devis. Rien à désactiver ailleurs.
      ------------------------------------------------------------ */
 
   /* Informations demandées lorsqu'un biscuit est personnalisable.
@@ -54,6 +63,23 @@
   };
 
   var COLLECTIONS = [
+    {
+      "id": "automne",
+      "nom": "Automne",
+      "occasion": "Automne",
+      "saison": true,
+      "description": "Une collection aux teintes de saison : terracotta, orange brûlé, blanc cassé et éclats dorés. Feuilles d’érable nervurées, citrouilles, tasses fumantes et petits feuillages, tous décorés à la main au glaçage royal. Les modèles et leurs tarifs arrivent très bientôt ; d’ici là, les photos ci-dessous montrent l’assortiment tel qu’il sort de l’atelier.",
+      "alt": "Assortiment de biscuits d’automne décorés à la main : feuilles d’érable, citrouilles et tasses sur un set en fibre naturelle",
+      "galerie": [
+        { "fichier": "automne-1.webp", "alt": "Feuilles d’érable en biscuit, l’une terracotta mouchetée d’or, l’autre blanche nervurée" },
+        { "fichier": "automne-2.webp", "alt": "Biscuit tasse terracotta surmonté d’une citrouille, entouré de citrouilles orange et de feuillages" },
+        { "fichier": "automne-3.webp", "alt": "Biscuit tasse d’automne au glaçage crème, citrouille et feuillage orange en premier plan" },
+        { "fichier": "automne-4.webp", "alt": "Biscuit plaque effet tricot crème posé près d’une tasse terracotta et de feuillages d’automne" },
+        { "fichier": "automne-5.webp", "alt": "Feuille d’érable blanche mouchetée d’or et feuillages orange sur un set tressé" },
+        { "fichier": "automne-6.webp", "alt": "Biscuit tasse terracotta à la citrouille orange, vu de près, avec un feuillage d’automne" }
+      ],
+      "produits": []
+    },
     {
       "id": "magie-noel",
       "nom": "Magie de Noël",
@@ -83,6 +109,7 @@
       "id": "frissons-halloween",
       "nom": "Frissons d’Halloween",
       "occasion": "Halloween",
+      "saison": true,
       "description": "Une collection à la fois effrayante et adorable pour célébrer Halloween. Entre citrouilles, petit fantôme, squelette, toile d’araignée et personnages rigolos, chaque biscuit est décoré à la main dans des teintes orange, violet, noir et blanc. Parfaite pour une fête d’Halloween, un goûter d’enfants ou une jolie box gourmande.",
       "alt": "Biscuits d’Halloween personnalisés : citrouilles, fantôme et toile d’araignée",
       "produits": [
@@ -381,6 +408,9 @@
   var ARTICLES = [];
   COLLECTIONS.forEach(function (c) {
     c.image = 'images/collections/' + c.id + '.webp';
+    (c.galerie || []).forEach(function (v) {
+      v.image = 'images/collections/' + v.fichier;
+    });
     c.produits.forEach(function (p) {
       p.id = c.id + '-' + p.ref;
       p.collectionId = c.id;

@@ -500,8 +500,11 @@
       bouton.dataset.branche = '1';
       bouton.addEventListener('click', function (e) {
         e.preventDefault();
+        /* Une collection sans modèle tarifé n'ouvre rien : la modale
+           serait vide. La page ne lui donne pas de bouton, mais un lien
+           direct ne doit pas non plus mener dans le mur. */
         var c = Cat.collection(bouton.getAttribute('data-collection'));
-        if (c) ouvrirCollection(c);
+        if (c && c.produits.length) ouvrirCollection(c);
       });
     });
   }

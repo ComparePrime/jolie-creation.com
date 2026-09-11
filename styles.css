@@ -1200,6 +1200,10 @@ body.page-accueil .hero-question{ margin-top: 40px; padding-top: 26px; }
 
 .collection-carte{
   display:flex; flex-direction: column;
+  /* Ce sont des <section>, donc la règle globale « section{padding:60px 0} »
+     leur ajoutait deux bandes blanches de 60 px. Une carte n'est pas une
+     section de page : son cadre commence à sa photo. */
+  padding: 0;
   background: var(--paper);
   border: 1px solid var(--line);
   border-radius: 24px;
@@ -1247,7 +1251,7 @@ body.page-accueil .hero-question{ margin-top: 40px; padding-top: 26px; }
   color: var(--gold-deep); opacity: .85;
   margin-bottom: 8px;
 }
-.collection-carte h2{
+.collection-carte h3{
   font-size: clamp(20px, 2.2vw, 23px);
   line-height: 1.25;
   margin: 0 0 12px;
@@ -1271,6 +1275,83 @@ body.page-accueil .hero-question{ margin-top: 40px; padding-top: 26px; }
   font-size: 15.5px; color: var(--ink-soft);
 }
 .collections-fin a{ color: var(--gold-deep); text-decoration: underline; text-underline-offset: 2px; }
+
+/* ---------- Collections du moment ----------
+   Ce qui se commande maintenant occupe toute la largeur, une carte par
+   rangée, photo à gauche : impossible de les confondre avec la grille
+   de vingt cartes qui suit. Elles restent des .collection-carte, donc
+   le bouton, la modale et le panier ne changent pas d'un octet. */
+.collections-vedettes{ gap: 30px; }
+@media (min-width: 700px){ .collections-vedettes{ grid-template-columns: 1fr; } }
+@media (min-width: 1080px){ .collections-vedettes{ grid-template-columns: 1fr; } }
+
+.collection-vedette{
+  border-color: var(--gold);
+  box-shadow: 0 18px 40px rgba(58,44,30,.09);
+}
+@media (min-width: 820px){
+  .collection-vedette{
+    display: grid;
+    grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+    align-items: stretch;
+  }
+  /* La photo suit la hauteur du texte au lieu de contraindre la carte :
+     un cadre carré de 500 px de large déséquilibrerait la rangée. */
+  .collection-vedette .collection-photo{ aspect-ratio: auto; height: 100%; min-height: 340px; }
+  /* La photo est plus haute que le texte : centrer le bloc répartit
+     l'écart des deux côtés au lieu de laisser un trou sous le bouton. */
+  .collection-vedette .collection-corps{ padding: 34px 36px 36px; justify-content: center; }
+  /* La galerie passe sous les deux colonnes : six vues sur une rangée
+     valent mieux que six colonnes de 90 px coincées à côté du texte. */
+  .collection-vedette .collection-galerie{ grid-column: 1 / -1; }
+}
+.collection-vedette h3{ font-size: clamp(23px, 2.8vw, 30px); }
+.collection-vedette .collection-texte{ font-size: 15.5px; }
+/* align-self : dans une colonne flex, un inline-block s'étire quand même
+   sur toute la largeur. La pastille doit épouser son texte. */
+.collection-saison{
+  align-self: flex-start;
+  padding: 5px 12px; border-radius: 999px;
+  background: var(--gold); color: var(--paper);
+  opacity: 1; letter-spacing: .14em;
+}
+/* Le bouton d'une carte ordinaire est collé en bas par margin-top:auto.
+   Ici la galerie le suit : il reprend sa place juste après le texte. */
+.collection-vedette .btn{ margin-top: 6px; }
+
+/* La galerie montre l'assortiment quand une seule photo ne suffit pas.
+   Elle vient après le bouton : on regarde, puis on commande. */
+.collection-galerie{
+  display: grid; gap: 10px;
+  grid-template-columns: repeat(3, 1fr);
+  padding: 0 24px 26px;
+}
+@media (min-width: 820px){ .collection-galerie{ padding: 0 36px 36px; } }
+/* Six de front seulement quand chaque vue garde au moins 150 px : en
+   dessous, deux rangées de trois se lisent mieux qu'une frise de timbres. */
+@media (min-width: 1000px){ .collection-galerie{ grid-template-columns: repeat(6, 1fr); } }
+.collection-galerie figure{
+  margin: 0; border-radius: 12px; overflow: hidden;
+  background: var(--cream-deep);
+}
+/* height:auto est indispensable : les attributs width et height du HTML
+   valent une hauteur fixe en CSS, qui neutraliserait aspect-ratio et
+   déroulerait les six vues sur 600 px de haut. */
+.collection-galerie img{
+  display: block; width: 100%; height: auto;
+  aspect-ratio: 3/4; object-fit: cover;
+  transition: transform .4s ease;
+}
+.collection-galerie figure:hover img{ transform: scale(1.06); }
+
+/* Le sommaire signale les collections du moment sans les déplacer :
+   elles restent à leur rang, repérables d'un coup d'œil. */
+.index-saison{
+  margin-left: 6px; padding: 2px 7px; border-radius: 999px;
+  background: var(--gold); color: var(--paper);
+  font-size: 10px; letter-spacing: .1em; text-transform: uppercase;
+  vertical-align: 1px;
+}
 
 /* ---------- Modale de sélection d'une collection ----------
    C'est ici que se compose la commande : elle doit rester lisible
