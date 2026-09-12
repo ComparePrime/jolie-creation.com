@@ -177,15 +177,41 @@ const PRIX_TEMOINS = {
     assert.deepStrictEqual(saison, ['automne', 'frissons-halloween']);
   });
 
-  await cas('la galerie d’Automne compte six vues décrites', () => {
-    const a = Catalogue.collection('automne');
-    assert.strictEqual(a.galerie.length, 6);
+  await cas('les galeries sont numérotées sans trou et décrites', () => {
     const vus = new Set();
-    a.galerie.forEach((v, i) => {
-      assert.strictEqual(v.image, 'images/collections/automne-' + (i + 1) + '.webp');
-      assert.ok(v.alt && v.alt.length > 25, v.image + ' : texte alternatif trop court');
-      assert.ok(!vus.has(v.alt), 'texte alternatif en double : ' + v.alt);
-      vus.add(v.alt);
+    Catalogue.COLLECTIONS.forEach((c) => {
+      (c.galerie || []).forEach((v, i) => {
+        assert.strictEqual(v.image, `images/collections/${c.id}-${i + 1}.webp`, c.id);
+        assert.ok(v.alt && v.alt.length > 25, v.image + ' : texte alternatif trop court');
+        assert.ok(!vus.has(v.alt), 'texte alternatif en double : ' + v.alt);
+        vus.add(v.alt);
+      });
+    });
+  });
+
+  await cas('chaque vue déclarée existe sur le disque, et réciproquement', () => {
+    const fs = require('node:fs');
+    const path = require('node:path');
+    const dossier = path.join(__dirname, '..', 'images', 'collections');
+    const declarees = new Set();
+    Catalogue.COLLECTIONS.forEach((c) => (c.galerie || []).forEach((v) => {
+      declarees.add(path.basename(v.image));
+      assert.ok(fs.existsSync(path.join(dossier, path.basename(v.image))),
+        'fichier manquant : ' + v.image);
+    }));
+    // Un fichier dérivé que plus personne ne déclare ne doit pas traîner :
+    // il partirait en production sans jamais s'afficher.
+    const cartes = new Set(Catalogue.COLLECTIONS.map((c) => c.id + '.webp'));
+    fs.readdirSync(dossier)
+      .filter((f) => f.endsWith('.webp') && !cartes.has(f))
+      .forEach((f) => assert.ok(declarees.has(f), 'vue orpheline : ' + f));
+  });
+
+  await cas('une galerie ne montre que des collections réellement achetables', () => {
+    Catalogue.COLLECTIONS.forEach((c) => {
+      if (!(c.galerie || []).length) return;
+      assert.ok(c.produits.length || c.id === 'automne',
+        c.id + ' : galerie sur une collection sans modèle');
     });
   });
 

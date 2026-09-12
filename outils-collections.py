@@ -106,34 +106,24 @@ def galerie(c, marge):
 
 
 def carte(c):
-    """Carte ordinaire : photo à gauche, texte à droite."""
-    return f'''      <section class="collection-carte" id="{c['id']}" aria-labelledby="t-{c['id']}">
+    """Une seule carte pour les vingt et une collections : la grande photo,
+    le texte, puis les autres vues de l'assortiment. Les collections du
+    moment n'en changent pas la forme — elles y ajoutent une pastille et
+    remontent dans leur propre section."""
+    if c['saison']:
+        classe, occasion = ' collection-vedette', (
+            '<span class="collection-occasion collection-saison">'
+            'Collection du moment</span>')
+    else:
+        classe, occasion = '', (
+            f'<span class="collection-occasion">{e(c["occasion"])}</span>')
+    return f'''      <section class="collection-carte{classe}" id="{c['id']}" aria-labelledby="t-{c['id']}">
         <div class="collection-photo">
           <img src="{c['image']}" alt="{e(c['alt'])}" loading="lazy" decoding="async" data-photo-collection>
           <span class="collection-photo-repli" aria-hidden="true">{e(c['nom'])}</span>
         </div>
         <div class="collection-corps">
-          <span class="collection-occasion">{e(c['occasion'])}</span>
-          <h3 id="t-{c['id']}">Collection {e(c['nom'])}</h3>
-          <p class="collection-texte">{e(c['description'])}</p>
-          <ul class="collection-faits">
-{faits(c, '            ')}
-          </ul>
-{action(c, '          ')}
-        </div>
-      </section>'''
-
-
-def vedette(c):
-    """Carte du moment : plus large, photo en grand, galerie si la
-    collection en porte une."""
-    return f'''      <section class="collection-carte collection-vedette" id="{c['id']}" aria-labelledby="t-{c['id']}">
-        <div class="collection-photo">
-          <img src="{c['image']}" alt="{e(c['alt'])}" loading="lazy" decoding="async" data-photo-collection>
-          <span class="collection-photo-repli" aria-hidden="true">{e(c['nom'])}</span>
-        </div>
-        <div class="collection-corps">
-          <span class="collection-occasion collection-saison">Collection du moment</span>
+          {occasion}
           <h3 id="t-{c['id']}">Collection {e(c['nom'])}</h3>
           <p class="collection-texte">{e(c['description'])}</p>
           <ul class="collection-faits">
@@ -193,7 +183,7 @@ def main():
     autres = [c for c in cols if not c['saison']]
     t = PAGE.read_text(encoding='utf-8')
 
-    t = remplacer(t, 'collections:vedettes', '\n\n'.join(vedette(c) for c in vedettes))
+    t = remplacer(t, 'collections:vedettes', '\n\n'.join(carte(c) for c in vedettes))
     t = remplacer(t, 'collections:liste', '\n\n'.join(carte(c) for c in autres))
     t = remplacer(t, 'collections:index', '\n'.join(
         f'        <li><a href="#{c["id"]}">{e(c["nom"])}</a>'

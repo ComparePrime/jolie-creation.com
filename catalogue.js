@@ -39,11 +39,15 @@
         un JPEG déposé à la place se convertit avec
         outils-photos.py. Si le fichier manque, la carte affiche
         un cadre sobre : rien ne casse.
-     5. « saison: true » remonte la collection dans « Les collections
+     5. « galerie » liste les autres vues du même assortiment, sous la
+        grande photo. Les fichiers se dérivent du portfolio par
+        outils-photos.py, qui écarte de lui-même une vue identique à la
+        photo de carte. Une collection sans galerie n'affiche que sa
+        grande photo : c'est un état normal, pas un manque à combler.
+     6. « saison: true » remonte la collection dans « Les collections
         du moment », en tête de page. À retirer quand la saison passe :
         la collection redescend alors parmi les autres, sans rien
-        perdre. Une collection du moment peut porter une « galerie »,
-        qui montre plusieurs vues de l'assortiment sous la carte.
+        perdre.
      Le reste — page, modale, panier, paiement — suit tout seul.
 
      Une collection dont « produits » est vide s'affiche mais ne
@@ -160,6 +164,10 @@
       "occasion": "Fête des mères",
       "description": "Une collection douce et fleurie imaginée pour célébrer les mamans avec une petite attention gourmande. Des marguerites aux détails en relief accompagnées de jolis cœurs personnalisés, dans des tons blanc, rose et vert. Une collection idéale pour la Fête des Mères, qui peut également être personnalisée avec un prénom ou un petit message.",
       "alt": "Biscuits personnalisés pour la fête des mères : marguerites et cœurs en relief",
+      "galerie": [
+        { "fichier": "bonne-fete-maman-1.webp", "alt": "Biscuit cœur « Bonne fête Maman » et grande marguerite blanche" },
+        { "fichier": "bonne-fete-maman-2.webp", "alt": "Biscuits marguerites et cœurs calligraphiés pour la fête des mères" }
+      ],
       "produits": [
         { "ref": "coeur-maman", "nom": "Cœur « Bonne fête Maman » avec inscription personnalisée", "prix": 600, "perso": ["texte"] },
         { "ref": "marguerite-relief", "nom": "Grande marguerite avec feuilles et détails en relief", "prix": 700 }
@@ -181,6 +189,11 @@
       "occasion": "Annonce de grossesse",
       "description": "Une collection douce et élégante imaginée pour annoncer l’arrivée d’un bébé d’une façon originale et gourmande. Dans des tons ivoire, beige et doré, les biscuits peuvent être personnalisés avec le nom de famille, la date prévue de naissance ou un petit message. Une jolie attention pour annoncer une grossesse aux futurs grands-parents, à la famille ou aux proches.",
       "alt": "Biscuits d’annonce de grossesse personnalisés dans des tons ivoire et doré",
+      "galerie": [
+        { "fichier": "annonce-grossesse-1.webp", "alt": "Biscuit calendrier de décembre, date entourée d’un cœur doré" },
+        { "fichier": "annonce-grossesse-2.webp", "alt": "Biscuit illustré d’un visage au trait et d’un petit cœur rouge" },
+        { "fichier": "annonce-grossesse-3.webp", "alt": "Biscuits cœurs ivoire mouchetés d’or autour du biscuit calendrier" }
+      ],
       "produits": [
         { "ref": "petit-coeur", "nom": "Petit cœur effet moucheté doré", "prix": 400 },
         { "ref": "coeur-moyen", "nom": "Cœur moyen effet moucheté doré", "prix": 500 },
@@ -237,6 +250,15 @@
       "occasion": "Anniversaire enfant",
       "description": "Une collection pleine d’énergie pour les petits passionnés de chantier et de gros engins, dans les incontournables tons jaune, noir, gris et orange. Personnalisable avec le prénom et l’âge de l’enfant pour un anniversaire sur le thème de la construction.",
       "alt": "Biscuits d’anniversaire sur le thème du chantier : pelleteuse, grue et casque",
+      "galerie": [
+        { "fichier": "petit-chantier-1.webp", "alt": "Biscuit cône de chantier orange et plaque au prénom Mathéo" },
+        { "fichier": "petit-chantier-2.webp", "alt": "Biscuit casque de chantier jaune décoré au glaçage royal" },
+        { "fichier": "petit-chantier-3.webp", "alt": "Biscuit pelleteuse jaune et biscuit chiffre 1 rayé noir et jaune" },
+        { "fichier": "petit-chantier-4.webp", "alt": "Biscuit camion benne jaune chargé de gravats en glaçage" },
+        { "fichier": "petit-chantier-5.webp", "alt": "Biscuits de chantier assortis : plaque au prénom, cône et panneau d’anniversaire" },
+        { "fichier": "petit-chantier-6.webp", "alt": "Biscuit grue jaune et chiffre 1 rayé, décorés à la main" },
+        { "fichier": "petit-chantier-7.webp", "alt": "Plaque de chantier en biscuit, prénom Mathéo en lettres rouges" }
+      ],
       "produits": [
         { "ref": "cone", "nom": "Cône de signalisation", "prix": 500 },
         { "ref": "barriere", "nom": "Barrière de chantier", "prix": 500 },
@@ -255,6 +277,12 @@
       "occasion": "Anniversaire enfant",
       "description": "Une collection tendre et élégante inspirée de l’univers équestre, dans des nuances de rose poudré, blanc, beige et brun. Personnalisable avec le prénom et l’âge de l’enfant, idéale pour les petits passionnés de chevaux.",
       "alt": "Biscuits décorés sur le thème du cheval : fer à cheval, bottes et tête de cheval",
+      "galerie": [
+        { "fichier": "passion-cheval-1.webp", "alt": "Biscuits tête de cheval, cœur au prénom Emily et marguerite en glaçage royal" },
+        { "fichier": "passion-cheval-2.webp", "alt": "Biscuit cœur au prénom Emily et biscuit fer à cheval tacheté" },
+        { "fichier": "passion-cheval-3.webp", "alt": "Biscuit selle d’équitation et marguerite blanche, finitions dorées" },
+        { "fichier": "passion-cheval-4.webp", "alt": "Biscuit cœur vichy rose au prénom Emily, marguerite et tête de cheval" }
+      ],
       "produits": [
         { "ref": "petite-fleur", "nom": "Petite fleur blanche et rose", "prix": 400 },
         { "ref": "coeur-vichy", "nom": "Cœur vichy rose avec prénom", "prix": 550, "perso": ["prenom"] },
@@ -274,6 +302,14 @@
       "occasion": "Anniversaire enfant",
       "description": "Une collection pleine de douceur inspirée des fonds marins, dans de jolies nuances de bleu, turquoise, corail et vert. Personnalisable avec le prénom et l’âge de l’enfant, parfaite pour un anniversaire sur le thème de la mer.",
       "alt": "Biscuits personnalisés thème océan : baleine, tortue marine et étoiles de mer",
+      "galerie": [
+        { "fichier": "petit-ocean-1.webp", "alt": "Biscuit nuage bleu au prénom Léo, entouré d’algues et d’étoiles de mer" },
+        { "fichier": "petit-ocean-2.webp", "alt": "Biscuit chiffre 4 bleu décoré de bulles, d’algues vertes et d’une étoile de mer corail" },
+        { "fichier": "petit-ocean-3.webp", "alt": "Biscuit baleine bleue posée sur une vague, décoré au glaçage royal" },
+        { "fichier": "petit-ocean-4.webp", "alt": "Biscuits tortues de mer bleue et verte, décorés à la main" },
+        { "fichier": "petit-ocean-5.webp", "alt": "Biscuit hippocampe bleu finement pointillé au glaçage" },
+        { "fichier": "petit-ocean-6.webp", "alt": "Biscuit coquillage bleu pâle et biscuit corail orange sur le thème de la mer" }
+      ],
       "produits": [
         { "ref": "etoile-orange", "nom": "Étoile de mer orange", "prix": 400 },
         { "ref": "etoile-bleue", "nom": "Étoile de mer bleue décorée", "prix": 400 },
@@ -292,6 +328,15 @@
       "occasion": "Anniversaire enfant",
       "description": "Une collection féerique et délicate aux nuances de rose poudré, blanc et lilas, sublimée par de fines touches dorées. Personnalisable avec le prénom et l’âge de l’enfant pour un anniversaire tout en douceur.",
       "alt": "Biscuits décorés thème licorne, rose poudré, lilas et touches dorées",
+      "galerie": [
+        { "fichier": "reve-licorne-1.webp", "alt": "Biscuit licorne à la crinière lilas et à la corne dorée, sur assiette rose poudré" },
+        { "fichier": "reve-licorne-2.webp", "alt": "Tête de licorne en glaçage blanc près d’un biscuit rose poudré à pois dorés" },
+        { "fichier": "reve-licorne-3.webp", "alt": "Biscuits nuages au prénom Eileen calligraphié à l’or, posés près d’un biscuit nœud" },
+        { "fichier": "reve-licorne-4.webp", "alt": "Biscuit licorne et biscuit nœud ruban doré sur fond rose poudré" },
+        { "fichier": "reve-licorne-5.webp", "alt": "Biscuit nœud doré et licorne blanche à la crinière lilas" },
+        { "fichier": "reve-licorne-6.webp", "alt": "Biscuit nuage au prénom Eileen, nœud rubané doré et licorne en arrière-plan" },
+        { "fichier": "reve-licorne-7.webp", "alt": "Deux biscuits nuages au prénom Eileen, calligraphie dorée sur glaçage blanc" }
+      ],
       "produits": [
         { "ref": "chiffre-pois", "nom": "Chiffre personnalisé rose à pois", "prix": 500, "perso": ["age"] },
         { "ref": "noeud-dore", "nom": "Grand nœud rose et doré", "prix": 600 },
@@ -322,6 +367,10 @@
       "occasion": "Anniversaire enfant",
       "description": "Une collection douce et champêtre inspirée de l’univers du petit lapin et de son potager, dans de jolies nuances de bleu, beige, orange et vert tendre. Personnalisable avec l’initiale, le prénom ou l’âge de l’enfant, parfaite pour un anniversaire, un baptême ou une baby shower.",
       "alt": "Biscuits personnalisés thème petit lapin au jardin, tons bleu et vert tendre",
+      "galerie": [
+        { "fichier": "petit-lapin-jardin-1.webp", "alt": "Biscuit ovale à l’initiale G bleue, entouré de carottes et de marguerites" },
+        { "fichier": "petit-lapin-jardin-2.webp", "alt": "Biscuit lapin en veste bleue, carotte et marguerite décorés à la main" }
+      ],
       "produits": [
         { "ref": "fleur-bleue", "nom": "Petite fleur blanche et bleue", "prix": 400 },
         { "ref": "carotte", "nom": "Carotte", "prix": 500 },
@@ -386,6 +435,12 @@
       "occasion": "Anniversaire",
       "description": "Une collection dynamique pour les passionnés de moto, de vitesse et d’aventure. Entre circuits, drapeaux à damier, casques et panneaux de voyage, chaque biscuit peut être personnalisé avec le prénom, l’âge et un petit message pour un anniversaire sur mesure.",
       "alt": "Biscuits d’anniversaire thème moto : casque, drapeau à damier et circuit",
+      "galerie": [
+        { "fichier": "moto-1.webp", "alt": "Biscuits moto, chiffre 60 et drapeau à damier sur glaçage blanc" },
+        { "fichier": "moto-2.webp", "alt": "Biscuits au prénom Yannick, « Joyeux anniversaire » et « Vroom » orange" },
+        { "fichier": "moto-3.webp", "alt": "Biscuits panneau « Speed limit 60 », moto et pancarte « Travel adventure »" },
+        { "fichier": "moto-4.webp", "alt": "Biscuit chiffre 60 noir et biscuit route sinueuse verte" }
+      ],
       "produits": [
         { "ref": "vroom", "nom": "Petit rond « Vroom ! »", "prix": 500 },
         { "ref": "rond-casque", "nom": "Petit rond avec casque de moto", "prix": 500 },
