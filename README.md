@@ -149,9 +149,10 @@ Trois filtres, du plus fiable au moins fiable :
 | `tests/envoi.test.js`                          | Tests de la fonction d'envoi (`npm test`).                   |
 | `outils-galerie.py`                            | Recompose la galerie de « Mes réalisations » en rangées.     |
 | `outils-collections.py`                        | Régénère les cartes de collection depuis `catalogue.js`.     |
-| `outils-photos.py`                             | Convertit les photos de collection en WebP allégé.           |
+| `outils-photos.py`                             | Dérive les vues de galerie du portfolio et convertit les photos en WebP. |
 | `images/collections/<id>.webp`                 | La photo de chaque collection, une par carte.                |
-| `images/collections/<id>-1.webp`…              | Les vues de galerie d'une collection du moment.              |
+| `images/collections/<id>-1.webp`…              | Les vues secondaires d'une collection, dérivées du portfolio. |
+| `images/creations/`                            | Le portfolio : photos pleine taille de « Mes réalisations ». |
 | `images/fond-rayures.png`                      | Les rayures du fond, seules.                                 |
 | `images/filigrane-logo.webp`                   | Le médaillon du logo, en filigrane par-dessus les rayures.   |
 
@@ -198,8 +199,13 @@ python3 outils-galerie.py
 Le script relit les dimensions réelles des fichiers, regroupe les photos
 en rangées et écrit le résultat dans la page. Chaque rangée occupe
 exactement la largeur et toutes ses photos y ont la même hauteur, sans
-aucun recadrage. Le script est idempotent : le relancer deux fois donne
-le même résultat.
+aucun recadrage. Il est idempotent : le relancer deux fois donne le même
+résultat.
+
+Une section peut s'ouvrir sur une grande photo, comme celle des micro-
+scénographies : un bloc `univers-layout` pour la photo principale et le
+texte, puis un `folio-group` où chaque `folio-set` est une réalisation,
+avec son titre, sa description et ses vues secondaires.
 
 ---
 
@@ -278,15 +284,10 @@ inventée serait un prix faux, et Google la confronte à la page.
 
 Le jour où les modèles arrivent, il suffit de remplir le tableau.
 
-### Mettre une collection en avant
+### Les vues secondaires d'une collection
 
-`"saison": true` fait remonter la collection dans « Les collections du
-moment », en tête de page, dans une carte pleine largeur. Retirer le
-drapeau la fait redescendre parmi les autres : rien d'autre à changer,
-et elle reste achetable dans les deux cas.
-
-Une collection du moment peut porter une galerie, quand une seule photo
-ne rend pas justice à l'assortiment :
+Chaque carte montre une grande photo, puis les autres vues du même
+assortiment. Elles se déclarent ainsi :
 
 ```js
 "galerie": [
@@ -295,10 +296,30 @@ ne rend pas justice à l'assortiment :
 ]
 ```
 
-Les fichiers se déposent dans `images/collections/` comme les autres ;
-`outils-photos.py` reconnaît le suffixe numérique et les réduit à 600 px
-au lieu de 800, puisqu'ils s'affichent par trois ou par six dans la
-carte.
+Les fichiers viennent presque tous du portfolio : la table `GALERIES` en
+tête d'`outils-photos.py` dit, pour chaque collection, quelles photos de
+`images/creations/` montrent ce même assortiment. Le script les réduit à
+520 px, les nomme `<id>-1.webp`, `<id>-2.webp`… et **écarte de lui-même
+une vue identique à la grande photo** — une galerie qui répète l'image du
+dessus n'apprend rien. Relancer ensuite `outils-collections.py`.
+
+Une règle tient tout le reste : **une vue de galerie doit montrer les
+modèles de la collection.** Les biscuits de baptême d'Elio, par exemple,
+sont de vraies photos mais d'autres modèles que le seul biscuit de
+« Baptême Douceur » : ils restent dans « Mes réalisations ». Illustrer
+une collection avec un modèle qu'on ne peut pas commander revient à le
+promettre.
+
+Une collection sans galerie n'affiche que sa grande photo. C'est un état
+normal, pas un manque à combler.
+
+### Mettre une collection en avant
+
+`"saison": true` fait remonter la collection dans « Les collections du
+moment », en tête de page, et lui donne un liseré doré et une pastille.
+La carte garde exactement la même forme que les vingt autres. Retirer le
+drapeau la fait redescendre parmi les autres : rien d'autre à changer, et
+elle reste achetable dans les deux cas.
 
 ---
 

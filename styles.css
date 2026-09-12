@@ -689,6 +689,9 @@ body.page-accueil .hero-question{ margin-top: 40px; padding-top: 26px; }
 @media (min-width: 700px){ .folio-group{ scroll-margin-top: 113px; } }
 @media (min-width: 1024px){ .folio-group{ scroll-margin-top: 121px; } }
 .folio-group + .folio-group{ margin-top: 72px; }
+/* La galerie d'une section qui s'ouvre sur une grande photo a besoin de
+   respirer : sans cela le premier titre colle au cadre du dessus. */
+.univers-layout + .folio-group{ margin-top: 64px; }
 .folio-group-head{ max-width: 760px; margin-bottom: 32px; }
 .folio-group-head h3{
   font-size: clamp(24px, 3vw, 33px);
@@ -698,12 +701,15 @@ body.page-accueil .hero-question{ margin-top: 40px; padding-top: 26px; }
 
 .folio-set + .folio-set{ margin-top: 46px; }
 .folio-set-head{ max-width: 720px; margin-bottom: 20px; }
-.folio-set-head h4{
+/* Un ensemble porte un h4 sous le titre de son groupe, ou un h3 quand la
+   section n'a pas de groupe intermédiaire — c'est le cas des micro-
+   scénographies. Même allure dans les deux cas. */
+.folio-set-head :is(h3, h4){
   font-size: 19px;
   letter-spacing: .01em;
   margin: 0 0 .35em;
 }
-.folio-set-head h4::before{
+.folio-set-head :is(h3, h4)::before{
   content:"";
   display:inline-block; vertical-align: middle;
   width: 26px; height:1px; margin-right: 12px;
@@ -1190,13 +1196,15 @@ body.page-accueil .hero-question{ margin-top: 40px; padding-top: 26px; }
 }
 .collections-index a:hover{ border-color: var(--gold); transform: translateY(-1px); }
 
-/* ---------- Cartes de collection ---------- */
+/* ---------- Cartes de collection ----------
+   Une carte par rangée, sur toute la largeur : la photo d'assortiment
+   mérite mieux qu'une vignette de grille, et les vues secondaires ont
+   besoin de place. La page est longue — le sommaire au-dessus y mène
+   directement. */
 .collections-liste{
-  display:grid; gap: 26px;
+  display:grid; gap: 30px;
   grid-template-columns: 1fr;
 }
-@media (min-width: 700px){ .collections-liste{ grid-template-columns: repeat(2, 1fr); } }
-@media (min-width: 1080px){ .collections-liste{ grid-template-columns: repeat(3, 1fr); gap: 30px; } }
 
 .collection-carte{
   display:flex; flex-direction: column;
@@ -1252,7 +1260,7 @@ body.page-accueil .hero-question{ margin-top: 40px; padding-top: 26px; }
   margin-bottom: 8px;
 }
 .collection-carte h3{
-  font-size: clamp(20px, 2.2vw, 23px);
+  font-size: clamp(23px, 2.8vw, 30px);
   line-height: 1.25;
   margin: 0 0 12px;
 }
@@ -1269,44 +1277,49 @@ body.page-accueil .hero-question{ margin-top: 40px; padding-top: 26px; }
   content:""; position: absolute; left: 0; top: .68em;
   width: 6px; height: 1px; background: var(--gold);
 }
-.collection-carte .btn{ margin-top: auto; align-self: flex-start; }
+.collection-carte .btn{ margin-top: 6px; align-self: flex-start; }
 .collections-fin{
   margin-top: 40px; text-align: center;
   font-size: 15.5px; color: var(--ink-soft);
 }
 .collections-fin a{ color: var(--gold-deep); text-decoration: underline; text-underline-offset: 2px; }
 
-/* ---------- Collections du moment ----------
-   Ce qui se commande maintenant occupe toute la largeur, une carte par
-   rangée, photo à gauche : impossible de les confondre avec la grille
-   de vingt cartes qui suit. Elles restent des .collection-carte, donc
-   le bouton, la modale et le panier ne changent pas d'un octet. */
-.collections-vedettes{ gap: 30px; }
-@media (min-width: 700px){ .collections-vedettes{ grid-template-columns: 1fr; } }
-@media (min-width: 1080px){ .collections-vedettes{ grid-template-columns: 1fr; } }
-
-.collection-vedette{
-  border-color: var(--gold);
-  box-shadow: 0 18px 40px rgba(58,44,30,.09);
-}
+/* La mise en page à deux colonnes vaut pour les vingt et une cartes :
+   grande photo d'assortiment à gauche, texte et bouton à droite, vues
+   secondaires en dessous. Les collections du moment n'en changent pas la
+   forme — un liseré doré et une pastille suffisent à les distinguer. */
 @media (min-width: 820px){
-  .collection-vedette{
+  .collection-carte{
     display: grid;
     grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
     align-items: stretch;
   }
   /* La photo suit la hauteur du texte au lieu de contraindre la carte :
      un cadre carré de 500 px de large déséquilibrerait la rangée. */
-  .collection-vedette .collection-photo{ aspect-ratio: auto; height: 100%; min-height: 340px; }
+  .collection-carte .collection-photo{ aspect-ratio: auto; height: 100%; min-height: 340px; }
   /* La photo est plus haute que le texte : centrer le bloc répartit
      l'écart des deux côtés au lieu de laisser un trou sous le bouton. */
-  .collection-vedette .collection-corps{ padding: 34px 36px 36px; justify-content: center; }
+  .collection-carte .collection-corps{ padding: 34px 36px 36px; justify-content: center; }
   /* La galerie passe sous les deux colonnes : six vues sur une rangée
      valent mieux que six colonnes de 90 px coincées à côté du texte. */
-  .collection-vedette .collection-galerie{ grid-column: 1 / -1; }
+  .collection-carte .collection-galerie{ grid-column: 1 / -1; }
+
+  /* Une rangée sur deux inverse les colonnes. Vingt et une cartes
+     identiques défilent comme un formulaire ; l'alternance leur rend un
+     rythme. L'ordre du HTML ne bouge pas : un lecteur d'écran et le
+     référencement lisent toujours photo puis texte. */
+  .collections-liste .collection-carte:nth-child(even){
+    grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+  }
+  .collections-liste .collection-carte:nth-child(even) .collection-photo{ grid-column: 2; grid-row: 1; }
+  .collections-liste .collection-carte:nth-child(even) .collection-corps{ grid-column: 1; grid-row: 1; }
 }
-.collection-vedette h3{ font-size: clamp(23px, 2.8vw, 30px); }
-.collection-vedette .collection-texte{ font-size: 15.5px; }
+.collection-carte .collection-texte{ font-size: 15.5px; }
+
+.collection-vedette{
+  border-color: var(--gold);
+  box-shadow: 0 18px 40px rgba(58,44,30,.09);
+}
 /* align-self : dans une colonne flex, un inline-block s'étire quand même
    sur toute la largeur. La pastille doit épouser son texte. */
 .collection-saison{
@@ -1315,9 +1328,6 @@ body.page-accueil .hero-question{ margin-top: 40px; padding-top: 26px; }
   background: var(--gold); color: var(--paper);
   opacity: 1; letter-spacing: .14em;
 }
-/* Le bouton d'une carte ordinaire est collé en bas par margin-top:auto.
-   Ici la galerie le suit : il reprend sa place juste après le texte. */
-.collection-vedette .btn{ margin-top: 6px; }
 
 /* La galerie montre l'assortiment quand une seule photo ne suffit pas.
    Elle vient après le bouton : on regarde, puis on commande. */

@@ -39,6 +39,21 @@ def taille_rangee(ratios):
     return m
 
 
+def reindenter(figure, base='            '):
+    """Remet une figure à plat sur son indentation d'origine.
+
+    Sans cela, le script n'est pas rejouable : il préfixait chaque ligne
+    de deux espaces, qui s'ajoutaient à ceux du tour précédent. La page
+    dérivait de deux espaces à chaque exécution."""
+    lignes = figure.split('\n')
+    suivantes = [l for l in lignes[1:] if l.strip()]
+    creux = min((len(l) - len(l.lstrip()) for l in suivantes), default=0)
+    sortie = [base + lignes[0].strip()]
+    for l in lignes[1:]:
+        sortie.append(base + l[creux:] if l.strip() else '')
+    return '\n'.join(sortie)
+
+
 def poser_ratio(m):
     bloc = m.group(0)
     src = re.search(r'<img src="([^"]+)"', bloc).group(1)
@@ -80,10 +95,10 @@ def refaire(m):
             h = plafond
         mesures.append((len(figs), round(h)))
         sortie.append(f'            <div class="folio-rangee"{style}>\n' +
-                      ''.join('  ' + ligne + '\n' for f in figs for ligne in f.split('\n')) +
+                      ''.join(reindenter(f) + '\n' for f in figs) +
                       '            </div>\n')
     resume.append(mesures)
-    return (bloc[:bloc.index('<figure')].rstrip(' ') + '\n' + ''.join(sortie) +
+    return (bloc[:bloc.index('<figure')].rstrip() + '\n' + ''.join(sortie) +
             '          ' + bloc[bloc.rindex('</div>'):])
 
 
@@ -92,6 +107,8 @@ def main():
     # on repart d'une galerie à plat pour pouvoir relancer le script
     s = s.replace('<div class="folio-rangee">', '').replace('</div>\n            </div>', '</div>')
     s = re.sub(r'\n\s*<div class="folio-rangee"[^>]*>', '', s)
+    # Les lignes vides laissées par l'aplatissement se cumuleraient elles aussi.
+    s = re.sub(r'\n[ \t]*\n(?=[ \t]*<figure class="folio-item")', '\n', s)
     s = re.sub(r'(?s)<figure class="folio-item"[^>]*>.*?</figure>', poser_ratio, s)
     s, n = re.subn(r'(?s)<div class="folio-masonry(?: folio-solo)?">.*?\n          </div>', refaire, s)
     s = s.replace('<div class="folio-masonry folio-solo">', '<div class="folio-masonry">')
