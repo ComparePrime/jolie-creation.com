@@ -186,6 +186,52 @@ revérifie avant d'encaisser — c'est là que l'argent change de main.
 
 ---
 
+## Ajouter la photo d'une formule de micro-scénographie
+
+Les trois cartes de `micro-scenographies.html` partagent le même cadre.
+Celle qui n'a pas encore de photo affiche son nom sur un fond crème :
+
+```html
+<div class="card-image sans-photo">
+  <span class="card-image-repli" aria-hidden="true">Micro-scénographie</span>
+</div>
+```
+
+Le jour où la photo existe, le `<span>` devient un `<img>` :
+
+```html
+<div class="card-image">
+  <img src="images/creations/ma-photo.jpeg" alt="…"
+       width="1063" height="1600" loading="lazy" decoding="async">
+</div>
+```
+
+Rien d'autre à toucher. Le cadre garde sa proportion de 4/5 à toutes les
+largeurs, et les trois cartes restent alignées avec une photo comme avec
+trois.
+
+Un cadre vide vaut mieux qu'une photo empruntée : trois cartes alignées
+se lisent mieux qu'une seule décalée, et une image qui ne montre pas la
+prestation vendue la décrit mal.
+
+### Cadrer une photo sans la déformer
+
+Les photos de l'atelier sont en portrait, les cadres des cartes sont plus
+larges : il faut donc choisir ce qu'on garde. `object-fit: cover` s'en
+charge sans jamais étirer l'image, et `object-position` décide de la
+partie visible. Deux classes suffisent sur l'accueil :
+
+| Classe            | Position          | Pour quoi                         |
+| ----------------- | ----------------- | --------------------------------- |
+| `cadrage-haut`    | `center 12%`      | Un décor dont le haut porte le sujet |
+| `cadrage-tiers`   | `center 28%`      | Un présentoir, sujet au premier tiers |
+
+Le pourcentage est le point de la photo qu'on veut voir au même point du
+cadre : 0 % colle le haut de la photo au haut du cadre, 100 % le bas au
+bas.
+
+---
+
 ## Modifier la galerie « Mes réalisations »
 
 Les photos sont posées à plat dans les `<div class="folio-masonry">` de
