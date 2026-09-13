@@ -370,6 +370,60 @@ main > section:first-of-type + section { padding-top: 80px; }
 }
 @media (min-width: 960px){
   .hero .wrap{ grid-template-columns: 1fr 0.95fr; gap: 60px; }
+  /* Sans photo, la deuxième colonne ne serait qu'un vide à droite. */
+  .hero-texte .wrap{ grid-template-columns: 1fr; }
+}
+
+/* ---------- En-tête sans photo ----------
+   Les pages Biscuits et Micro-scénographies ouvraient sur une grande
+   photo en arche. Sur téléphone, où les deux colonnes s'empilent, elle
+   poussait tout le contenu sous la ligne de flottaison : le visiteur
+   arrivait sur une image avant d'arriver sur l'offre.
+
+   Le texte reprend donc toute la largeur. Centré et borné à 60 caractères
+   de ligne, il reste lisible au lieu de s'étaler sur les 1124 px du
+   conteneur. L'en-tête perd aussi sa hauteur inutile : sans photo à
+   accompagner, 90 px de blanc sous les boutons n'avaient plus de raison
+   d'être. */
+.hero-texte .wrap{
+  grid-template-columns: 1fr;
+  justify-items: center;
+  text-align: center;
+}
+.hero-texte{
+  padding-bottom: 54px;
+  /* Le même voile crème que l'en-tête de l'accueil. Sans la photo qui
+     l'occupait, la moitié droite laisse voir le filigrane du fond, et
+     deux calligraphies dorées se superposaient au texte. Le voile
+     l'apaise derrière les mots puis le rend au décor sur les bords. */
+  background: radial-gradient(130% 105% at 50% 50%,
+    rgba(252,241,235,.96) 0%,
+    rgba(252,241,235,.93) 45%,
+    rgba(252,241,235,.70) 70%,
+    rgba(252,241,235,0) 92%);
+}
+.hero-texte .hero-copy{ max-width: 760px; }
+.hero-texte .hero-copy p.lead{ max-width: 60ch; margin-left: auto; margin-right: auto; }
+.hero-texte .hero-actions{ justify-content: center; }
+.hero-texte .hero-trust{ justify-content: center; }
+/* Les trois repères s'empilaient un par ligne sur téléphone et ajoutaient
+   130 px à un en-tête qu'on vient justement d'alléger. En colonnes ils
+   se lisent d'un coup d'œil. */
+@media (max-width: 620px){
+  .hero-texte .hero-trust{
+    display: grid; grid-template-columns: repeat(3, 1fr);
+    gap: 14px 10px; width: 100%;
+  }
+  .hero-texte .hero-trust div{ font-size: 12px; line-height: 1.35; }
+  .hero-texte .hero-trust strong{ font-size: 17px; margin-bottom: 2px; }
+}
+.hero-texte .hero-actions:last-child{ margin-bottom: 0; }
+/* Le trait décoratif du sur-titre reste sur la première ligne quand le
+   texte passe à deux : centré, il tire alors l'œil à gauche pour rien.
+   Sur écran étroit il s'efface, le sur-titre se suffit. */
+@media (max-width: 560px){
+  .hero-texte .eyebrow::before{ display: none; }
+  .hero-texte .eyebrow{ letter-spacing: .14em; }
 }
 
 /* ---------- Hero éditorial de l'accueil ----------
@@ -884,13 +938,14 @@ body.page-accueil .hero-question{ margin-top: 40px; padding-top: 26px; }
   transform: scale(1.04);
 }
 
-/* Cadrage : le cadre est plus large que les photos, toutes en portrait.
-   object-position choisit ce qu'on garde plutôt que de rogner au centre
-   par défaut — le pourcentage est le point de la photo qu'on veut voir
-   au même point du cadre. Jamais de déformation : object-fit reste
-   « cover ». */
-.card-image img.cadrage-haut{ object-position: center 12%; }
-.card-image img.cadrage-tiers{ object-position: center 28%; }
+/* Cadrage : les cadres sont plus larges que les photos, toutes en
+   portrait. object-position choisit ce qu'on garde plutôt que de rogner
+   au centre par défaut — le pourcentage est le point de la photo qu'on
+   veut voir au même point du cadre. Jamais de déformation : object-fit
+   reste « cover ». Ces deux classes ne sont pas réservées aux cartes :
+   tout cadre plus large que sa photo peut s'en servir. */
+img.cadrage-haut{ object-position: center 12%; }
+img.cadrage-tiers{ object-position: center 28%; }
 
 /* Les cartes de formule s'offrent un cadre plus haut : la photo y montre
    le décor ET les biscuits, ce qu'un bandeau de 320 px couperait. La
