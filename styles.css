@@ -884,13 +884,14 @@ body.page-accueil .hero-question{ margin-top: 40px; padding-top: 26px; }
   transform: scale(1.04);
 }
 
-/* Cadrage : le cadre est plus large que les photos, toutes en portrait.
-   object-position choisit ce qu'on garde plutôt que de rogner au centre
-   par défaut — le pourcentage est le point de la photo qu'on veut voir
-   au même point du cadre. Jamais de déformation : object-fit reste
-   « cover ». */
-.card-image img.cadrage-haut{ object-position: center 12%; }
-.card-image img.cadrage-tiers{ object-position: center 28%; }
+/* Cadrage : les cadres sont plus larges que les photos, toutes en
+   portrait. object-position choisit ce qu'on garde plutôt que de rogner
+   au centre par défaut — le pourcentage est le point de la photo qu'on
+   veut voir au même point du cadre. Jamais de déformation : object-fit
+   reste « cover ». Ces deux classes servent partout, pas seulement dans
+   les cartes. */
+img.cadrage-haut{ object-position: center 12%; }
+img.cadrage-tiers{ object-position: center 28%; }
 
 /* Les cartes de formule s'offrent un cadre plus haut : la photo y montre
    le décor ET les biscuits, ce qu'un bandeau de 320 px couperait. La
