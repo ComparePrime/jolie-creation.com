@@ -74,7 +74,7 @@ PRINCIPALES = {
 # densité demande.
 FORMULES = [
     'escargot/micro-sceno-escargot-decor.jpeg',
-    'escargot/micro-sceno-escargot.jpeg',
+    'escargot/micro-sceno-escargot-1.jpeg',
     'escargot/micro-sceno-escargot-photobooth.jpeg',
 ]
 
