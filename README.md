@@ -154,7 +154,7 @@ Trois filtres, du plus fiable au moins fiable :
 | `images/collections/<id>/vue-1.webp`…          | Les vues secondaires, dérivées des photos pleine taille.     |
 | `images/collections/<id>/*.jpg`                | Les photos pleine taille d'origine, rangées avec leur collection. |
 | `images/micro-scenographies/<thème>/`          | Les photos d'une micro-scénographie installée, originaux et WebP de carte. |
-| `images/site/atelier-pate.jpg`                 | Une photo d'atelier, hors catalogue (avec `julie.jpeg`).     |
+| `images/site/atelier-*.jpg`                    | Les photos d'atelier, hors catalogue (avec `julie.jpeg`).    |
 | `images/site/fond-rayures.png`                      | Les rayures du fond, seules.                                 |
 | `images/site/filigrane-logo.webp`                   | Le médaillon du logo, en filigrane par-dessus les rayures.   |
 
@@ -311,13 +311,18 @@ classe :
 
 Les photos des cinq autres étapes sont de vraies photos de l'atelier,
 choisies parce qu'elles montrent l'étape : la pâte dans la cuve du
-batteur, le biscuit nature avant décoration, la poche à douille sur le
-plan de travail, un prénom calligraphié, une commande emballée sachet par
-sachet.
+batteur, les biscuits nature qui refroidissent sur grille, la poche à
+douille sur le plan de travail, un prénom calligraphié, une commande
+emballée sachet par sachet.
 
 Une photo d'atelier qui n'appartient à aucune collection se range dans
-`images/site/`, avec le portrait de Julie : elle montre le métier, pas un
-produit au catalogue.
+`images/site/`, sous le nom `atelier-<étape>.jpg`, avec le portrait de
+Julie : elle montre le métier, pas un produit au catalogue. Les étapes 01
+et 03 en ont une. Les trois dernières montrent encore les biscuits d'une
+collection, rangés avec elle : ce sont de vraies photos de l'atelier, et
+elles servent aux deux endroits. Le jour où une photo de l'étape elle-même
+existe, elle la remplace — une photo de l'étape vaut toujours mieux qu'une
+image approchante.
 
 ---
 
