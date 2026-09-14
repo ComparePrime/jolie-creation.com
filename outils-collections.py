@@ -8,15 +8,19 @@ retaper dans le HTML.
 
     python3 outils-collections.py
 
-Le script ne touche qu'aux quatre zones délimitées par des repères dans
-la page (vedettes, liste, index, jsonld). Tout le reste du fichier est
-laissé intact. Il est idempotent : le relancer deux fois donne le même
-résultat.
+Le script ne touche qu'aux deux zones délimitées par des repères dans la
+page (vedettes, jsonld). Tout le reste du fichier est laissé intact. Il
+est idempotent : le relancer deux fois donne le même résultat.
 
-Deux blocs de cartes, décidés par le seul drapeau « saison » du
-catalogue : les collections du moment en haut de page, avec une
-présentation plus large, les autres ensuite. Retirer le drapeau fait
-redescendre une collection sans rien changer d'autre.
+**Seules les collections de saison sont sur la page.** Le drapeau
+« saison » du catalogue décide de qui y figure ; les autres collections
+restent au catalogue, achetables par leur ancre, et se découvrent dans
+« Mes réalisations ». La page des biscuits présente l'offre et la saison
+en cours, elle n'est plus un catalogue.
+
+Les données structurées suivent la même règle : elles ne décrivent que
+ce que la page montre. Annoncer vingt et un produits sur une page qui en
+présente deux serait une déclaration de circonstance.
 """
 import html
 import json
@@ -159,9 +163,9 @@ def donnees_structurees(cols):
     return {
         '@context': 'https://schema.org',
         '@type': 'ItemList',
-        'name': 'Collections de biscuits personnalisés — Jolie Création',
-        'description': 'Collections de biscuits personnalisés décorés à la main '
-                       'dans le canton de Fribourg, en Suisse.',
+        'name': 'Collections de biscuits personnalisés de saison — Jolie Création',
+        'description': 'Collections de saison de biscuits personnalisés décorés à '
+                       'la main dans le canton de Fribourg, en Suisse.',
         'numberOfItems': len(cols),
         'itemListElement': [
             {'@type': 'ListItem', 'position': i + 1, 'item': produit(c)}
@@ -180,26 +184,22 @@ def remplacer(texte, nom, contenu):
 def main():
     cols = collections()
     vedettes = [c for c in cols if c['saison']]
-    autres = [c for c in cols if not c['saison']]
     t = PAGE.read_text(encoding='utf-8')
 
     t = remplacer(t, 'collections:vedettes', '\n\n'.join(carte(c) for c in vedettes))
-    t = remplacer(t, 'collections:liste', '\n\n'.join(carte(c) for c in autres))
-    t = remplacer(t, 'collections:index', '\n'.join(
-        f'        <li><a href="#{c["id"]}">{e(c["nom"])}</a>'
-        + (' <span class="index-saison">du moment</span>' if c['saison'] else '')
-        + '</li>' for c in cols))
     t = remplacer(t, 'collections:jsonld',
                   '<script type="application/ld+json">\n' +
-                  json.dumps(donnees_structurees(cols), ensure_ascii=False, indent=2) +
+                  json.dumps(donnees_structurees(vedettes), ensure_ascii=False, indent=2) +
                   '\n</script>')
 
     PAGE.write_text(t, encoding='utf-8')
-    modeles = sum(c['n'] for c in cols)
-    print(f'{len(cols)} collections ({len(vedettes)} du moment, {len(autres)} '
-          f'permanentes), {modeles} modèles écrits dans {PAGE.name}')
+    modeles = sum(c['n'] for c in vedettes)
+    print(f'{len(vedettes)} collection(s) de saison sur {len(cols)} au catalogue, '
+          f'{modeles} modèles écrits dans {PAGE.name}')
+    print('Hors saison, et donc hors de cette page : '
+          + ', '.join(c['nom'] for c in cols if not c['saison']))
 
-    attendues = [c['image'] for c in cols] + [v['image'] for c in cols for v in c['galerie']]
+    attendues = [c['image'] for c in vedettes] + [v['image'] for c in vedettes for v in c['galerie']]
     manquantes = [i for i in attendues if not (RACINE / i).exists()]
     if manquantes:
         print(f'\n{len(manquantes)} photo(s) encore attendue(s) :')
@@ -207,7 +207,7 @@ def main():
             print('  ' + i)
         print('En attendant, ces cartes affichent le nom de la collection.')
 
-    sans_prix = [c['nom'] for c in cols if not c['n']]
+    sans_prix = [c['nom'] for c in vedettes if not c['n']]
     if sans_prix:
         print('\nCollection(s) sans modèle tarifé, affichée(s) mais pas '
               'achetable(s) : ' + ', '.join(sans_prix))

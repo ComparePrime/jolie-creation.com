@@ -946,6 +946,8 @@ body.page-accueil .hero-question{ margin-top: 40px; padding-top: 26px; }
    tout cadre plus large que sa photo peut s'en servir. */
 img.cadrage-haut{ object-position: center 12%; }
 img.cadrage-tiers{ object-position: center 28%; }
+img.cadrage-milieu{ object-position: center 45%; }
+img.cadrage-bas{ object-position: center 65%; }
 
 /* Les cartes de formule s'offrent un cadre plus haut : la photo y montre
    le décor ET les biscuits, ce qu'un bandeau de 320 px couperait. La
@@ -960,14 +962,15 @@ img.cadrage-tiers{ object-position: center 28%; }
 /* Une formule sans photo garde le cadre, à sa place et à sa taille :
    trois cartes alignées valent mieux qu'une seule décalée de 400 px.
    Le jour où la photo arrive, le <span> devient un <img>. */
-.card-image.sans-photo{
+.card-image.sans-photo,
+.atelier-photo.sans-photo{
   display: flex; align-items: center; justify-content: center;
   padding: 24px;
   background: linear-gradient(150deg, var(--cream-deep), var(--cream));
-  /* Le même trait que celui qu'une photo dessine sous elle : sans lui, le
-     cadre vide se fond dans la carte au lieu de s'y poser. */
-  border-bottom: 1px solid var(--line);
 }
+/* Le même trait que celui qu'une photo dessine sous elle : sans lui, le
+   cadre vide se fond dans la carte au lieu de s'y poser. */
+.card-image.sans-photo{ border-bottom: 1px solid var(--line); }
 .card-image-repli{
   font-family: var(--font-display);
   font-size: 21px; line-height: 1.3; text-align: center;
@@ -2364,3 +2367,80 @@ form.devis-form{
 }
 .retrait-note strong{ display:block; color: var(--ink); font-size: 15.5px; }
 .retrait-note span{ display:block; font-size: 14px; line-height:1.6; color: var(--ink-soft); margin-top: 5px; }
+
+
+/* ---------- Comment sont créés mes biscuits ----------
+   Six étapes en rangées alternées : la photo passe d'un côté à l'autre
+   pour qu'on lise la page en zigzag plutôt qu'en colonne. Les étapes
+   dont la photo n'existe pas encore gardent leur cadre, au nom de
+   l'étape — remplacer le <span> par un <img> suffira. */
+.atelier-etapes{
+  list-style: none; margin: 0; padding: 0;
+  display: grid; gap: 30px;
+}
+.atelier-etape{
+  display: grid; gap: 0;
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: 24px;
+  overflow: hidden;
+}
+.atelier-photo{
+  aspect-ratio: 5/4;
+  background: linear-gradient(150deg, var(--cream-deep), var(--cream));
+  overflow: hidden;
+}
+.atelier-photo img{ width: 100%; height: 100%; object-fit: cover; display: block; }
+.atelier-texte{
+  display: flex; flex-direction: column; justify-content: center;
+  padding: 28px 26px 30px;
+}
+.atelier-num{
+  font-family: var(--font-display);
+  font-size: 34px; line-height: 1;
+  color: var(--gold); opacity: .45;
+  margin-bottom: 10px;
+}
+.atelier-etape h3{
+  font-size: clamp(20px, 2.4vw, 26px);
+  line-height: 1.25;
+  margin: 0 0 12px;
+}
+.atelier-etape p{
+  font-size: 15.5px; line-height: 1.75; color: var(--ink-soft);
+  margin: 0;
+}
+
+/* Deux étapes n'ont pas encore de photo d'atelier. Plutôt qu'un grand
+   cadre vide, elles tiennent en une rangée de texte compacte : le numéro
+   à gauche, l'étape à droite. Le jour où la photo existe, il suffit de
+   rendre à l'étape son <div class="atelier-photo"><img…></div> et de
+   retirer la classe. */
+.atelier-etape-texte .atelier-texte{ padding: 26px 26px 28px; }
+.atelier-etape-texte .atelier-num{ margin-bottom: 6px; }
+
+@media (min-width: 820px){
+  .atelier-etape{
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    align-items: stretch;
+  }
+  .atelier-etape-texte{ grid-template-columns: 1fr; }
+  .atelier-etape-texte .atelier-texte{
+    display: grid;
+    grid-template-columns: 90px minmax(0, 1fr);
+    align-items: start;
+    column-gap: 8px;
+    padding: 34px 44px;
+  }
+  .atelier-etape-texte .atelier-num{ grid-row: 1 / span 2; margin: 0; font-size: 44px; }
+  .atelier-etape-texte h3{ margin-bottom: 8px; }
+  .atelier-etape-texte p{ max-width: 68ch; }
+  /* Une proportion définie, sinon la hauteur naturelle d'une photo
+     portrait étirerait la rangée sur mille pixels. */
+  .atelier-photo{ aspect-ratio: 5/4; }
+  .atelier-texte{ padding: 40px 44px; }
+  /* Une rangée sur deux renvoie la photo à droite. L'ordre du HTML ne
+     bouge pas : le numéro et le titre restent lus dans l'ordre. */
+  .atelier-etape:nth-child(even) .atelier-photo{ grid-column: 2; grid-row: 1; }
+  .atelier-etape:nth-child(even) .atelier-texte{ grid-column: 1; grid-row: 1; }
+}

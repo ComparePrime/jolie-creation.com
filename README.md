@@ -148,7 +148,8 @@ Trois filtres, du plus fiable au moins fiable :
 | `tests/catalogue.test.js`                      | Tests de la fonction de paiement (`npm test`).               |
 | `tests/envoi.test.js`                          | Tests de la fonction d'envoi (`npm test`).                   |
 | `outils-galerie.py`                            | Recompose la galerie de « Mes réalisations » en rangées.     |
-| `outils-collections.py`                        | Régénère les cartes de collection depuis `catalogue.js`.     |
+| `outils-collections.py`                        | Régénère les cartes des collections de saison depuis `catalogue.js`. |
+| `outils-avis.py`                               | Recopie les avis de « Mes réalisations » vers la page Biscuits. |
 | `outils-photos.py`                             | Dérive les vues de galerie du portfolio et convertit les photos en WebP. |
 | `images/collections/<id>.webp`                 | La photo de chaque collection, une par carte.                |
 | `images/collections/<id>-1.webp`…              | Les vues secondaires d'une collection, dérivées du portfolio. |
@@ -229,6 +230,58 @@ partie visible. Deux classes suffisent sur l'accueil :
 Le pourcentage est le point de la photo qu'on veut voir au même point du
 cadre : 0 % colle le haut de la photo au haut du cadre, 100 % le bas au
 bas.
+
+---
+
+## La page « Biscuits personnalisés »
+
+Six sections, dans cet ordre :
+
+1. **En-tête** — l'offre en une phrase, sans photo.
+2. **Saison en cours** — les collections portant `"saison": true`.
+3. **Comment sont créés mes biscuits ?** — les six étapes de l'atelier.
+4. **Mes réalisations** — la passerelle vers la galerie.
+5. **Elles en parlent** — les avis, recopiés depuis la galerie.
+6. **Appel final** — devis et WhatsApp.
+
+### Les six étapes de l'atelier
+
+Elles vivent en clair dans la page, dans `<ol class="atelier-etapes">`.
+Deux d'entre elles n'ont pas encore de photo d'atelier : elles portent la
+classe `atelier-etape-texte` et tiennent en une rangée compacte, numéro à
+gauche. Un grand cadre vide vaudrait moins qu'une rangée assumée.
+
+Le jour où la photo existe, rendre à l'étape son cadre et retirer la
+classe :
+
+```html
+<li class="atelier-etape">
+  <div class="atelier-photo">
+    <img src="images/creations/…" alt="…" width="…" height="…"
+         loading="lazy" decoding="async" class="cadrage-tiers">
+  </div>
+  <div class="atelier-texte">…</div>
+</li>
+```
+
+Les photos des quatre autres étapes sont de vraies photos de l'atelier,
+choisies parce qu'elles montrent l'étape : le biscuit nature avant
+décoration, la poche à douille sur le plan de travail, un prénom
+calligraphié, une commande emballée sachet par sachet.
+
+### Les avis, écrits une fois
+
+Les avis clients s'écrivent dans `mes-realisations.html` et **seulement
+là**. `outils-avis.py` les recopie entre les repères `<!-- avis:liste -->`
+de la page Biscuits :
+
+```bash
+python3 outils-avis.py
+```
+
+Corriger un avis du côté copié ne sert à rien : le prochain passage du
+script l'écraserait. Un avis corrigé d'un côté et pas de l'autre serait
+pire que pas d'avis du tout.
 
 ---
 
@@ -359,13 +412,21 @@ promettre.
 Une collection sans galerie n'affiche que sa grande photo. C'est un état
 normal, pas un manque à combler.
 
-### Mettre une collection en avant
+### Le drapeau « saison » décide de la page des biscuits
 
-`"saison": true` fait remonter la collection dans « Les collections du
-moment », en tête de page, et lui donne un liseré doré et une pastille.
-La carte garde exactement la même forme que les vingt autres. Retirer le
-drapeau la fait redescendre parmi les autres : rien d'autre à changer, et
-elle reste achetable dans les deux cas.
+`"saison": true` met la collection sur la page Biscuits, dans la section
+« Saison en cours ». **C'est la seule chose qui l'y met.** La page
+présente l'offre et ce qui se commande en ce moment ; elle n'est pas un
+catalogue.
+
+Retirer le drapeau retire la collection de cette page. Elle reste au
+catalogue, avec ses prix et sa modale, et se découvre dans « Mes
+réalisations » — où un thème peut porter un bouton « Choisir mes
+biscuits » qui ouvre la même modale et remplit le même panier.
+
+Les données structurées suivent la même règle : elles ne décrivent que
+les collections réellement affichées. Annoncer vingt et un produits sur
+une page qui en présente deux serait une déclaration de circonstance.
 
 ---
 
