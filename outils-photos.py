@@ -5,20 +5,24 @@
 
 Le script fait deux choses, dans cet ordre.
 
-**1. Il dérive les vues de galerie depuis images/creations/.** La table
-GALERIES ci-dessous dit, pour chaque collection, quelles photos du
-portfolio montrent ce même assortiment. Elles deviennent
-images/collections/<id>-1.webp, -2.webp… Une photo identique à la photo
-de carte est écartée automatiquement : une galerie qui répète la grande
-image au-dessus n'apprend rien.
+Chaque collection a son dossier, images/collections/<id>/, où vivent sa
+photo de carte, ses vues de galerie et les photos pleine taille du
+portfolio.
 
-**2. Il convertit en WebP tout original déposé dans images/collections/.**
-Déposer magie-noel.jpg dans ce dossier suffit à obtenir magie-noel.webp.
+**1. Il dérive les vues de galerie.** La table GALERIES ci-dessous dit,
+pour chaque collection, quelles photos pleine taille montrent le même
+assortiment. Elles deviennent vue-1.webp, vue-2.webp… Une photo identique
+à la photo de carte est écartée automatiquement : une galerie qui répète
+la grande image au-dessus n'apprend rien.
+
+**2. Il convertit en WebP tout original déposé sans WebP.** Déposer
+principale.jpg dans un dossier de collection suffit à obtenir
+principale.webp.
 
 Deux tailles, selon le rôle de la photo :
 
-  magie-noel.jpg   -> magie-noel.webp     800 px, la photo de la carte
-  automne-1.jpg    -> automne-1.webp      520 px, une vue de galerie
+  principale.jpg   -> principale.webp     800 px, la photo de la carte
+  vue-1.jpg        -> vue-1.webp          520 px, une vue de galerie
 
 Les vues de galerie s'affichent par trois ou par six dans une carte : à
 plus de 520 px, on paierait des pixels que personne ne voit.
@@ -40,14 +44,13 @@ import sys
 from PIL import Image
 
 RACINE = pathlib.Path(__file__).resolve().parent
-DOSSIER = RACINE / 'images' / 'collections'
-PORTFOLIO = RACINE / 'images' / 'creations'
+COLLECTIONS = RACINE / 'images' / 'collections'
 COTE_CARTE = 800
 COTE_GALERIE = 520
 QUALITE = 78
 SOURCES = {'.png', '.jpg', '.jpeg', '.tif', '.tiff', '.bmp'}
-# « automne-3 » est une vue de galerie ; « magie-noel » est une carte.
-GALERIE = re.compile(r'-\d+$')
+# « vue-3 » est une vue de galerie ; « principale » est une carte.
+GALERIE = re.compile(r'^vue-\d+$')
 
 # Collections dont le portfolio garde d'autres vues du même assortiment.
 # L'ordre compte : c'est celui de la galerie sur la page.
@@ -95,51 +98,54 @@ def convertir(source, cible, cote):
 
 
 def deriver():
-    """Écrit <id>-1.webp… depuis le portfolio. Renvoie la liste écrite."""
+    """Écrit <id>/vue-1.webp… depuis les photos pleine taille."""
     ecrits = []
     for cid, photos in GALERIES.items():
-        carte = DOSSIER / f'{cid}.webp'
+        dossier = COLLECTIONS / cid
+        carte = dossier / 'principale.webp'
         reference = empreinte(carte) if carte.exists() else None
         rang = 0
         for nom in photos:
-            source = PORTFOLIO / nom
+            source = dossier / nom
             if not source.exists():
-                print(f'  photo introuvable : images/creations/{nom}', file=sys.stderr)
+                print(f'  photo introuvable : {source.relative_to(RACINE)}', file=sys.stderr)
                 continue
             if reference and memes(reference, empreinte(source)):
                 continue          # c'est déjà la grande photo de la carte
             rang += 1
-            cible = DOSSIER / f'{cid}-{rang}.webp'
+            cible = dossier / f'vue-{rang}.webp'
             convertir(source, cible, COTE_GALERIE)
-            ecrits.append((cible.name, nom, cible.stat().st_size))
+            ecrits.append((f'{cid}/{cible.name}', nom, cible.stat().st_size))
         # Une galerie raccourcie ne doit pas laisser traîner ses anciens fichiers.
-        trop = DOSSIER / f'{cid}-{rang + 1}.webp'
+        trop = dossier / f'vue-{rang + 1}.webp'
         while trop.exists():
             trop.unlink()
             rang += 1
-            trop = DOSSIER / f'{cid}-{rang + 1}.webp'
+            trop = dossier / f'vue-{rang + 1}.webp'
     return ecrits
 
 
 def deposees():
-    """Convertit les originaux déposés à la main dans images/collections/."""
+    """Convertit les originaux déposés à la main sans leur WebP."""
     faits, ignores = [], 0
-    for source in sorted(DOSSIER.iterdir()):
+    for source in sorted(COLLECTIONS.rglob('*')):
         if source.suffix.lower() not in SOURCES:
             continue
+        if source.stem not in ('principale',) and not GALERIE.match(source.stem):
+            continue          # une photo pleine taille du portfolio, pas une source
         cible = source.with_suffix('.webp')
         if cible.exists() and cible.stat().st_mtime >= source.stat().st_mtime:
             ignores += 1
             continue
         convertir(source, cible,
-                  COTE_GALERIE if GALERIE.search(source.stem) else COTE_CARTE)
-        faits.append((source.name, cible.stat().st_size))
+                  COTE_GALERIE if GALERIE.match(source.stem) else COTE_CARTE)
+        faits.append((str(source.relative_to(COLLECTIONS)), cible.stat().st_size))
     return faits, ignores
 
 
 def main():
-    if not DOSSIER.is_dir():
-        raise SystemExit(f'Dossier introuvable : {DOSSIER}')
+    if not COLLECTIONS.is_dir():
+        raise SystemExit(f'Dossier introuvable : {COLLECTIONS}')
 
     ecrits = deriver()
     for cible, source, taille in ecrits:
@@ -151,7 +157,7 @@ def main():
         print(f'{nom:28} → {taille / 1024:5.0f} ko')
     print(f'{len(faits)} photo(s) déposées converties, {ignores} déjà à jour.')
 
-    tous = sorted(DOSSIER.glob('*.webp'))
+    tous = sorted(COLLECTIONS.rglob('*.webp'))
     total = sum(f.stat().st_size for f in tous)
     print(f'\n{len(tous)} WebP, {total / 1024:.0f} ko au total.')
     if total > 2_500_000:

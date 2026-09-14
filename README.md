@@ -154,8 +154,8 @@ Trois filtres, du plus fiable au moins fiable :
 | `images/collections/<id>.webp`                 | La photo de chaque collection, une par carte.                |
 | `images/collections/<id>-1.webp`…              | Les vues secondaires d'une collection, dérivées du portfolio. |
 | `images/creations/`                            | Le portfolio : photos pleine taille de « Mes réalisations ». |
-| `images/fond-rayures.png`                      | Les rayures du fond, seules.                                 |
-| `images/filigrane-logo.webp`                   | Le médaillon du logo, en filigrane par-dessus les rayures.   |
+| `images/site/fond-rayures.png`                      | Les rayures du fond, seules.                                 |
+| `images/site/filigrane-logo.webp`                   | Le médaillon du logo, en filigrane par-dessus les rayures.   |
 
 ### Trois principes du code de paiement
 
@@ -233,16 +233,37 @@ bas.
 
 ---
 
-## La page « Biscuits personnalisés »
+## Deux pages, deux rôles
 
-Six sections, dans cet ordre :
+**La séparation est la règle qui tient tout le reste.**
+
+`biscuits-personnalises.html` **présente la prestation**. Ni modèle, ni
+prix, ni bloc de collection. Sept sections :
 
 1. **En-tête** — l'offre en une phrase, sans photo.
-2. **Saison en cours** — les collections portant `"saison": true`.
+2. **Saison en cours** — un aperçu des collections `"saison": true` :
+   photo, nom, lien vers la galerie. Rien d'autre.
 3. **Comment sont créés mes biscuits ?** — les six étapes de l'atelier.
-4. **Mes réalisations** — la passerelle vers la galerie.
-5. **Elles en parlent** — les avis, recopiés depuis la galerie.
-6. **Appel final** — devis et WhatsApp.
+4. **Ingrédients & conservation** — composition, allergènes, durée.
+5. **Mes réalisations** — la passerelle vers la galerie.
+6. **Elles en parlent** — les avis, recopiés depuis la galerie.
+7. **Appel final** — devis et WhatsApp.
+
+`mes-realisations.html` **porte le catalogue**. Les vingt et une
+collections y vivent au complet : grande photo, nom, présentation, vues
+secondaires, liste des modèles avec leurs prix, bouton de sélection quand
+la collection est commandable. Puis la galerie des réalisations, série
+par série.
+
+Les deux zones se régénèrent d'un même geste :
+
+```bash
+python3 outils-collections.py
+```
+
+Le script écrit les collections dans la galerie et l'aperçu de saison
+dans la vitrine. Il ne peut pas écrire de prix du côté vitrine : c'est le
+gabarit qui l'en empêche, pas la discipline.
 
 ### Les six étapes de l'atelier
 
@@ -412,21 +433,15 @@ promettre.
 Une collection sans galerie n'affiche que sa grande photo. C'est un état
 normal, pas un manque à combler.
 
-### Le drapeau « saison » décide de la page des biscuits
+### Le drapeau « saison »
 
-`"saison": true` met la collection sur la page Biscuits, dans la section
-« Saison en cours ». **C'est la seule chose qui l'y met.** La page
-présente l'offre et ce qui se commande en ce moment ; elle n'est pas un
-catalogue.
+`"saison": true` fait deux choses, et seulement deux : la collection
+apparaît en aperçu sur la page vitrine, et elle porte une pastille
+« collection du moment » dans la galerie. Retirer le drapeau la retire de
+la vitrine. Elle reste au catalogue, achetable, à sa place dans la
+galerie.
 
-Retirer le drapeau retire la collection de cette page. Elle reste au
-catalogue, avec ses prix et sa modale, et se découvre dans « Mes
-réalisations » — où un thème peut porter un bouton « Choisir mes
-biscuits » qui ouvre la même modale et remplit le même panier.
-
-Les données structurées suivent la même règle : elles ne décrivent que
-les collections réellement affichées. Annoncer vingt et un produits sur
-une page qui en présente deux serait une déclaration de circonstance.
+Les données structurées vivent sur la galerie, qui porte le catalogue.
 
 ---
 
