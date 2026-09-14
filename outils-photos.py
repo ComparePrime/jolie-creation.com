@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Prépare les photos des cartes de collection.
+"""Prépare les photos des cartes de collection et de formule.
 
     python3 outils-photos.py
 
@@ -45,8 +45,10 @@ from PIL import Image
 
 RACINE = pathlib.Path(__file__).resolve().parent
 COLLECTIONS = RACINE / 'images' / 'collections'
+SCENOS = RACINE / 'images' / 'micro-scenographies'
 COTE_CARTE = 800
 COTE_GALERIE = 520
+COTE_FORMULE = 1100
 QUALITE = 78
 SOURCES = {'.png', '.jpg', '.jpeg', '.tif', '.tiff', '.bmp'}
 # « vue-3 » est une vue de galerie ; « principale » est une carte.
@@ -61,6 +63,20 @@ PRINCIPALES = {
     'bapteme-nature': 'bapteme-elio-5.jpeg',
     'logo-entreprise': 'entreprise-3.jpeg',
 }
+
+# Photos qui illustrent une carte de formule sur micro-scenographies.html.
+# Le cadre y fait 341 px de large : servir le fichier d'origine reviendrait
+# à télécharger trois fois la taille utile. Chacune reçoit un .webp à côté
+# de son original, qui lui ne bouge pas — la galerie et le partage social
+# continuent de s'en servir en pleine taille. Ces photos sont en portrait,
+# donc c'est leur hauteur que COTE_FORMULE borne : 1100 px de haut laissent
+# plus de 700 px de large, soit le double du cadre, ce qu'un écran à forte
+# densité demande.
+FORMULES = [
+    'escargot/micro-sceno-escargot-decor.jpeg',
+    'escargot/micro-sceno-escargot.jpeg',
+    'escargot/micro-sceno-escargot-photobooth.jpeg',
+]
 
 # Collections dont le portfolio garde d'autres vues du même assortiment.
 # L'ordre compte : c'est celui de la galerie sur la page.
@@ -129,6 +145,22 @@ def principales():
     return ecrits
 
 
+def formules():
+    """Écrit le .webp de carte à côté de chaque photo de formule."""
+    ecrits = []
+    for nom in FORMULES:
+        source = SCENOS / nom
+        cible = source.with_suffix('.webp')
+        if not source.exists():
+            print(f'  photo introuvable : {source.relative_to(RACINE)}', file=sys.stderr)
+            continue
+        if cible.exists() and cible.stat().st_mtime >= source.stat().st_mtime:
+            continue
+        convertir(source, cible, COTE_FORMULE)
+        ecrits.append((cible.name, source.name, cible.stat().st_size))
+    return ecrits
+
+
 def deriver():
     """Écrit <id>/vue-1.webp… depuis les photos pleine taille."""
     ecrits = []
@@ -183,6 +215,9 @@ def main():
     for cible, source, taille in ecrits:
         print(f'{cible:28} ← {source:30} {taille / 1024:5.0f} ko')
     print(f'{len(ecrits)} vue(s) de galerie dérivées du portfolio.')
+
+    for cible, source, taille in formules():
+        print(f'{cible:44} ← {source:40} {taille / 1024:5.0f} ko')
 
     faits, ignores = deposees()
     for nom, taille in faits:

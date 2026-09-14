@@ -959,32 +959,6 @@ img.cadrage-bas{ object-position: center 65%; }
 }
 #formules .card-image img{ object-position: center 30%; }
 
-/* Une formule sans photo garde le cadre, à sa place et à sa taille :
-   trois cartes alignées valent mieux qu'une seule décalée de 400 px.
-   Le jour où la photo arrive, le <span> devient un <img>. */
-.card-image.sans-photo,
-.atelier-photo.sans-photo{
-  display: flex; align-items: center; justify-content: center;
-  padding: 24px;
-  background: linear-gradient(150deg, var(--cream-deep), var(--cream));
-}
-/* Le même trait que celui qu'une photo dessine sous elle : sans lui, le
-   cadre vide se fond dans la carte au lieu de s'y poser. */
-.card-image.sans-photo{ border-bottom: 1px solid var(--line); }
-.card-image-repli{
-  font-family: var(--font-display);
-  font-size: 21px; line-height: 1.3; text-align: center;
-  color: var(--gold-deep);
-  opacity: .5;
-}
-
-.formule-card.no-image .card-content{
-  padding-top: 40px;
-}
-.formule-card.no-image.featured .card-content{
-  padding-top: 62px;
-}
-
 .card-content{
   padding: 32px 32px 0;
   display: flex;
@@ -2411,11 +2385,11 @@ form.devis-form{
   margin: 0;
 }
 
-/* Deux étapes n'ont pas encore de photo d'atelier. Plutôt qu'un grand
-   cadre vide, elles tiennent en une rangée de texte compacte : le numéro
-   à gauche, l'étape à droite. Le jour où la photo existe, il suffit de
-   rendre à l'étape son <div class="atelier-photo"><img…></div> et de
-   retirer la classe. */
+/* Une étape n'a pas encore de photo d'atelier. Plutôt qu'un grand cadre
+   vide, elle tient en une rangée de texte compacte : le numéro à gauche,
+   l'étape à droite. Le jour où la photo existe, il suffit de rendre à
+   l'étape son <div class="atelier-photo"><img…></div> et de retirer la
+   classe. */
 .atelier-etape-texte .atelier-texte{ padding: 26px 26px 28px; }
 .atelier-etape-texte .atelier-num{ margin-bottom: 6px; }
 
