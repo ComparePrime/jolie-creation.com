@@ -162,7 +162,7 @@ const PRIX_TEMOINS = {
 
   await cas('chaque collection annonce son image et son texte alternatif', () => {
     Catalogue.COLLECTIONS.forEach((c) => {
-      assert.strictEqual(c.image, 'images/collections/' + c.id + '.webp', c.id);
+      assert.strictEqual(c.image, 'images/collections/' + c.id + '/principale.webp', c.id);
       assert.ok(c.alt && c.alt.length > 20, c.id + ' : texte alternatif trop court');
       assert.ok(c.description && c.description.length > 60, c.id + ' : description trop courte');
     });
@@ -181,7 +181,7 @@ const PRIX_TEMOINS = {
     const vus = new Set();
     Catalogue.COLLECTIONS.forEach((c) => {
       (c.galerie || []).forEach((v, i) => {
-        assert.strictEqual(v.image, `images/collections/${c.id}-${i + 1}.webp`, c.id);
+        assert.strictEqual(v.image, `images/collections/${c.id}/vue-${i + 1}.webp`, c.id);
         assert.ok(v.alt && v.alt.length > 25, v.image + ' : texte alternatif trop court');
         assert.ok(!vus.has(v.alt), 'texte alternatif en double : ' + v.alt);
         vus.add(v.alt);
@@ -192,19 +192,21 @@ const PRIX_TEMOINS = {
   await cas('chaque vue déclarée existe sur le disque, et réciproquement', () => {
     const fs = require('node:fs');
     const path = require('node:path');
-    const dossier = path.join(__dirname, '..', 'images', 'collections');
+    const racine = path.join(__dirname, '..');
     const declarees = new Set();
     Catalogue.COLLECTIONS.forEach((c) => (c.galerie || []).forEach((v) => {
-      declarees.add(path.basename(v.image));
-      assert.ok(fs.existsSync(path.join(dossier, path.basename(v.image))),
-        'fichier manquant : ' + v.image);
+      declarees.add(v.image);
+      assert.ok(fs.existsSync(path.join(racine, v.image)), 'fichier manquant : ' + v.image);
     }));
     // Un fichier dérivé que plus personne ne déclare ne doit pas traîner :
     // il partirait en production sans jamais s'afficher.
-    const cartes = new Set(Catalogue.COLLECTIONS.map((c) => c.id + '.webp'));
-    fs.readdirSync(dossier)
-      .filter((f) => f.endsWith('.webp') && !cartes.has(f))
-      .forEach((f) => assert.ok(declarees.has(f), 'vue orpheline : ' + f));
+    Catalogue.COLLECTIONS.forEach((c) => {
+      const dossier = path.join(racine, 'images', 'collections', c.id);
+      fs.readdirSync(dossier)
+        .filter((f) => f.startsWith('vue-') && f.endsWith('.webp'))
+        .forEach((f) => assert.ok(declarees.has(`images/collections/${c.id}/${f}`),
+          'vue orpheline : ' + c.id + '/' + f));
+    });
   });
 
   await cas('une galerie ne montre que des collections réellement achetables', () => {

@@ -148,13 +148,14 @@ Trois filtres, du plus fiable au moins fiable :
 | `tests/catalogue.test.js`                      | Tests de la fonction de paiement (`npm test`).               |
 | `tests/envoi.test.js`                          | Tests de la fonction d'envoi (`npm test`).                   |
 | `outils-galerie.py`                            | Recompose la galerie de « Mes réalisations » en rangées.     |
-| `outils-collections.py`                        | Régénère les cartes de collection depuis `catalogue.js`.     |
+| `outils-collections.py`                        | Régénère les cartes des collections de saison depuis `catalogue.js`. |
+| `outils-avis.py`                               | Recopie les avis de « Mes réalisations » vers la page Biscuits. |
 | `outils-photos.py`                             | Dérive les vues de galerie du portfolio et convertit les photos en WebP. |
 | `images/collections/<id>.webp`                 | La photo de chaque collection, une par carte.                |
 | `images/collections/<id>-1.webp`…              | Les vues secondaires d'une collection, dérivées du portfolio. |
 | `images/creations/`                            | Le portfolio : photos pleine taille de « Mes réalisations ». |
-| `images/fond-rayures.png`                      | Les rayures du fond, seules.                                 |
-| `images/filigrane-logo.webp`                   | Le médaillon du logo, en filigrane par-dessus les rayures.   |
+| `images/site/fond-rayures.png`                      | Les rayures du fond, seules.                                 |
+| `images/site/filigrane-logo.webp`                   | Le médaillon du logo, en filigrane par-dessus les rayures.   |
 
 ### Trois principes du code de paiement
 
@@ -229,6 +230,79 @@ partie visible. Deux classes suffisent sur l'accueil :
 Le pourcentage est le point de la photo qu'on veut voir au même point du
 cadre : 0 % colle le haut de la photo au haut du cadre, 100 % le bas au
 bas.
+
+---
+
+## Deux pages, deux rôles
+
+**La séparation est la règle qui tient tout le reste.**
+
+`biscuits-personnalises.html` **présente la prestation**. Ni modèle, ni
+prix, ni bloc de collection. Sept sections :
+
+1. **En-tête** — l'offre en une phrase, sans photo.
+2. **Saison en cours** — un aperçu des collections `"saison": true` :
+   photo, nom, lien vers la galerie. Rien d'autre.
+3. **Comment sont créés mes biscuits ?** — les six étapes de l'atelier.
+4. **Ingrédients & conservation** — composition, allergènes, durée.
+5. **Mes réalisations** — la passerelle vers la galerie.
+6. **Elles en parlent** — les avis, recopiés depuis la galerie.
+7. **Appel final** — devis et WhatsApp.
+
+`mes-realisations.html` **porte le catalogue**. Les vingt et une
+collections y vivent au complet : grande photo, nom, présentation, vues
+secondaires, liste des modèles avec leurs prix, bouton de sélection quand
+la collection est commandable. Puis la galerie des réalisations, série
+par série.
+
+Les deux zones se régénèrent d'un même geste :
+
+```bash
+python3 outils-collections.py
+```
+
+Le script écrit les collections dans la galerie et l'aperçu de saison
+dans la vitrine. Il ne peut pas écrire de prix du côté vitrine : c'est le
+gabarit qui l'en empêche, pas la discipline.
+
+### Les six étapes de l'atelier
+
+Elles vivent en clair dans la page, dans `<ol class="atelier-etapes">`.
+Deux d'entre elles n'ont pas encore de photo d'atelier : elles portent la
+classe `atelier-etape-texte` et tiennent en une rangée compacte, numéro à
+gauche. Un grand cadre vide vaudrait moins qu'une rangée assumée.
+
+Le jour où la photo existe, rendre à l'étape son cadre et retirer la
+classe :
+
+```html
+<li class="atelier-etape">
+  <div class="atelier-photo">
+    <img src="images/creations/…" alt="…" width="…" height="…"
+         loading="lazy" decoding="async" class="cadrage-tiers">
+  </div>
+  <div class="atelier-texte">…</div>
+</li>
+```
+
+Les photos des quatre autres étapes sont de vraies photos de l'atelier,
+choisies parce qu'elles montrent l'étape : le biscuit nature avant
+décoration, la poche à douille sur le plan de travail, un prénom
+calligraphié, une commande emballée sachet par sachet.
+
+### Les avis, écrits une fois
+
+Les avis clients s'écrivent dans `mes-realisations.html` et **seulement
+là**. `outils-avis.py` les recopie entre les repères `<!-- avis:liste -->`
+de la page Biscuits :
+
+```bash
+python3 outils-avis.py
+```
+
+Corriger un avis du côté copié ne sert à rien : le prochain passage du
+script l'écraserait. Un avis corrigé d'un côté et pas de l'autre serait
+pire que pas d'avis du tout.
 
 ---
 
@@ -359,13 +433,15 @@ promettre.
 Une collection sans galerie n'affiche que sa grande photo. C'est un état
 normal, pas un manque à combler.
 
-### Mettre une collection en avant
+### Le drapeau « saison »
 
-`"saison": true` fait remonter la collection dans « Les collections du
-moment », en tête de page, et lui donne un liseré doré et une pastille.
-La carte garde exactement la même forme que les vingt autres. Retirer le
-drapeau la fait redescendre parmi les autres : rien d'autre à changer, et
-elle reste achetable dans les deux cas.
+`"saison": true` fait deux choses, et seulement deux : la collection
+apparaît en aperçu sur la page vitrine, et elle porte une pastille
+« collection du moment » dans la galerie. Retirer le drapeau la retire de
+la vitrine. Elle reste au catalogue, achetable, à sa place dans la
+galerie.
+
+Les données structurées vivent sur la galerie, qui porte le catalogue.
 
 ---
 

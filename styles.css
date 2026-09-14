@@ -106,8 +106,8 @@ body::before{
   z-index: -1;
   background-image:
     linear-gradient(rgba(252, 241, 235, 0.9), rgba(252, 241, 235, 0.9)),
-    url('images/filigrane-logo.webp'),
-    url('images/fond-rayures.png');
+    url('images/site/filigrane-logo.webp'),
+    url('images/site/fond-rayures.png');
   background-size: cover, min(50vh, 78vw, 620px) auto, cover;
   background-position: center, center center, center top;
   background-repeat: no-repeat;
@@ -946,6 +946,8 @@ body.page-accueil .hero-question{ margin-top: 40px; padding-top: 26px; }
    tout cadre plus large que sa photo peut s'en servir. */
 img.cadrage-haut{ object-position: center 12%; }
 img.cadrage-tiers{ object-position: center 28%; }
+img.cadrage-milieu{ object-position: center 45%; }
+img.cadrage-bas{ object-position: center 65%; }
 
 /* Les cartes de formule s'offrent un cadre plus haut : la photo y montre
    le décor ET les biscuits, ce qu'un bandeau de 320 px couperait. La
@@ -960,14 +962,15 @@ img.cadrage-tiers{ object-position: center 28%; }
 /* Une formule sans photo garde le cadre, à sa place et à sa taille :
    trois cartes alignées valent mieux qu'une seule décalée de 400 px.
    Le jour où la photo arrive, le <span> devient un <img>. */
-.card-image.sans-photo{
+.card-image.sans-photo,
+.atelier-photo.sans-photo{
   display: flex; align-items: center; justify-content: center;
   padding: 24px;
   background: linear-gradient(150deg, var(--cream-deep), var(--cream));
-  /* Le même trait que celui qu'une photo dessine sous elle : sans lui, le
-     cadre vide se fond dans la carte au lieu de s'y poser. */
-  border-bottom: 1px solid var(--line);
 }
+/* Le même trait que celui qu'une photo dessine sous elle : sans lui, le
+   cadre vide se fond dans la carte au lieu de s'y poser. */
+.card-image.sans-photo{ border-bottom: 1px solid var(--line); }
 .card-image-repli{
   font-family: var(--font-display);
   font-size: 21px; line-height: 1.3; text-align: center;
@@ -2364,3 +2367,196 @@ form.devis-form{
 }
 .retrait-note strong{ display:block; color: var(--ink); font-size: 15.5px; }
 .retrait-note span{ display:block; font-size: 14px; line-height:1.6; color: var(--ink-soft); margin-top: 5px; }
+
+
+/* ---------- Comment sont créés mes biscuits ----------
+   Six étapes en rangées alternées : la photo passe d'un côté à l'autre
+   pour qu'on lise la page en zigzag plutôt qu'en colonne. Les étapes
+   dont la photo n'existe pas encore gardent leur cadre, au nom de
+   l'étape — remplacer le <span> par un <img> suffira. */
+.atelier-etapes{
+  list-style: none; margin: 0; padding: 0;
+  display: grid; gap: 30px;
+}
+.atelier-etape{
+  display: grid; gap: 0;
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: 24px;
+  overflow: hidden;
+}
+.atelier-photo{
+  aspect-ratio: 5/4;
+  background: linear-gradient(150deg, var(--cream-deep), var(--cream));
+  overflow: hidden;
+}
+.atelier-photo img{ width: 100%; height: 100%; object-fit: cover; display: block; }
+.atelier-texte{
+  display: flex; flex-direction: column; justify-content: center;
+  padding: 28px 26px 30px;
+}
+.atelier-num{
+  font-family: var(--font-display);
+  font-size: 34px; line-height: 1;
+  color: var(--gold); opacity: .45;
+  margin-bottom: 10px;
+}
+.atelier-etape h3{
+  font-size: clamp(20px, 2.4vw, 26px);
+  line-height: 1.25;
+  margin: 0 0 12px;
+}
+.atelier-etape p{
+  font-size: 15.5px; line-height: 1.75; color: var(--ink-soft);
+  margin: 0;
+}
+
+/* Deux étapes n'ont pas encore de photo d'atelier. Plutôt qu'un grand
+   cadre vide, elles tiennent en une rangée de texte compacte : le numéro
+   à gauche, l'étape à droite. Le jour où la photo existe, il suffit de
+   rendre à l'étape son <div class="atelier-photo"><img…></div> et de
+   retirer la classe. */
+.atelier-etape-texte .atelier-texte{ padding: 26px 26px 28px; }
+.atelier-etape-texte .atelier-num{ margin-bottom: 6px; }
+
+@media (min-width: 820px){
+  .atelier-etape{
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    align-items: stretch;
+  }
+  .atelier-etape-texte{ grid-template-columns: 1fr; }
+  .atelier-etape-texte .atelier-texte{
+    display: grid;
+    grid-template-columns: 90px minmax(0, 1fr);
+    align-items: start;
+    column-gap: 8px;
+    padding: 34px 44px;
+  }
+  .atelier-etape-texte .atelier-num{ grid-row: 1 / span 2; margin: 0; font-size: 44px; }
+  .atelier-etape-texte h3{ margin-bottom: 8px; }
+  .atelier-etape-texte p{ max-width: 68ch; }
+  /* Une proportion définie, sinon la hauteur naturelle d'une photo
+     portrait étirerait la rangée sur mille pixels. */
+  .atelier-photo{ aspect-ratio: 5/4; }
+  .atelier-texte{ padding: 40px 44px; }
+  /* Une rangée sur deux renvoie la photo à droite. L'ordre du HTML ne
+     bouge pas : le numéro et le titre restent lus dans l'ordre. */
+  .atelier-etape:nth-child(even) .atelier-photo{ grid-column: 2; grid-row: 1; }
+  .atelier-etape:nth-child(even) .atelier-texte{ grid-column: 1; grid-row: 1; }
+}
+
+/* ---------- Aperçu de la saison, sur la page vitrine ----------
+   Une photo, un nom, un lien. Ni modèle ni prix : cette page présente la
+   prestation, le catalogue vit dans « Mes réalisations ». */
+.saison-apercu{
+  display: grid; gap: 22px;
+  grid-template-columns: 1fr;
+  max-width: 820px; margin: 0 auto;
+}
+@media (min-width: 620px){ .saison-apercu{ grid-template-columns: repeat(2, 1fr); } }
+.saison-carte{
+  display: block;
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: 24px;
+  overflow: hidden;
+  color: inherit;
+  transition: transform .3s ease, box-shadow .3s ease;
+}
+.saison-carte:hover{ transform: translateY(-3px); box-shadow: 0 16px 34px rgba(58,44,30,.08); }
+.saison-photo{ display: block; aspect-ratio: 1/1; overflow: hidden; }
+.saison-photo img{ width: 100%; height: 100%; object-fit: cover; display: block; }
+.saison-corps{ display: block; padding: 20px 22px 24px; }
+.saison-occasion{
+  display: block;
+  font-size: 11px; letter-spacing: .18em; text-transform: uppercase;
+  color: var(--gold-deep); opacity: .85; margin-bottom: 6px;
+}
+.saison-nom{
+  display: block;
+  font-family: var(--font-display); font-size: 23px; line-height: 1.25;
+  color: var(--ink); margin-bottom: 10px;
+}
+.saison-voir{
+  display: inline-block;
+  font-size: 14px; color: var(--gold-deep);
+  border-bottom: 1px solid var(--gold);
+  padding-bottom: 2px;
+}
+
+/* ---------- Les modèles d'une collection, dans la galerie ----------
+   Nom à gauche, prix à droite, séparés par un filet : une liste de
+   tarifs se lit en diagonale, pas en paragraphe. */
+.collection-bloc{
+  display: flex; flex-direction: column;
+  padding: 0;
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: 24px;
+  overflow: hidden;
+  scroll-margin-top: 105px;
+  transition: box-shadow .3s ease, transform .3s ease;
+}
+@media (min-width: 700px){ .collection-bloc{ scroll-margin-top: 113px; } }
+@media (min-width: 1024px){ .collection-bloc{ scroll-margin-top: 121px; } }
+.collection-bloc:hover{ box-shadow: 0 16px 34px rgba(58,44,30,.08); }
+.collection-bloc h3{
+  font-size: clamp(23px, 2.8vw, 30px);
+  line-height: 1.25;
+  margin: 0 0 12px;
+}
+.collection-bloc .collection-texte{ font-size: 15.5px; }
+.collection-saison-pastille{
+  display: inline-block;
+  margin-left: 10px; padding: 4px 11px; border-radius: 999px;
+  background: var(--gold); color: var(--paper);
+  font-size: 10.5px; letter-spacing: .14em; text-transform: uppercase;
+  vertical-align: 2px;
+}
+.collection-modeles{
+  list-style: none; margin: 4px 0 24px; padding: 0;
+  border-top: 1px solid var(--line);
+}
+.collection-modeles li{
+  display: flex; align-items: baseline; gap: 14px;
+  padding: 11px 0;
+  border-bottom: 1px solid var(--line);
+  font-size: 15px;
+}
+.modele-nom{ flex: 1; color: var(--ink); }
+.modele-perso{
+  display: block;
+  font-size: 12.5px; color: var(--ink-soft); opacity: .85; margin-top: 2px;
+}
+.modele-prix{
+  font-family: var(--font-display); font-size: 16.5px;
+  color: var(--gold-deep); white-space: nowrap;
+}
+/* Le supplément se rattache visuellement au modèle qu'il complète. */
+.modele-option{ padding-left: 18px; font-size: 14px; }
+.modele-option .modele-nom{ color: var(--ink-soft); }
+.modele-option .modele-prix{ font-size: 15px; }
+.collection-attente{
+  margin: 4px 0 24px; padding: 14px 18px;
+  border: 1px dashed var(--line); border-radius: 14px;
+  font-size: 14.5px; color: var(--ink-soft);
+}
+.collection-bloc .btn{ align-self: flex-start; }
+
+@media (min-width: 900px){
+  .collection-bloc{
+    display: grid;
+    grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+    align-items: stretch;
+  }
+  .collection-bloc .collection-photo{ aspect-ratio: auto; height: 100%; min-height: 340px; }
+  .collection-bloc .collection-corps{ padding: 34px 36px 36px; }
+  .collection-bloc .collection-galerie{ grid-column: 1 / -1; }
+  /* Une rangée sur deux inverse les colonnes : vingt et un blocs
+     identiques défileraient comme un formulaire. */
+  .collections-liste .collection-bloc:nth-child(even){
+    grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+  }
+  .collections-liste .collection-bloc:nth-child(even) .collection-photo{ grid-column: 2; grid-row: 1; }
+  .collections-liste .collection-bloc:nth-child(even) .collection-corps{ grid-column: 1; grid-row: 1; }
+}
