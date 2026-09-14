@@ -149,11 +149,11 @@ Trois filtres, du plus fiable au moins fiable :
 | `tests/envoi.test.js`                          | Tests de la fonction d'envoi (`npm test`).                   |
 | `outils-galerie.py`                            | Recompose en rangées les photos d'une micro-scénographie.    |
 | `outils-collections.py`                        | Régénère le catalogue de « Mes réalisations » et l'aperçu de saison depuis `catalogue.js`. |
-| `outils-photos.py`                             | Dérive les vues de galerie du portfolio et convertit les photos en WebP. |
+| `outils-photos.py`                             | Dérive les vues de galerie et les photos de carte, et convertit en WebP. |
 | `images/collections/<id>/principale.webp`      | La grande photo de chaque collection.                        |
 | `images/collections/<id>/vue-1.webp`…          | Les vues secondaires, dérivées des photos pleine taille.     |
 | `images/collections/<id>/*.jpg`                | Les photos pleine taille d'origine, rangées avec leur collection. |
-| `images/micro-scenographies/<thème>/`          | Les photos d'une micro-scénographie installée.               |
+| `images/micro-scenographies/<thème>/`          | Les photos d'une micro-scénographie installée, originaux et WebP de carte. |
 | `images/site/fond-rayures.png`                      | Les rayures du fond, seules.                                 |
 | `images/site/filigrane-logo.webp`                   | Le médaillon du logo, en filigrane par-dessus les rayures.   |
 
@@ -187,33 +187,40 @@ revérifie avant d'encaisser — c'est là que l'argent change de main.
 
 ---
 
-## Ajouter la photo d'une formule de micro-scénographie
+## La photo d'une formule de micro-scénographie
 
-Les trois cartes de `micro-scenographies.html` partagent le même cadre.
-Celle qui n'a pas encore de photo affiche son nom sur un fond crème :
-
-```html
-<div class="card-image sans-photo">
-  <span class="card-image-repli" aria-hidden="true">Micro-scénographie</span>
-</div>
-```
-
-Le jour où la photo existe, le `<span>` devient un `<img>` :
+Les trois cartes de `micro-scenographies.html` partagent le même cadre,
+et chacune porte désormais sa photo :
 
 ```html
 <div class="card-image">
-  <img src="images/collections/petit-ocean/ma-photo.jpeg" alt="…"
-       width="1063" height="1600" loading="lazy" decoding="async">
+  <img src="images/micro-scenographies/escargot/micro-sceno-escargot-decor.webp"
+       alt="…" width="825" height="1100" loading="lazy" decoding="async">
 </div>
 ```
 
-Rien d'autre à toucher. Le cadre garde sa proportion de 4/5 à toutes les
-largeurs, et les trois cartes restent alignées avec une photo comme avec
-trois.
+Le cadre garde sa proportion de 4/5 à toutes les largeurs, donc le
+cadrage est le même en une, deux ou trois colonnes.
 
-Un cadre vide vaut mieux qu'une photo empruntée : trois cartes alignées
-se lisent mieux qu'une seule décalée, et une image qui ne montre pas la
-prestation vendue la décrit mal.
+**La carte sert un `.webp`, pas l'original.** Le cadre fait 341 px de
+large : y télécharger un fichier de 1100 px coûterait trois fois la taille
+utile. La table `FORMULES` en tête d'`outils-photos.py` liste les photos
+concernées et écrit le `.webp` à côté de chacune :
+
+```bash
+python3 outils-photos.py
+```
+
+L'original ne bouge pas — la galerie de « Mes réalisations » et le partage
+social continuent de s'en servir en pleine taille. Les trois cartes sont
+ainsi passées de 754 ko à 235 ko, sans différence visible à l'écran.
+
+**Chaque photo doit montrer ce que sa formule vend, et rien de plus.**
+Les trois viennent du même événement, et c'est justement ce qui les rend
+comparables : la Formule 1 montre le décor et ses présentoirs vides, la
+Formule 2 les mêmes présentoirs garnis de biscuits, la Formule 3
+l'ensemble avec le photobooth. Illustrer la Formule 1 avec une photo où
+l'on voit des biscuits promettrait ce qu'elle ne comprend pas.
 
 ### Cadrer une photo sans la déformer
 
