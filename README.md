@@ -154,6 +154,7 @@ Trois filtres, du plus fiable au moins fiable :
 | `images/collections/<id>/vue-1.webp`…          | Les vues secondaires, dérivées des photos pleine taille.     |
 | `images/collections/<id>/*.jpg`                | Les photos pleine taille d'origine, rangées avec leur collection. |
 | `images/micro-scenographies/<thème>/`          | Les photos d'une micro-scénographie installée, originaux et WebP de carte. |
+| `images/site/atelier-pate.jpg`                 | Une photo d'atelier, hors catalogue (avec `julie.jpeg`).     |
 | `images/site/fond-rayures.png`                      | Les rayures du fond, seules.                                 |
 | `images/site/filigrane-logo.webp`                   | Le médaillon du logo, en filigrane par-dessus les rayures.   |
 
@@ -290,9 +291,10 @@ gabarit qui l'en empêche, pas la discipline.
 ### Les six étapes de l'atelier
 
 Elles vivent en clair dans la page, dans `<ol class="atelier-etapes">`.
-Deux d'entre elles n'ont pas encore de photo d'atelier : elles portent la
-classe `atelier-etape-texte` et tiennent en une rangée compacte, numéro à
-gauche. Un grand cadre vide vaudrait moins qu'une rangée assumée.
+L'une d'elles — la découpe — n'a pas encore de photo d'atelier : elle
+porte la classe `atelier-etape-texte` et tient en une rangée compacte,
+numéro à gauche. Un grand cadre vide vaudrait moins qu'une rangée
+assumée.
 
 Le jour où la photo existe, rendre à l'étape son cadre et retirer la
 classe :
@@ -307,10 +309,15 @@ classe :
 </li>
 ```
 
-Les photos des quatre autres étapes sont de vraies photos de l'atelier,
-choisies parce qu'elles montrent l'étape : le biscuit nature avant
-décoration, la poche à douille sur le plan de travail, un prénom
-calligraphié, une commande emballée sachet par sachet.
+Les photos des cinq autres étapes sont de vraies photos de l'atelier,
+choisies parce qu'elles montrent l'étape : la pâte dans la cuve du
+batteur, le biscuit nature avant décoration, la poche à douille sur le
+plan de travail, un prénom calligraphié, une commande emballée sachet par
+sachet.
+
+Une photo d'atelier qui n'appartient à aucune collection se range dans
+`images/site/`, avec le portrait de Julie : elle montre le métier, pas un
+produit au catalogue.
 
 ---
 

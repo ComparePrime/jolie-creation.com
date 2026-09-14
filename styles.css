@@ -2385,11 +2385,11 @@ form.devis-form{
   margin: 0;
 }
 
-/* Deux étapes n'ont pas encore de photo d'atelier. Plutôt qu'un grand
-   cadre vide, elles tiennent en une rangée de texte compacte : le numéro
-   à gauche, l'étape à droite. Le jour où la photo existe, il suffit de
-   rendre à l'étape son <div class="atelier-photo"><img…></div> et de
-   retirer la classe. */
+/* Une étape n'a pas encore de photo d'atelier. Plutôt qu'un grand cadre
+   vide, elle tient en une rangée de texte compacte : le numéro à gauche,
+   l'étape à droite. Le jour où la photo existe, il suffit de rendre à
+   l'étape son <div class="atelier-photo"><img…></div> et de retirer la
+   classe. */
 .atelier-etape-texte .atelier-texte{ padding: 26px 26px 28px; }
 .atelier-etape-texte .atelier-num{ margin-bottom: 6px; }
 
