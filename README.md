@@ -250,10 +250,14 @@ prix, ni bloc de collection. Sept sections :
 7. **Appel final** — devis et WhatsApp.
 
 `mes-realisations.html` **porte le catalogue**. Les vingt et une
-collections y vivent au complet : grande photo, nom, présentation, vues
-secondaires, liste des modèles avec leurs prix, bouton de sélection quand
-la collection est commandable. Puis la galerie des réalisations, série
-par série.
+collections y vivent : grande photo, nom, présentation, vues secondaires,
+nombre de modèles et bouton de sélection. Puis la galerie des
+réalisations, série par série.
+
+**Les prix ne s'affichent nulle part sur la page.** Ils apparaissent dans
+la modale, au moment de choisir ses biscuits. Une liste de tarifs sous
+chaque collection transformait la galerie en catalogue e-commerce ; c'est
+un portfolio.
 
 Les deux zones se régénèrent d'un même geste :
 
