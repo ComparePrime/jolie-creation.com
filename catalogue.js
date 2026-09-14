@@ -452,6 +452,70 @@
         { "ref": "travel", "nom": "Panneau « Travel / Adventure » avec détails en relief", "prix": 600 },
         { "ref": "speed-limit", "nom": "Panneau « Speed Limit »", "prix": 600 }
       ]
+    },
+    {
+      "id": "douceur-abeille",
+      "nom": "Douceur d’Abeille",
+      "occasion": "Premier anniversaire",
+      "description": "Un univers doux et champêtre pour un premier anniversaire : alvéoles dorées, marguerites blanches et petites abeilles, dans des tons miel, blanc et bleu ciel. Le prénom et le chiffre se calligraphient à la main. Sur devis, comme toutes mes créations sur mesure.",
+      "alt": "Biscuits personnalisés thème abeille : alvéoles dorées, marguerites et prénom calligraphié",
+      "galerie": [
+        { "fichier": "vue-1.webp", "alt": "Biscuit « One » bleu ciel à l’abeille, posé près d’une grande marguerite blanche" }
+      ],
+      "produits": []
+    },
+    {
+      "id": "velo-route",
+      "nom": "Passion Vélo",
+      "occasion": "Anniversaire adulte",
+      "description": "Un vélo de route dessiné à la main, un âge et un prénom : de quoi marquer l’anniversaire d’un cycliste. Glaçage blanc, cadre rouge et noir, contours nets. Sur devis, adapté à la couleur du vélo et au nombre de biscuits.",
+      "alt": "Biscuits d’anniversaire thème vélo de route : vélo dessiné à la main, âge et prénom",
+      "galerie": [
+        { "fichier": "vue-1.webp", "alt": "Biscuit festonné blanc au vélo de route rouge, avec l’âge et le prénom en dessous" },
+        { "fichier": "vue-2.webp", "alt": "Commande de biscuits vélo emballés un par un, alignés avant la remise" }
+      ],
+      "produits": []
+    },
+    {
+      "id": "elegance-florale",
+      "nom": "Élégance Florale",
+      "occasion": "Anniversaire adulte",
+      "description": "Fleurs en relief, feuillages et calligraphie dorée dans un camaïeu de rose poudré, framboise et bordeaux. Une collection pour un anniversaire d’adulte tout en délicatesse, avec l’âge et l’initiale au centre. Sur devis.",
+      "alt": "Biscuits d’anniversaire floraux : fleurs en relief, initiale et âge dans des tons rose et bordeaux",
+      "galerie": [
+        { "fichier": "vue-1.webp", "alt": "Biscuits fleurs bordeaux et cœur à l’initiale, sur fond rose poudré" },
+        { "fichier": "vue-2.webp", "alt": "Grande fleur bordeaux en relief près du biscuit rond à l’âge calligraphié" }
+      ],
+      "produits": []
+    },
+    {
+      "id": "bapteme-nature",
+      "nom": "Baptême Nature",
+      "occasion": "Baptême",
+      "description": "Vert sauge, blanc et touches dorées : colombe, feuillages d’olivier et médaillon à l’initiale de l’enfant. Une collection de baptême plus végétale que « Baptême Douceur », à composer selon le prénom, la date et les couleurs de la cérémonie. Sur devis.",
+      "alt": "Biscuits de baptême vert sauge : colombe, feuillages d’olivier et médaillon à l’initiale",
+      "galerie": [
+        { "fichier": "vue-1.webp", "alt": "Biscuits de baptême vert sauge : colombe, feuillage et médaillon à l’initiale E" },
+        { "fichier": "vue-2.webp", "alt": "Médaillon de baptême à l’initiale E en relief, sur glaçage vert sauge" },
+        { "fichier": "vue-3.webp", "alt": "Feuillages d’olivier en biscuit et colombe blanche, posés sur un set tressé" },
+        { "fichier": "vue-4.webp", "alt": "Biscuit colombe blanche en relief sur médaillon vert sauge" }
+      ],
+      "produits": []
+    },
+    {
+      "id": "logo-entreprise",
+      "nom": "Logo d’entreprise",
+      "occasion": "Entreprise",
+      "description": "Votre logo reproduit à la main au glaçage royal, dans vos couleurs exactes. Pour un événement d’entreprise, un salon, un remerciement client ou une fin d’année. Quantité, forme et finition se décident ensemble : sur devis.",
+      "alt": "Biscuits personnalisés au logo d’entreprise, reproduits à la main au glaçage royal",
+      "galerie": [
+        { "fichier": "vue-1.webp", "alt": "Biscuits ronds au logo Getaz Payerne, décorés d’un renne de fin d’année" },
+        { "fichier": "vue-2.webp", "alt": "Série de biscuits au logo d’entreprise sur grille de refroidissement" },
+        { "fichier": "vue-3.webp", "alt": "Biscuit au logo iAD Immobilier vu de près, relief et contours nets" },
+        { "fichier": "vue-4.webp", "alt": "Commande d’entreprise alignée avant emballage, logos identiques un par un" },
+        { "fichier": "vue-5.webp", "alt": "Plateau de biscuits au logo d’entreprise, prêts pour la remise au client" }
+      ],
+      "produits": []
     }
   ];
 

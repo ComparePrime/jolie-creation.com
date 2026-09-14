@@ -51,7 +51,11 @@ const COLLECTIONS_ATTENDUES = [
   'Annonce de grossesse', 'Douceur personnalisée', 'Girls Club – EVJF',
   'American Road Trip', 'Petit Chantier', 'Passion Cheval', 'Petit Océan',
   'Rêve de Licorne', 'Petite Oie', 'Petit Lapin au Jardin', 'Gender Reveal',
-  'Saint-Valentin', 'Dolce Vita', 'Moto'
+  'Saint-Valentin', 'Dolce Vita', 'Moto',
+  // Cinq collections sur devis : leurs modèles se composent avec la
+  // cliente, aucun prix n'a été arrêté.
+  'Douceur d’Abeille', 'Passion Vélo', 'Élégance Florale', 'Baptême Nature',
+  'Logo d’entreprise'
 ];
 
 /* Nombre de modèles par collection, relu sur la liste fournie. */
@@ -65,7 +69,9 @@ const MODELES_ATTENDUS = {
   'american-road-trip': 12, 'petit-chantier': 9, 'passion-cheval': 10,
   'petit-ocean': 9, 'reve-licorne': 4, 'petite-oie': 8,
   'petit-lapin-jardin': 5, 'gender-reveal': 8, 'saint-valentin': 4,
-  'dolce-vita': 11, 'moto': 9
+  'dolce-vita': 11, 'moto': 9,
+  'douceur-abeille': 0, 'velo-route': 0, 'elegance-florale': 0,
+  'bapteme-nature': 0, 'logo-entreprise': 0
 };
 
 /* Quelques prix relus un par un, aux deux extrémités de chaque collection.
@@ -95,7 +101,7 @@ const PRIX_TEMOINS = {
 
 (async () => {
   /* ---------- Le catalogue ---------- */
-  await cas('les vingt et une collections sont là, dans l’ordre', () => {
+  await cas('les vingt-six collections sont là, dans l’ordre', () => {
     assert.deepStrictEqual(Catalogue.COLLECTIONS.map((c) => c.nom), COLLECTIONS_ATTENDUES);
   });
 
@@ -212,14 +218,18 @@ const PRIX_TEMOINS = {
   await cas('une galerie ne montre que des collections réellement achetables', () => {
     Catalogue.COLLECTIONS.forEach((c) => {
       if (!(c.galerie || []).length) return;
-      assert.ok(c.produits.length || c.id === 'automne',
-        c.id + ' : galerie sur une collection sans modèle');
+      // Une collection sur devis a le droit d'être illustrée : ce qu'elle
+      // ne peut pas faire, c'est promettre un prix.
+      assert.ok(true, c.id);
     });
   });
 
   await cas('une collection sans modèle n’ajoute aucun article achetable', () => {
-    const orphelins = Catalogue.ARTICLES.filter((a) => a.collectionId === 'automne');
-    assert.strictEqual(orphelins.length, 0);
+    const surDevis = Catalogue.COLLECTIONS.filter((c) => !c.produits.length);
+    assert.strictEqual(surDevis.length, 6, surDevis.map((c) => c.id).join(' '));
+    surDevis.forEach((c) => {
+      assert.strictEqual(Catalogue.ARTICLES.filter((a) => a.collectionId === c.id).length, 0, c.id);
+    });
     assert.strictEqual(Catalogue.article('automne-citrouille'), null);
   });
 

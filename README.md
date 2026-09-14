@@ -147,13 +147,13 @@ Trois filtres, du plus fiable au moins fiable :
 | `netlify/functions/envoyer-message.js`         | Envoie devis et commandes par e-mail. Seul endroit où vivent les identifiants SMTP. |
 | `tests/catalogue.test.js`                      | Tests de la fonction de paiement (`npm test`).               |
 | `tests/envoi.test.js`                          | Tests de la fonction d'envoi (`npm test`).                   |
-| `outils-galerie.py`                            | Recompose la galerie de « Mes réalisations » en rangées.     |
-| `outils-collections.py`                        | Régénère les cartes des collections de saison depuis `catalogue.js`. |
-| `outils-avis.py`                               | Recopie les avis de « Mes réalisations » vers la page Biscuits. |
+| `outils-galerie.py`                            | Recompose en rangées les photos d'une micro-scénographie.    |
+| `outils-collections.py`                        | Régénère le catalogue de « Mes réalisations » et l'aperçu de saison depuis `catalogue.js`. |
 | `outils-photos.py`                             | Dérive les vues de galerie du portfolio et convertit les photos en WebP. |
-| `images/collections/<id>.webp`                 | La photo de chaque collection, une par carte.                |
-| `images/collections/<id>-1.webp`…              | Les vues secondaires d'une collection, dérivées du portfolio. |
-| `images/creations/`                            | Le portfolio : photos pleine taille de « Mes réalisations ». |
+| `images/collections/<id>/principale.webp`      | La grande photo de chaque collection.                        |
+| `images/collections/<id>/vue-1.webp`…          | Les vues secondaires, dérivées des photos pleine taille.     |
+| `images/collections/<id>/*.jpg`                | Les photos pleine taille d'origine, rangées avec leur collection. |
+| `images/micro-scenographies/<thème>/`          | Les photos d'une micro-scénographie installée.               |
 | `images/site/fond-rayures.png`                      | Les rayures du fond, seules.                                 |
 | `images/site/filigrane-logo.webp`                   | Le médaillon du logo, en filigrane par-dessus les rayures.   |
 
@@ -202,7 +202,7 @@ Le jour où la photo existe, le `<span>` devient un `<img>` :
 
 ```html
 <div class="card-image">
-  <img src="images/creations/ma-photo.jpeg" alt="…"
+  <img src="images/collections/petit-ocean/ma-photo.jpeg" alt="…"
        width="1063" height="1600" loading="lazy" decoding="async">
 </div>
 ```
@@ -246,13 +246,24 @@ prix, ni bloc de collection. Sept sections :
 3. **Comment sont créés mes biscuits ?** — les six étapes de l'atelier.
 4. **Ingrédients & conservation** — composition, allergènes, durée.
 5. **Mes réalisations** — la passerelle vers la galerie.
-6. **Elles en parlent** — les avis, recopiés depuis la galerie.
+6. **Elles en parlent** — les avis clients. Ils vivent ici et nulle part
+   ailleurs.
 7. **Appel final** — devis et WhatsApp.
 
-`mes-realisations.html` **porte le catalogue**. Les vingt et une
-collections y vivent : grande photo, nom, présentation, vues secondaires,
-nombre de modèles et bouton de sélection. Puis la galerie des
-réalisations, série par série.
+`mes-realisations.html` **porte le catalogue entier**. Les vingt-six
+collections y vivent, et elles seules : grande photo, nom, présentation,
+vues secondaires, nombre de modèles et bouton d'action. Puis la
+micro-scénographie installée.
+
+**Toute photo de biscuit appartient à une collection.** Il n'y a plus de
+galerie séparée : une photo qui n'illustrait aucune collection en a reçu
+une. Deux endroits qui montrent les mêmes biscuits finissent toujours par
+diverger, et le visiteur ne sait plus lequel fait foi.
+
+**Une collection sans prix se commande sur devis.** Son bloc n'ouvre pas
+la modale : il renvoie au formulaire de contact, thème pré-rempli. Six
+collections sont dans ce cas. `outils-collections.py` choisit le bouton
+d'après `produits` : une liste vide veut dire devis.
 
 **Les prix ne s'affichent nulle part sur la page.** Ils apparaissent dans
 la modale, au moment de choisir ses biscuits. Une liste de tarifs sous
@@ -265,8 +276,8 @@ Les deux zones se régénèrent d'un même geste :
 python3 outils-collections.py
 ```
 
-Le script écrit les collections dans la galerie et l'aperçu de saison
-dans la vitrine. Il ne peut pas écrire de prix du côté vitrine : c'est le
+Le script écrit le catalogue dans « Mes réalisations » et l'aperçu de
+saison dans la vitrine. Il ne peut pas écrire de prix du côté vitrine : c'est le
 gabarit qui l'en empêche, pas la discipline.
 
 ### Les six étapes de l'atelier
@@ -282,7 +293,7 @@ classe :
 ```html
 <li class="atelier-etape">
   <div class="atelier-photo">
-    <img src="images/creations/…" alt="…" width="…" height="…"
+    <img src="images/collections/…/…" alt="…" width="…" height="…"
          loading="lazy" decoding="async" class="cadrage-tiers">
   </div>
   <div class="atelier-texte">…</div>
@@ -294,27 +305,14 @@ choisies parce qu'elles montrent l'étape : le biscuit nature avant
 décoration, la poche à douille sur le plan de travail, un prénom
 calligraphié, une commande emballée sachet par sachet.
 
-### Les avis, écrits une fois
-
-Les avis clients s'écrivent dans `mes-realisations.html` et **seulement
-là**. `outils-avis.py` les recopie entre les repères `<!-- avis:liste -->`
-de la page Biscuits :
-
-```bash
-python3 outils-avis.py
-```
-
-Corriger un avis du côté copié ne sert à rien : le prochain passage du
-script l'écraserait. Un avis corrigé d'un côté et pas de l'autre serait
-pire que pas d'avis du tout.
-
 ---
 
-## Modifier la galerie « Mes réalisations »
+## Modifier les photos d'une micro-scénographie
 
-Les photos sont posées à plat dans les `<div class="folio-masonry">` de
-`mes-realisations.html` : une balise `<figure class="folio-item">` par
-photo. Après tout ajout ou retrait, relancer :
+Les photos sont posées à plat dans le `<div class="folio-masonry">` de la
+section « Micro-scénographies » de `mes-realisations.html` : une balise
+`<figure class="folio-item">` par photo. Après tout ajout ou retrait,
+relancer :
 
 ```bash
 python3 outils-galerie.py
@@ -370,18 +368,25 @@ Tout se passe dans `catalogue.js`, tableau `COLLECTIONS`. Un bloc suffit :
 }
 ```
 
-Puis déposer la photo dans `images/collections/`, sous le nom de la
-collection (`ma-collection.jpg`), et lancer les deux outils :
+Puis créer le dossier `images/collections/ma-collection/`, y déposer la
+grande photo sous le nom `principale.jpg` — avec les photos pleine taille
+de la collection, s'il y en a — et lancer les deux outils :
 
 ```bash
-python3 outils-photos.py        # la photo devient ma-collection.webp
-python3 outils-collections.py   # la carte apparaît sur la page
+python3 outils-photos.py        # principale.jpg devient principale.webp
+python3 outils-collections.py   # le bloc apparaît sur la page
 ```
 
+Une collection dont la grande photo se choisit parmi ses photos pleine
+taille, faute d'un cliché `principale` à part, se déclare dans la table
+`PRINCIPALES` en tête d'`outils-photos.py` : le script s'occupe du reste.
+
 La page charge toutes les photos d'un coup : c'est ce qui impose le WebP
-réduit. Les vingt premiers originaux pesaient 5,7 Mo, les WebP 0,9 Mo,
-pour une différence invisible à l'écran. Tant qu'une photo manque, sa
-carte affiche un cadre sobre au nom de la collection : rien ne casse.
+réduit. Les quatre-vingt-un WebP du catalogue pèsent ensemble un peu plus
+de 2 Mo, là où les originaux en font plusieurs dizaines, pour une
+différence invisible à l'écran. `outils-photos.py` alerte au-delà de
+2,5 Mo. Tant qu'une photo manque, son bloc affiche un cadre sobre au nom
+de la collection : rien ne casse.
 
 Trois règles à connaître :
 
@@ -400,13 +405,17 @@ serveur lisent tous la même structure.
 
 ### Une collection pas encore tarifée
 
-`"produits": []` est un état valable. La collection s'affiche, avec sa
-photo et son texte, mais la carte remplace le bouton d'achat par un
-renvoi vers le devis et annonce que les modèles sont en préparation. Les
-données structurées omettent alors l'offre : une fourchette de prix
-inventée serait un prix faux, et Google la confronte à la page.
+`"produits": []` est un état valable. C'est même **la façon d'annoncer
+un devis** : pas de prix publié veut dire composé avec la cliente. Le
+bloc s'affiche avec sa photo et son texte, mais le bouton d'achat cède la
+place à un renvoi vers le formulaire de contact, thème pré-rempli, et les
+repères annoncent « Sur devis, composé avec vous ». Les données
+structurées omettent alors l'offre : une fourchette de prix inventée
+serait un prix faux, et Google la confronte à la page.
 
-Le jour où les modèles arrivent, il suffit de remplir le tableau.
+Six collections sont dans ce cas aujourd'hui. Le jour où les modèles et
+leurs prix arrivent, il suffit de remplir le tableau : le bouton d'achat
+revient de lui-même.
 
 ### Les vues secondaires d'une collection
 
@@ -415,24 +424,25 @@ assortiment. Elles se déclarent ainsi :
 
 ```js
 "galerie": [
-  { "fichier": "ma-collection-1.webp", "alt": "…" },
-  { "fichier": "ma-collection-2.webp", "alt": "…" }
+  { "fichier": "vue-1.webp", "alt": "…" },
+  { "fichier": "vue-2.webp", "alt": "…" }
 ]
 ```
 
-Les fichiers viennent presque tous du portfolio : la table `GALERIES` en
-tête d'`outils-photos.py` dit, pour chaque collection, quelles photos de
-`images/creations/` montrent ce même assortiment. Le script les réduit à
-520 px, les nomme `<id>-1.webp`, `<id>-2.webp`… et **écarte de lui-même
-une vue identique à la grande photo** — une galerie qui répète l'image du
-dessus n'apprend rien. Relancer ensuite `outils-collections.py`.
+Les fichiers se dérivent des photos pleine taille rangées dans le dossier
+de la collection : la table `GALERIES` en tête d'`outils-photos.py` dit,
+pour chaque collection, lesquelles montrent ce même assortiment et dans
+quel ordre. Le script les réduit à 520 px, les nomme `vue-1.webp`,
+`vue-2.webp`… et **écarte de lui-même une vue identique à la grande
+photo** — une galerie qui répète l'image du dessus n'apprend rien. Une
+galerie raccourcie voit ses anciens fichiers supprimés. Relancer ensuite
+`outils-collections.py`.
 
 Une règle tient tout le reste : **une vue de galerie doit montrer les
-modèles de la collection.** Les biscuits de baptême d'Elio, par exemple,
-sont de vraies photos mais d'autres modèles que le seul biscuit de
-« Baptême Douceur » : ils restent dans « Mes réalisations ». Illustrer
-une collection avec un modèle qu'on ne peut pas commander revient à le
-promettre.
+modèles de la collection.** Une photo qui montre d'autres modèles que
+ceux qu'on peut commander appartient à une autre collection — au besoin,
+une nouvelle, sur devis. Illustrer une collection avec un modèle qu'on ne
+peut pas commander revient à le promettre.
 
 Une collection sans galerie n'affiche que sa grande photo. C'est un état
 normal, pas un manque à combler.
@@ -441,11 +451,11 @@ normal, pas un manque à combler.
 
 `"saison": true` fait deux choses, et seulement deux : la collection
 apparaît en aperçu sur la page vitrine, et elle porte une pastille
-« collection du moment » dans la galerie. Retirer le drapeau la retire de
-la vitrine. Elle reste au catalogue, achetable, à sa place dans la
-galerie.
+« collection du moment » dans le catalogue. Retirer le drapeau la retire
+de la vitrine. Elle reste au catalogue, achetable, à sa place.
 
-Les données structurées vivent sur la galerie, qui porte le catalogue.
+Les données structurées vivent sur « Mes réalisations », qui porte le
+catalogue.
 
 ---
 
