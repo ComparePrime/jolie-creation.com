@@ -5,10 +5,10 @@
 
 Une seule source, catalogue.js, et deux destinations aux rôles nets :
 
-**mes-realisations.html** reçoit les vingt et une collections au complet —
-grande photo, nom, présentation, vues secondaires, liste des modèles avec
-leurs prix, bouton de sélection quand la collection est commandable.
-C'est la galerie, et c'est le seul endroit où le catalogue s'affiche.
+**mes-realisations.html** reçoit les vingt et une collections — grande
+photo, nom, présentation, vues secondaires, nombre de modèles et bouton
+de sélection. Les prix ne s'y affichent pas : ils apparaissent dans la
+modale, au moment de choisir. C'est une galerie, pas une liste de tarifs.
 
 **biscuits-personnalises.html** ne reçoit qu'un aperçu court des
 collections de saison : photo, nom, une ligne, et un lien vers la galerie.
@@ -36,9 +36,9 @@ console.log(JSON.stringify(C.COLLECTIONS.map((c) => ({
   alt: c.alt, image: c.image, saison: !!c.saison,
   galerie: (c.galerie || []).map((v) => ({ image: v.image, alt: v.alt })),
   produits: c.produits.map((p) => ({
-    nom: p.nom, prix: p.prix,
+    prix: p.prix,
     perso: (p.champs || []).map((ch) => ch.libelle),
-    option: p.option ? { libelle: p.option.libelle, supplement: p.option.supplement } : null
+    option: !!p.option
   }))
 }))));
 """
@@ -72,26 +72,22 @@ def galerie(c, marge):
 
 
 def modeles(c, marge):
-    """Le nom et le prix de chaque biscuit. Une collection sans modèle
-    tarifé annonce que ses prix arrivent — un prix supposé serait faux."""
+    """Combien de modèles, et rien de plus. Les prix s'affichent dans la
+    modale, au moment de choisir : une liste de tarifs sous chaque
+    collection transformait la galerie en catalogue e-commerce."""
     if not c['produits']:
         return (f'{marge}<p class="collection-attente">Les modèles et leurs tarifs '
                 f'arrivent très bientôt.</p>')
-    lignes = []
-    for p in c['produits']:
-        detail = ''
-        if p['perso']:
-            detail = (f'<span class="modele-perso">Personnalisable&nbsp;: '
-                      f'{e(", ".join(p["perso"]).lower())}</span>')
-        lignes.append(
-            f'{marge}  <li><span class="modele-nom">{e(p["nom"])}{detail}</span>'
-            f'<span class="modele-prix">{chf(p["prix"])}</span></li>')
-        if p['option']:
-            lignes.append(
-                f'{marge}  <li class="modele-option"><span class="modele-nom">'
-                f'{e(p["option"]["libelle"])}</span>'
-                f'<span class="modele-prix">+&nbsp;{chf(p["option"]["supplement"])}</span></li>')
-    return (f'{marge}<ul class="collection-modeles">\n' + '\n'.join(lignes)
+    n = len(c['produits'])
+    faits = [f'{n} modèle{"s" if n > 1 else ""} au choix, à commander à l’unité']
+    perso = [p for p in c['produits'] if p['perso']]
+    if perso:
+        champs = sorted({x.lower() for p in perso for x in p['perso']})
+        faits.append('Personnalisable&nbsp;: ' + ', '.join(champs))
+    if any(p['option'] for p in c['produits']):
+        faits.append('Personnalisation disponible en option')
+    return (f'{marge}<ul class="collection-faits">\n'
+            + '\n'.join(f'{marge}  <li>{t}</li>' for t in faits)
             + f'\n{marge}</ul>')
 
 
