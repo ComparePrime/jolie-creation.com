@@ -76,8 +76,12 @@ def modeles(c, marge):
     modale, au moment de choisir : une liste de tarifs sous chaque
     collection transformait la galerie en catalogue e-commerce."""
     if not c['produits']:
-        return (f'{marge}<p class="collection-attente">Les modèles et leurs tarifs '
-                f'arrivent très bientôt.</p>')
+        # Pas de prix annoncé veut dire sur devis : la collection se
+        # compose avec la cliente, elle ne se commande pas au panier.
+        return (f'{marge}<ul class="collection-faits">\n'
+                f'{marge}  <li>Sur devis, composé avec vous</li>\n'
+                f'{marge}  <li>Formes, couleurs et quantité sur mesure</li>\n'
+                f'{marge}</ul>')
     n = len(c['produits'])
     faits = [f'{n} modèle{"s" if n > 1 else ""} au choix, à commander à l’unité']
     perso = [p for p in c['produits'] if p['perso']]
@@ -98,7 +102,7 @@ def action(c, marge):
     lien = ('contact.html?formule=biscuits&theme='
             + urllib.parse.quote('Collection ' + c['nom']))
     return (f'{marge}<a class="btn btn-primary btn-small" href="{e(lien)}">'
-            f'Demander la collection {e(c["nom"])}</a>')
+            f'Demander un devis</a>')
 
 
 def bloc(c):

@@ -52,6 +52,16 @@ SOURCES = {'.png', '.jpg', '.jpeg', '.tif', '.tiff', '.bmp'}
 # « vue-3 » est une vue de galerie ; « principale » est une carte.
 GALERIE = re.compile(r'^vue-\d+$')
 
+# Collections dont la grande photo se dérive d'une photo pleine taille,
+# faute d'un cliché « principale » déposé à part.
+PRINCIPALES = {
+    'douceur-abeille': 'anniversaire-abeille-laura.jpg',
+    'velo-route': 'anniversaire-adulte-3.jpeg',
+    'elegance-florale': 'anniversaire-adulte-5.jpeg',
+    'bapteme-nature': 'bapteme-elio-5.jpeg',
+    'logo-entreprise': 'entreprise-3.jpeg',
+}
+
 # Collections dont le portfolio garde d'autres vues du même assortiment.
 # L'ordre compte : c'est celui de la galerie sur la page.
 GALERIES = {
@@ -72,6 +82,11 @@ GALERIES = {
     'annonce-grossesse': ['naissance-calendrier.jpg', 'art-ligne-coeur.jpg',
                           'coeur-nature.jpg'],
     'bonne-fete-maman': [f'fete-maman-{i}.jpg' for i in range(1, 4)],
+    'douceur-abeille': ['anniversaire-abeille-laura.jpg', 'anniversaire-abeille-one.jpg'],
+    'velo-route': [f'anniversaire-adulte-{i}.jpeg' for i in (1, 2, 3)],
+    'elegance-florale': [f'anniversaire-adulte-{i}.jpeg' for i in (4, 5, 6)],
+    'bapteme-nature': [f'bapteme-elio-{i}.jpeg' for i in range(1, 6)],
+    'logo-entreprise': [f'entreprise-{i}.jpeg' for i in range(1, 7)],
 }
 
 
@@ -95,6 +110,23 @@ def convertir(source, cible, cote):
     if image.mode not in ('RGB', 'RGBA'):
         image = image.convert('RGB')
     image.save(cible, 'WEBP', quality=QUALITE, method=6)
+
+
+def principales():
+    """Écrit <id>/principale.webp pour les collections dont la grande photo
+    se choisit parmi les photos pleine taille."""
+    ecrits = []
+    for cid, nom in PRINCIPALES.items():
+        source = COLLECTIONS / cid / nom
+        cible = COLLECTIONS / cid / 'principale.webp'
+        if not source.exists():
+            print(f'  photo introuvable : {source.relative_to(RACINE)}', file=sys.stderr)
+            continue
+        if cible.exists() and cible.stat().st_mtime >= source.stat().st_mtime:
+            continue
+        convertir(source, cible, COTE_CARTE)
+        ecrits.append((f'{cid}/principale.webp', nom, cible.stat().st_size))
+    return ecrits
 
 
 def deriver():
@@ -147,7 +179,7 @@ def main():
     if not COLLECTIONS.is_dir():
         raise SystemExit(f'Dossier introuvable : {COLLECTIONS}')
 
-    ecrits = deriver()
+    ecrits = principales() + deriver()
     for cible, source, taille in ecrits:
         print(f'{cible:28} ← {source:30} {taille / 1024:5.0f} ko')
     print(f'{len(ecrits)} vue(s) de galerie dérivées du portfolio.')
