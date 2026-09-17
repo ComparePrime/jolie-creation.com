@@ -1000,7 +1000,7 @@ img.cadrage-bas{ object-position: center 65%; }
 }
 /* Les frais de déplacement font partie du tarif, mais pas du montant :
    plus petits et sur leur propre ligne dès qu'ils ne tiennent plus,
-   pour ne pas donner à lire « 470 CHF + frais » d'un seul bloc. */
+   pour ne pas donner à lire « 570 CHF + frais » d'un seul bloc. */
 .price-suite{
   display: inline-block;
   font-family: var(--font-body);
