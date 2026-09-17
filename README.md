@@ -420,9 +420,13 @@ python3 outils-collections.py   # le bloc apparaît sur la page
 Une collection dont la grande photo se choisit parmi ses photos pleine
 taille, faute d'un cliché `principale` à part, se déclare dans la table
 `PRINCIPALES` en tête d'`outils-photos.py` : le script s'occupe du reste.
+Déposer un `principale.jpg` dispense d'y figurer — et **c'est la seule
+façon de changer la photo d'une collection pour de bon**. Remplacer
+`principale.webp` à la main ne tient pas : c'est un fichier dérivé, que
+le prochain passage du script réécrit.
 
 La page charge toutes les photos d'un coup : c'est ce qui impose le WebP
-réduit. Les quatre-vingt-un WebP du catalogue pèsent ensemble un peu plus
+réduit. Les quatre-vingt-deux WebP du catalogue pèsent ensemble un peu plus
 de 2 Mo, là où les originaux en font plusieurs dizaines, pour une
 différence invisible à l'écran. `outils-photos.py` alerte au-delà de
 2,5 Mo. Tant qu'une photo manque, son bloc affiche un cadre sobre au nom

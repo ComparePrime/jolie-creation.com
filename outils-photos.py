@@ -55,10 +55,11 @@ SOURCES = {'.png', '.jpg', '.jpeg', '.tif', '.tiff', '.bmp'}
 GALERIE = re.compile(r'^vue-\d+$')
 
 # Collections dont la grande photo se dérive d'une photo pleine taille,
-# faute d'un cliché « principale » déposé à part.
+# faute d'un cliché « principale » déposé à part. Déposer un
+# principale.jpg dans le dossier dispense d'y figurer : c'est lui qui
+# fait foi, et deposees() s'en charge.
 PRINCIPALES = {
     'douceur-abeille': 'anniversaire-abeille-laura.jpg',
-    'velo-route': 'anniversaire-adulte-3.jpeg',
     'elegance-florale': 'anniversaire-adulte-5.jpeg',
     'bapteme-nature': 'bapteme-elio-5.jpeg',
     'logo-entreprise': 'entreprise-3.jpeg',

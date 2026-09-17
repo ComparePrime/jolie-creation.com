@@ -472,7 +472,8 @@
       "alt": "Biscuits d’anniversaire thème vélo de route : vélo dessiné à la main, âge et prénom",
       "galerie": [
         { "fichier": "vue-1.webp", "alt": "Biscuit festonné blanc au vélo de route rouge, avec l’âge et le prénom en dessous" },
-        { "fichier": "vue-2.webp", "alt": "Commande de biscuits vélo emballés un par un, alignés avant la remise" }
+        { "fichier": "vue-2.webp", "alt": "Commande de biscuits vélo emballés un par un, alignés avant la remise" },
+        { "fichier": "vue-3.webp", "alt": "Les biscuits vélo en cours de décoration sur la grille, poche à douille noire posée à côté" }
       ],
       "produits": []
     },
