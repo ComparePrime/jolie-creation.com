@@ -42,27 +42,47 @@ html{ scroll-behavior: smooth; }
 }
 
 /* ---------- Animations au scroll ----------
-   .reveal-init / .in-view sont ajoutées par script.js (IntersectionObserver).
-   Le contenu reste visible par défaut si le JS ne s'exécute pas :
-   la classe .reveal-init n'est jamais présente dans le HTML statique. */
+   Un seul système pour tout le site : .reveal-init pose l'état de départ,
+   .in-view le lève. Les deux classes sont ajoutées par script.js
+   (IntersectionObserver), jamais écrites dans le HTML : sans JS, sans
+   IntersectionObserver ou avec « moins d'animations », le contenu reste
+   simplement visible.
+
+   Deux propriétés seulement, opacity et transform : ce sont les deux que
+   le navigateur compose sans repasser par la mise en page. Animer une
+   hauteur ou une marge ferait recalculer la page à chaque image.
+
+   La courbe est la même partout. Elle part vite et s'arrête longuement :
+   l'élément semble se poser plutôt que glisser. */
+:root{
+  --entree: cubic-bezier(.22, 1, .36, 1);
+  --entree-duree: .62s;
+}
 .reveal-init{
   opacity: 0;
-  transform: translateY(22px);
-  transition: opacity .7s cubic-bezier(.22,.61,.36,1), transform .7s cubic-bezier(.22,.61,.36,1);
+  transform: translateY(20px);
+  transition: opacity var(--entree-duree) var(--entree),
+              transform var(--entree-duree) var(--entree);
+  /* La transition ne doit pas commencer avant que l'élément soit observé ;
+     will-change reste hors jeu, il coûte une couche de composition par
+     élément et la page en compte plusieurs centaines. */
 }
+/* Une photo se pose d'un peu plus loin et d'un souffle de trop-grand :
+   le mouvement se lit sur une grande surface, pas sur une ligne de texte. */
 .reveal-init.reveal-media{
-  transform: translateY(28px) scale(0.97);
+  transform: translateY(24px) scale(0.985);
 }
-/* Arrivée latérale, plus lente : réservée au moment "signature" du hero. */
+/* Arrivée latérale : réservée au moment « signature » de l'accueil. */
 .reveal-init.reveal-left{
-  transform: translateX(-34px);
-  transition-duration: 1.1s;
+  transform: translateX(-25px);
+  transition-duration: .7s;
 }
 @media (max-width: 640px){
-  .reveal-init{ transform: translateY(12px); transition-duration: .5s; }
-  .reveal-init.reveal-media{ transform: translateY(14px) scale(0.985); }
-  /* Déplacement réduit sur mobile : la marge latérale y est plus courte. */
-  .reveal-init.reveal-left{ transform: translateX(-18px); transition-duration: .9s; }
+  /* Sur un écran étroit, le même déplacement paraît deux fois plus grand :
+     on le réduit, et on raccourcit d'autant. */
+  .reveal-init{ transform: translateY(12px); --entree-duree: .5s; }
+  .reveal-init.reveal-media{ transform: translateY(14px) scale(0.99); }
+  .reveal-init.reveal-left{ transform: translateX(-14px); transition-duration: .55s; }
 }
 /* Déclaré APRÈS les variantes et le media query : à spécificité égale,
    c'est l'ordre qui tranche. Placée plus haut, cette règle était écrasée
@@ -191,7 +211,7 @@ p{ margin:0 0 1em; overflow-wrap: break-word; }
   border-color: var(--ink);
   color: var(--ink);
 }
-.btn-ghost:hover{ background: var(--ink); color: var(--paper); }
+.btn-ghost:hover{ background: var(--ink); color: var(--paper); transform: translateY(-1px); }
 .btn-ghost.on-dark{ border-color: rgba(255,255,255,.55); color:#fff; }
 .btn-ghost.on-dark:hover{ background:#fff; color: var(--ink); }
 .btn-small{ padding: 10px 20px; font-size: 13px; }
@@ -202,6 +222,15 @@ p{ margin:0 0 1em; overflow-wrap: break-word; }
   background: rgba(var(--header-bg), .88);
   backdrop-filter: blur(10px);
   border-bottom: 1px solid var(--line);
+  transition: background .3s var(--entree), box-shadow .3s var(--entree);
+}
+/* Une fois la page défilée, l'en-tête se détache du contenu qui passe
+   dessous : un fond un peu plus dense, une ombre à peine posée. Ni la
+   hauteur ni le rembourrage ne bougent — sinon tout le contenu sauterait
+   au premier cran de molette. */
+.site-header.is-scrolled{
+  background: rgba(var(--header-bg), .96);
+  box-shadow: 0 6px 24px -18px rgba(58, 44, 30, .55);
 }
 .site-header .wrap{
   display:flex;
@@ -858,7 +887,7 @@ body.page-accueil .hero-question{ margin-top: 40px; padding-top: 26px; }
   .folio-item .scallop-frame{ height: auto; }
   .folio-item .scallop-frame img{ height: auto; }
 }
-.folio-item .scallop-frame:hover img{ transform: scale(1.03); }
+@media (hover: hover){ .folio-item .scallop-frame:hover img{ transform: scale(1.02); } }
 
 /* Photo unique de la section micro-scénographies : elle non plus
    n'est pas recadrée, d'où l'absence d'aspect-ratio imposé. */
@@ -944,8 +973,10 @@ body.page-accueil .hero-question{ margin-top: 40px; padding-top: 26px; }
   object-position: center;
   transition: transform .5s ease;
 }
-.formule-card:hover .card-image img{
-  transform: scale(1.04);
+/* Un survol ne vaut que pour un vrai pointeur : sur un écran tactile,
+   :hover se colle à l'élément après le tap et n'en repart plus. */
+@media (hover: hover){
+  .formule-card:hover .card-image img{ transform: scale(1.02); }
 }
 
 /* Cadrage : les cadres sont plus larges que les photos, toutes en
@@ -1406,7 +1437,7 @@ img.cadrage-bas{ object-position: center 65%; }
   aspect-ratio: 3/4; object-fit: cover;
   transition: transform .4s ease;
 }
-.collection-galerie figure:hover img{ transform: scale(1.06); }
+@media (hover: hover){ .collection-galerie figure:hover img{ transform: scale(1.02); } }
 
 /* ---------- Ordres de grandeur ----------
    Une information, pas un tarif contractuel : trois repères de taille,
@@ -1642,7 +1673,7 @@ img.cadrage-bas{ object-position: center 65%; }
   box-shadow: var(--shadow-soft);
 }
 .event-card img{ width:100%; height:100%; object-fit:cover; transition: transform .5s ease; }
-.event-card:hover img{ transform: scale(1.06); }
+@media (hover: hover){ .event-card:hover img{ transform: scale(1.02); } }
 .event-card::before{
   content:""; position:absolute; inset:0;
   background: linear-gradient(180deg, rgba(58,44,30,0) 40%, rgba(30,21,13,.82) 100%);
@@ -1746,7 +1777,7 @@ img.cadrage-bas{ object-position: center 65%; }
   transition: transform .2s ease;
 }
 .whatsapp-float svg{ width: 26px; height: 26px; fill: #fff; display:block; }
-.whatsapp-float:hover{ transform: scale(1.08); }
+.whatsapp-float:hover{ transform: scale(1.04); }
 @media (min-width: 900px){
   .whatsapp-float{ right: 28px; bottom: 28px; }
 }
@@ -1875,9 +1906,17 @@ form.devis-form{
   width: 100%;
   box-sizing: border-box;
 }
+/* Le focus se pose au lieu de sauter. Rien ne bouge : ni taille, ni
+   position — seuls la bordure, le fond et un halo très pâle changent.
+   Un champ qui se déplace au focus fait rater la frappe suivante. */
+.field input, .field select, .field textarea{
+  transition: border-color .22s var(--entree), background .22s var(--entree),
+              box-shadow .22s var(--entree);
+}
 .field input:focus, .field select:focus, .field textarea:focus{
   outline: none; border-color: var(--gold);
   background: var(--paper);
+  box-shadow: 0 0 0 3px rgba(197, 160, 89, .14);
 }
 .field textarea{ resize: vertical; min-height: 110px; }
 .form-note{ font-size: 12.5px; color: var(--ink-soft); }
