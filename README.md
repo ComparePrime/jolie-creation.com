@@ -246,17 +246,22 @@ bas.
 **La séparation est la règle qui tient tout le reste.**
 
 `biscuits-personnalises.html` **présente la prestation**. Ni modèle, ni
-prix, ni bloc de collection. Sept sections :
+bloc de collection, ni prix de modèle. Huit sections :
 
 1. **En-tête** — l'offre en une phrase, sans photo.
 2. **Saison en cours** — un aperçu des collections `"saison": true` :
    photo, nom, lien vers la galerie. Rien d'autre.
 3. **Comment sont créés mes biscuits ?** — les six étapes de l'atelier.
 4. **Ingrédients & conservation** — composition, allergènes, durée.
-5. **Mes réalisations** — la passerelle vers la galerie.
-6. **Elles en parlent** — les avis clients. Ils vivent ici et nulle part
+5. **Combien coûte un biscuit ?** — trois ordres de grandeur par taille.
+   Purement informatif : aucun bouton, aucun panier. Le tarif exact d'un
+   modèle vit dans `catalogue.js` et s'affiche dans la modale, au moment
+   de composer la commande. C'est la seule exception à « aucun prix sur
+   cette page », et elle ne cite aucun modèle.
+6. **Mes réalisations** — la passerelle vers la galerie.
+7. **Elles en parlent** — les avis clients. Ils vivent ici et nulle part
    ailleurs.
-7. **Appel final** — devis et WhatsApp.
+8. **Appel final** — devis et WhatsApp.
 
 `mes-realisations.html` **porte le catalogue entier**. Les vingt-six
 collections y vivent, et elles seules : grande photo, nom, présentation,
@@ -264,12 +269,19 @@ vues secondaires, nombre de modèles et bouton d'action. Puis la
 micro-scénographie installée.
 
 **Le haut de page s'efface devant les créations.** Un surtitre, un titre
-de trois mots, une phrase, deux liens d'ancre : la première photo arrive
-à 750 px du haut, contre 1355 px auparavant. Il n'y a plus de sommaire de
-vingt-six pastilles avant la première création — vingt-six noms alignés
-avant d'avoir rien vu se lisent comme un menu déroulant, pas comme un
-portfolio. Les deux liens `#collections` et `#micro-scenographies`
-suffisent à la navigation.
+de trois mots, deux phrases, deux liens d'ancre : la première photo
+arrive à 766 px du haut, contre 1355 px auparavant. Il n'y a plus de
+sommaire de vingt-six pastilles avant la première création — vingt-six
+noms alignés avant d'avoir rien vu se lisent comme un menu déroulant, pas
+comme un portfolio. Les deux liens `#collections` et
+`#micro-scenographies` suffisent à la navigation.
+
+**Les collections du moment ouvrent la galerie, dans leur propre
+section.** `#collections-du-moment` les présente, `#collections` porte
+toutes les autres. Le drapeau `saison` de `catalogue.js` décide seul du
+partage, et `outils-collections.py` retire de la liste générale celles
+qu'il a mises en tête : une collection mise en avant puis répétée douze
+blocs plus bas se lit comme deux collections.
 
 **Toute photo de biscuit appartient à une collection.** Il n'y a plus de
 galerie séparée : une photo qui n'illustrait aucune collection en a reçu
@@ -292,8 +304,9 @@ Les deux zones se régénèrent d'un même geste :
 python3 outils-collections.py
 ```
 
-Le script écrit le catalogue dans « Mes réalisations » et l'aperçu de
-saison dans la vitrine. Il ne peut pas écrire de prix du côté vitrine : c'est le
+Le script écrit les deux listes de « Mes réalisations » — les collections
+du moment, puis toutes les autres — et l'aperçu de saison dans la
+vitrine. Il ne peut pas écrire de prix du côté vitrine : c'est le
 gabarit qui l'en empêche, pas la discipline.
 
 ### Les six étapes de l'atelier
@@ -476,10 +489,12 @@ normal, pas un manque à combler.
 
 ### Le drapeau « saison »
 
-`"saison": true` fait deux choses, et seulement deux : la collection
-apparaît en aperçu sur la page vitrine, et elle porte une pastille
-« collection du moment » dans le catalogue. Retirer le drapeau la retire
-de la vitrine. Elle reste au catalogue, achetable, à sa place.
+`"saison": true` fait trois choses, et seulement trois : la collection
+apparaît en aperçu sur la page vitrine, elle passe dans la section
+« Collections du moment » en tête de galerie — et disparaît d'autant de
+la liste générale —, et elle porte une pastille « collection du moment ».
+Retirer le drapeau la ramène simplement à son rang dans la liste
+générale, achetable comme avant.
 
 La pastille se pose en tête d'une rangée `.collection-meta`, juste
 au-dessus du nom, suivie de l'occasion quand celle-ci apprend quelque
