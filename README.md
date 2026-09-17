@@ -263,6 +263,14 @@ collections y vivent, et elles seules : grande photo, nom, présentation,
 vues secondaires, nombre de modèles et bouton d'action. Puis la
 micro-scénographie installée.
 
+**Le haut de page s'efface devant les créations.** Un surtitre, un titre
+de trois mots, une phrase, deux liens d'ancre : la première photo arrive
+à 750 px du haut, contre 1355 px auparavant. Il n'y a plus de sommaire de
+vingt-six pastilles avant la première création — vingt-six noms alignés
+avant d'avoir rien vu se lisent comme un menu déroulant, pas comme un
+portfolio. Les deux liens `#collections` et `#micro-scenographies`
+suffisent à la navigation.
+
 **Toute photo de biscuit appartient à une collection.** Il n'y a plus de
 galerie séparée : une photo qui n'illustrait aucune collection en a reçu
 une. Deux endroits qui montrent les mêmes biscuits finissent toujours par
@@ -472,6 +480,14 @@ normal, pas un manque à combler.
 apparaît en aperçu sur la page vitrine, et elle porte une pastille
 « collection du moment » dans le catalogue. Retirer le drapeau la retire
 de la vitrine. Elle reste au catalogue, achetable, à sa place.
+
+La pastille se pose en tête d'une rangée `.collection-meta`, juste
+au-dessus du nom, suivie de l'occasion quand celle-ci apprend quelque
+chose — pour « Automne » ou « Saint-Valentin », l'occasion répète le titre
+et `outils-collections.py` ne l'écrit pas. Cette rangée est un conteneur
+flex, et ce n'est pas un détail : dans la colonne flex du corps, la
+pastille s'étirait sur toute la largeur et donnait une barre dorée de
+573 px pour trois mots.
 
 Les données structurées vivent sur « Mes réalisations », qui porte le
 catalogue.

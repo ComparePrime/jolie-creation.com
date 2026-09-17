@@ -5,9 +5,9 @@
 
 Une seule source, catalogue.js, et deux destinations aux rôles nets :
 
-**mes-realisations.html** reçoit les vingt et une collections — grande
-photo, nom, présentation, vues secondaires, nombre de modèles et bouton
-de sélection. Les prix ne s'y affichent pas : ils apparaissent dans la
+**mes-realisations.html** reçoit toutes les collections — grande photo,
+nom, présentation, vues secondaires, nombre de modèles et bouton de
+sélection. Les prix ne s'y affichent pas : ils apparaissent dans la
 modale, au moment de choisir. C'est une galerie, pas une liste de tarifs.
 
 **biscuits-personnalises.html** ne reçoit qu'un aperçu court des
@@ -105,17 +105,34 @@ def action(c, marge):
             f'Demander un devis</a>')
 
 
+def reperes(c):
+    """La ligne de petits repères posée au-dessus du nom : l'occasion, et la
+    pastille de saison quand il y en a une.
+
+    L'occasion ne s'écrit que lorsqu'elle apprend quelque chose. Pour
+    « Automne » ou « Saint-Valentin », elle répète mot pour mot le titre
+    juste en dessous : deux fois le même mot, en deux tailles, ne fait pas
+    une hiérarchie."""
+    # La pastille passe en tête : elle est ainsi toujours à l'aplomb du
+    # titre, que la collection porte une occasion ou non.
+    marques = []
+    if c['saison']:
+        marques.append('<span class="collection-saison-pastille">Collection du moment</span>')
+    if c['occasion'] != c['nom']:
+        marques.append(f'<span class="collection-occasion">{e(c["occasion"])}</span>')
+    if not marques:
+        return ''
+    return '\n          <p class="collection-meta">' + ''.join(marques) + '</p>'
+
+
 def bloc(c):
     """Une collection dans la galerie : photo, texte, vues, modèles, bouton."""
-    saison = ('\n          <span class="collection-saison-pastille">Collection du moment</span>'
-              if c['saison'] else '')
     return f'''      <article class="collection-bloc" id="{c['id']}" aria-labelledby="t-{c['id']}">
         <div class="collection-photo">
           <img src="{c['image']}" alt="{e(c['alt'])}" loading="lazy" decoding="async" data-photo-collection>
           <span class="collection-photo-repli" aria-hidden="true">{e(c['nom'])}</span>
         </div>
-        <div class="collection-corps">
-          <span class="collection-occasion">{e(c['occasion'])}</span>{saison}
+        <div class="collection-corps">{reperes(c)}
           <h3 id="t-{c['id']}">{e(c['nom'])}</h3>
           <p class="collection-texte">{e(c['description'])}</p>
 {modeles(c, '          ')}
@@ -182,10 +199,6 @@ def main():
     t = GALERIE_PAGE.read_text(encoding='utf-8')
     t = remplacer(GALERIE_PAGE, t, 'collections:toutes',
                   '\n\n'.join(bloc(c) for c in cols))
-    t = remplacer(GALERIE_PAGE, t, 'collections:sommaire', '\n'.join(
-        f'        <li><a href="#{c["id"]}">{e(c["nom"])}</a>'
-        + ('<span class="index-saison">du moment</span>' if c['saison'] else '')
-        + '</li>' for c in cols))
     t = remplacer(GALERIE_PAGE, t, 'collections:jsonld',
                   '<script type="application/ld+json">\n'
                   + json.dumps(donnees_structurees(cols), ensure_ascii=False, indent=2)

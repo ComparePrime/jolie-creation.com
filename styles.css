@@ -319,6 +319,16 @@ main > section:first-of-type + section { padding-top: 80px; }
 .section-head{ max-width: 640px; margin-bottom: 56px; }
 .section-head.center{ margin-left:auto; margin-right:auto; text-align:center; }
 .section-head h2{ font-size: clamp(30px, 4vw, 42px); margin-top: 14px; text-wrap: balance; }
+/* En-tête allégé : ni ornement ni surtitre, et l'écart sous lui réduit.
+   Sur une page-portfolio, l'en-tête de page puis celui de la section
+   s'empilent et repoussent la première photo de plusieurs centaines de
+   pixels avant qu'on ait rien vu. */
+/* La section qui suit immédiatement une intro de page n'a pas besoin de
+   ses 80 px habituels : le changement de fond marque déjà la coupure. */
+.section-serree:first-of-type{ padding-top: 44px; }
+.section-head-mince{ margin-bottom: 32px; }
+.section-head-mince h2{ margin-top: 0; }
+.section-head-mince p{ font-size: 16px; }
 .section-head p{ color: var(--ink-soft); font-size: 17px; }
 .section-ink .section-head p{ color: rgba(255,253,249,.75); }
 
@@ -1237,38 +1247,10 @@ img.cadrage-bas{ object-position: center 65%; }
 .etapes-commande h3{ font-size: 17px; margin: 0 0 8px; }
 .etapes-commande p{ margin: 0; font-size: 14.5px; line-height: 1.65; color: var(--ink-soft); }
 
-/* ---------- Index des collections ----------
-   Vingt collections font une page longue : cette table des matières
-   évite de la faire défiler pour trouver la bonne. */
-.collections-index{
-  background: var(--cream-deep);
-  border-radius: 20px;
-  padding: 22px 26px 24px;
-  margin-bottom: 40px;
-}
-.collections-index > p{
-  margin: 0 0 12px;
-  font-size: 11.5px; letter-spacing: .18em; text-transform: uppercase;
-  color: var(--gold-deep);
-}
-.collections-index ul{
-  display:flex; flex-wrap: wrap; gap: 8px 10px;
-  margin: 0; padding: 0; list-style: none;
-}
-.collections-index a{
-  display:inline-block;
-  padding: 7px 14px; border-radius: 999px;
-  background: var(--paper); border: 1px solid var(--line);
-  font-size: 13.5px; color: var(--ink);
-  transition: border-color .2s ease, transform .2s ease;
-}
-.collections-index a:hover{ border-color: var(--gold); transform: translateY(-1px); }
-
 /* ---------- Cartes de collection ----------
    Une carte par rangée, sur toute la largeur : la photo d'assortiment
    mérite mieux qu'une vignette de grille, et les vues secondaires ont
-   besoin de place. La page est longue — le sommaire au-dessus y mène
-   directement. */
+   besoin de place. */
 .collections-liste{
   display:grid; gap: 30px;
   grid-template-columns: 1fr;
@@ -1284,7 +1266,7 @@ img.cadrage-bas{ object-position: center 65%; }
   border: 1px solid var(--line);
   border-radius: 24px;
   overflow: hidden;
-  /* Le sommaire mène ici : la carte visée ne doit pas passer sous
+  /* Un lien d'ancre mène ici : la carte visée ne doit pas passer sous
      l'en-tête fixe. */
   scroll-margin-top: 105px;
   transition: box-shadow .3s ease, transform .3s ease;
@@ -1421,15 +1403,6 @@ img.cadrage-bas{ object-position: center 65%; }
   transition: transform .4s ease;
 }
 .collection-galerie figure:hover img{ transform: scale(1.06); }
-
-/* Le sommaire signale les collections du moment sans les déplacer :
-   elles restent à leur rang, repérables d'un coup d'œil. */
-.index-saison{
-  margin-left: 6px; padding: 2px 7px; border-radius: 999px;
-  background: var(--gold); color: var(--paper);
-  font-size: 10px; letter-spacing: .1em; text-transform: uppercase;
-  vertical-align: 1px;
-}
 
 /* ---------- Modale de sélection d'une collection ----------
    C'est ici que se compose la commande : elle doit rester lisible
@@ -1739,6 +1712,16 @@ img.cadrage-bas{ object-position: center 65%; }
 }
 .page-intro .eyebrow{ justify-content:center; }
 .page-intro h1{ font-size: clamp(34px, 5vw, 52px); margin-top: 14px; }
+/* Le chapô d'une page-portfolio : une phrase, pas un paragraphe. Plus
+   étroit que .narrow pour qu'il tienne en deux ou trois lignes sous le
+   titre au lieu de s'étaler sur toute la colonne. */
+.page-chapo{
+  max-width: 54ch;
+  margin: 16px auto 0;
+  font-size: 16.5px; line-height: 1.7;
+  color: var(--ink-soft);
+  text-wrap: pretty;
+}
 .breadcrumb{ font-size: 13px; color: var(--ink-soft); margin-bottom: 18px; }
 .breadcrumb a:hover{ color: var(--gold-deep); }
 
@@ -2480,12 +2463,33 @@ form.devis-form{
   margin: 0 0 12px;
 }
 .collection-bloc .collection-texte{ font-size: 15.5px; }
+/* Les repères d'une collection — l'occasion, la pastille « du moment » —
+   tiennent sur une rangée au-dessus du nom.
+
+   Cette rangée est un conteneur flex, et c'est tout l'intérêt : dans la
+   colonne flex du corps, un enfant s'étire sur toute la largeur
+   disponible. La pastille y devenait une barre dorée de 573 px pour
+   trois mots. En rangée, elle se taille sur son texte ; align-self
+   empêche la rangée elle-même de s'étirer. */
+.collection-meta{
+  display: flex; align-items: center; flex-wrap: wrap;
+  gap: 8px 10px;
+  align-self: flex-start;
+  margin: 0 0 12px;
+}
+.collection-meta .collection-occasion{ margin-bottom: 0; }
 .collection-saison-pastille{
-  display: inline-block;
-  margin-left: 10px; padding: 4px 11px; border-radius: 999px;
+  padding: 5px 12px; border-radius: 999px;
   background: var(--gold); color: var(--paper);
-  font-size: 10.5px; letter-spacing: .14em; text-transform: uppercase;
-  vertical-align: 2px;
+  font-size: 10px; letter-spacing: .14em; text-transform: uppercase;
+  line-height: 1;
+  white-space: nowrap;
+}
+/* Sur les écrans les plus étroits, l'interlettrage coûte cher : vingt
+   lettres espacées occupaient les deux tiers de la colonne. Resserré, le
+   label reste un label. */
+@media (max-width: 380px){
+  .collection-saison-pastille{ font-size: 9.5px; letter-spacing: .08em; padding: 4px 10px; }
 }
 .collection-modeles{
   list-style: none; margin: 4px 0 24px; padding: 0;
@@ -2524,7 +2528,10 @@ form.devis-form{
     align-items: stretch;
   }
   .collection-bloc .collection-photo{ aspect-ratio: auto; height: 100%; min-height: 340px; }
-  .collection-bloc .collection-corps{ padding: 34px 36px 36px; }
+  /* Le texte se centre face à la photo. Une collection courte — deux
+     repères, pas de liste de modèles — laissait sinon un vide au bas de
+     sa colonne pendant que la photo, elle, allait jusqu'en bas. */
+  .collection-bloc .collection-corps{ padding: 34px 36px 36px; justify-content: center; }
   .collection-bloc .collection-galerie{ grid-column: 1 / -1; }
   /* Une rangée sur deux inverse les colonnes : vingt et un blocs
      identiques défileraient comme un formulaire. */
