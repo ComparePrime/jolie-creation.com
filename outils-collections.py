@@ -114,7 +114,9 @@ def reperes(c):
     juste en dessous : deux fois le même mot, en deux tailles, ne fait pas
     une hiérarchie."""
     # La pastille passe en tête : elle est ainsi toujours à l'aplomb du
-    # titre, que la collection porte une occasion ou non.
+    # titre, que la collection porte une occasion ou non. Elle reste utile
+    # même sous le titre de sa section : un lien direct (#automne) ou un
+    # partage amène le visiteur sur le bloc seul, sans l'en-tête.
     marques = []
     if c['saison']:
         marques.append('<span class="collection-saison-pastille">Collection du moment</span>')
@@ -197,8 +199,10 @@ def main():
     saison = [c for c in cols if c['saison']]
 
     t = GALERIE_PAGE.read_text(encoding='utf-8')
+    t = remplacer(GALERIE_PAGE, t, 'collections:saison',
+                  '\n\n'.join(bloc(c) for c in saison))
     t = remplacer(GALERIE_PAGE, t, 'collections:toutes',
-                  '\n\n'.join(bloc(c) for c in cols))
+                  '\n\n'.join(bloc(c) for c in cols if not c['saison']))
     t = remplacer(GALERIE_PAGE, t, 'collections:jsonld',
                   '<script type="application/ld+json">\n'
                   + json.dumps(donnees_structurees(cols), ensure_ascii=False, indent=2)
@@ -210,6 +214,8 @@ def main():
     VITRINE.write_text(v, encoding='utf-8')
 
     modeles_total = sum(len(c['produits']) for c in cols)
+    print(f'{len(saison)} collection(s) du moment en tête de galerie, '
+          f'{len(cols) - len(saison)} à la suite — sans doublon.')
     print(f'{len(cols)} collections et {modeles_total} modèles écrits dans '
           f'{GALERIE_PAGE.name}')
     print(f'{len(saison)} collection(s) de saison en aperçu dans {VITRINE.name} '

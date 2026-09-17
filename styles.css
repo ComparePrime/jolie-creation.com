@@ -1381,12 +1381,16 @@ img.cadrage-bas{ object-position: center 65%; }
 
 /* La galerie montre l'assortiment quand une seule photo ne suffit pas.
    Elle vient après le bouton : on regarde, puis on commande. */
+/* Le padding du haut vaut le gap : les vues secondaires respirent de la
+   même façon entre elles et sous la grande photo. Sans lui, la première
+   rangée venait coller le bas de la photo principale — deux images qui
+   se touchent se lisent comme une seule. */
 .collection-galerie{
   display: grid; gap: 10px;
   grid-template-columns: repeat(3, 1fr);
-  padding: 0 24px 26px;
+  padding: 10px 24px 26px;
 }
-@media (min-width: 820px){ .collection-galerie{ padding: 0 36px 36px; } }
+@media (min-width: 820px){ .collection-galerie{ gap: 12px; padding: 12px 36px 36px; } }
 /* Six de front seulement quand chaque vue garde au moins 150 px : en
    dessous, deux rangées de trois se lisent mieux qu'une frise de timbres. */
 @media (min-width: 1000px){ .collection-galerie{ grid-template-columns: repeat(6, 1fr); } }
@@ -1403,6 +1407,48 @@ img.cadrage-bas{ object-position: center 65%; }
   transition: transform .4s ease;
 }
 .collection-galerie figure:hover img{ transform: scale(1.06); }
+
+/* ---------- Ordres de grandeur ----------
+   Une information, pas un tarif contractuel : trois repères de taille,
+   sans cadre, sans bouton, sans panier. Le prix exact d'un modèle vit
+   dans catalogue.js et s'affiche dans la modale, au moment de choisir.
+   Un filet suffit à séparer les repères — un cadre par ligne en ferait
+   une grille de produits. */
+.tarifs-reperes{
+  list-style: none; margin: 0 auto; padding: 0;
+  max-width: 860px;
+  display: grid; grid-template-columns: 1fr;
+}
+.tarifs-reperes li{
+  display: flex; align-items: baseline; flex-wrap: wrap;
+  gap: 4px 14px;
+  padding: 15px 2px;
+  border-top: 1px solid var(--line);
+}
+.tarifs-reperes li:last-child{ border-bottom: 1px solid var(--line); }
+.tarif-nom{ font-family: var(--font-display); font-size: 18px; color: var(--ink); }
+.tarif-taille{ flex: 1; font-size: 13.5px; color: var(--ink-soft); }
+.tarif-prix{
+  font-family: var(--font-display); font-size: 17px;
+  color: var(--gold-deep); white-space: nowrap;
+}
+/* En trois colonnes, chaque repère s'empile : le filet du haut les aligne
+   comme trois entrées de sommaire plutôt que trois cartes. */
+@media (min-width: 760px){
+  .tarifs-reperes{ grid-template-columns: repeat(3, 1fr); column-gap: 30px; }
+  .tarifs-reperes li{
+    flex-direction: column; align-items: flex-start;
+    gap: 7px; padding: 20px 0 0;
+    border-bottom: none;
+  }
+  .tarifs-reperes li:last-child{ border-bottom: none; }
+  .tarif-taille{ flex: none; }
+}
+.tarifs-note{
+  max-width: 620px; margin: 26px auto 0;
+  text-align: center; font-size: 14.5px; color: var(--ink-soft);
+}
+.tarifs-note a{ color: var(--gold-deep); text-decoration: underline; text-underline-offset: 3px; }
 
 /* ---------- Modale de sélection d'une collection ----------
    C'est ici que se compose la commande : elle doit rester lisible
@@ -1716,12 +1762,15 @@ img.cadrage-bas{ object-position: center 65%; }
    étroit que .narrow pour qu'il tienne en deux ou trois lignes sous le
    titre au lieu de s'étaler sur toute la colonne. */
 .page-chapo{
-  max-width: 54ch;
+  max-width: 58ch;
   margin: 16px auto 0;
   font-size: 16.5px; line-height: 1.7;
   color: var(--ink-soft);
   text-wrap: pretty;
 }
+/* La seconde ligne est une précision, pas une suite du chapô : un cran
+   plus petite, et collée à lui plutôt qu'à la navigation. */
+.page-chapo-suite{ margin-top: 10px; font-size: 15px; }
 .breadcrumb{ font-size: 13px; color: var(--ink-soft); margin-bottom: 18px; }
 .breadcrumb a:hover{ color: var(--gold-deep); }
 
