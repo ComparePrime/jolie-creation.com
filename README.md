@@ -311,11 +311,11 @@ gabarit qui l'en empêche, pas la discipline.
 
 ### Les six étapes de l'atelier
 
-Elles vivent en clair dans la page, dans `<ol class="atelier-etapes">`.
-L'une d'elles — la découpe — n'a pas encore de photo d'atelier : elle
-porte la classe `atelier-etape-texte` et tient en une rangée compacte,
-numéro à gauche. Un grand cadre vide vaudrait moins qu'une rangée
-assumée.
+Elles vivent en clair dans la page, dans `<ol class="atelier-etapes">`,
+et chacune a désormais sa photo. Le jour où l'une d'elles perdrait la
+sienne, la classe `atelier-etape-texte` la fait tenir en une rangée
+compacte, numéro à gauche : un grand cadre vide vaudrait moins qu'une
+rangée assumée.
 
 Le jour où la photo existe, rendre à l'étape son cadre et retirer la
 classe :
@@ -330,20 +330,20 @@ classe :
 </li>
 ```
 
-Les photos des cinq autres étapes sont de vraies photos de l'atelier,
-choisies parce qu'elles montrent l'étape : la pâte dans la cuve du
-batteur, les biscuits nature qui refroidissent sur grille, la poche à
+Ce sont de vraies photos de l'atelier, choisies parce qu'elles montrent
+l'étape : la pâte dans la cuve du batteur, l'emporte-pièce dans la pâte
+étalée, les biscuits nature qui refroidissent sur grille, la poche à
 douille sur le plan de travail, un prénom calligraphié, une commande
 emballée sachet par sachet.
 
 Une photo d'atelier qui n'appartient à aucune collection se range dans
 `images/site/`, sous le nom `atelier-<étape>.jpg`, avec le portrait de
-Julie : elle montre le métier, pas un produit au catalogue. Les étapes 01
-et 03 en ont une. Les trois dernières montrent encore les biscuits d'une
-collection, rangés avec elle : ce sont de vraies photos de l'atelier, et
-elles servent aux deux endroits. Le jour où une photo de l'étape elle-même
-existe, elle la remplace — une photo de l'étape vaut toujours mieux qu'une
-image approchante.
+Julie : elle montre le métier, pas un produit au catalogue. Les étapes 01,
+02 et 03 en ont une. Les trois dernières montrent encore les biscuits
+d'une collection, rangés avec elle : ce sont de vraies photos de
+l'atelier, et elles servent aux deux endroits. Le jour où une photo de
+l'étape elle-même existe, elle la remplace — une photo de l'étape vaut
+toujours mieux qu'une image approchante.
 
 ---
 
