@@ -383,29 +383,71 @@ document.addEventListener('DOMContentLoaded', function () {
     el.textContent = new Date().getFullYear();
   });
 
+  // --- L'en-tête collant se détache une fois la page défilée ---
+  // Une classe, et c'est la CSS qui décide de l'ombre. Rien ne change de
+  // taille ni de position : un en-tête qui grandit ou rétrécit au scroll
+  // décale tout le contenu sous lui.
+  var enTete = document.querySelector('.site-header');
+  if (enTete) {
+    var marquerDefilement = function () {
+      enTete.classList.toggle('is-scrolled', window.scrollY > 8);
+    };
+    marquerDefilement();
+    // passive : le navigateur n'a pas à attendre ce gestionnaire pour
+    // défiler. Sans lui, chaque cran de molette attend le JS.
+    window.addEventListener('scroll', marquerDefilement, { passive: true });
+  }
+
   // --- Animations au scroll (fade + léger déplacement) ---
   // Progressive enhancement : sans JS ou avec IntersectionObserver indisponible,
   // ou si l'utilisateur préfère moins d'animations, le contenu reste simplement visible
   // (la classe .reveal-init, seule à porter l'opacité 0, n'est ajoutée qu'ici).
   var prefersReducedMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   if (!prefersReducedMotion && 'IntersectionObserver' in window) {
+    // Une série d'éléments frères qui se posent l'un après l'autre. Le
+    // décalage est plafonné par « max » : une galerie de trente vues ne
+    // doit pas finir d'apparaître trois secondes après la première.
+    // « base » retarde toute la série, pour qu'elle passe après ce qui la
+    // précède dans son bloc.
     var staggerGroups = [
       { selector: '.value-card', max: 5, step: 80 },
-      { selector: '.formule-card', max: 4, step: 90 },
+      { selector: '.formule-card', max: 4, step: 110 },
+      { selector: '.saison-carte', max: 3, step: 110 },
       { selector: '.testi-card', max: 4, step: 90 },
       { selector: '.event-card', max: 5, step: 70 },
       { selector: '.why-item', max: 4, step: 90 },
       { selector: '.gallery-item', max: 7, step: 55 },
       { selector: '.folio-item', max: 6, step: 45 },
       { selector: '.home-gallery-strip .scallop-frame', max: 5, step: 70 },
-      { selector: '.timeline li', max: 5, step: 90 }
+      { selector: '.timeline li', max: 5, step: 90 },
+      { selector: '.atelier-etape', max: 5, step: 90 },
+      { selector: '.tarifs-reperes li', max: 3, step: 90 },
+      // Les vues secondaires d'une collection, après sa grande photo et
+      // son texte : c'est la fin de la découverte du bloc.
+      { selector: '.collection-galerie figure', max: 5, step: 65, base: 150 }
     ];
-    var mediaSelectors = ['.hero-media', '.univers-media', '.about-photo', '.home-gallery-strip .scallop-frame'];
+    // Une suite ordonnée à l'intérieur d'un même bloc : surtitre, titre,
+    // texte, boutons — ou grande photo puis informations. Même mécanique
+    // que les séries, mais les étapes sont nommées une à une.
+    var sequences = [
+      { parent: '.hero-copy', etapes: [
+        { selector: '.eyebrow', delai: 0 },
+        { selector: 'h1', delai: 100 },
+        { selector: '.hero-intro, .hero-sub, > p', delai: 200 },
+        { selector: '.hero-actions, .hero-trust', delai: 300 }
+      ] },
+      { parent: '.collection-bloc', etapes: [
+        { selector: '.collection-photo', delai: 0, media: true },
+        { selector: '.collection-corps', delai: 110 }
+      ] }
+    ];
+    var mediaSelectors = ['.hero-media', '.univers-media', '.about-photo',
+      '.home-gallery-strip .scallop-frame', '.atelier-photo', '.card-image'];
     // Arrivée depuis la gauche, légèrement décalée pour passer après le
     // reste du hero (qui, lui, monte).
     var leftSelectors = ['.hero-question'];
     var soloSelectors = [
-      '.hero-copy', '.section-head', '.page-intro > .wrap', '.cta-final',
+      '.section-head', '.page-intro > .wrap', '.cta-final',
       '.univers-layout > div:not(.univers-media)', '.contact-info-card', 'form.devis-form',
       '.about-top', '.about-bottom', '.objectif-box', '.bottom-band'
     ].concat(leftSelectors);
@@ -421,7 +463,28 @@ document.addEventListener('DOMContentLoaded', function () {
       });
       byParent.forEach(function (els) {
         els.forEach(function (el, i) {
-          revealTargets.set(el, Math.min(i, group.max) * group.step);
+          revealTargets.set(el, (group.base || 0) + Math.min(i, group.max) * group.step);
+        });
+      });
+    });
+
+    var mediaFromSequence = [];
+    sequences.forEach(function (suite) {
+      document.querySelectorAll(suite.parent).forEach(function (bloc) {
+        suite.etapes.forEach(function (etape) {
+          // :scope garde la suite dans SON bloc : sans lui, le premier
+          // hero de la page fournirait les étapes de tous les autres.
+          // Il se préfixe à CHAQUE terme de la liste : « :scope a, b »
+          // ne porterait que sur « a », et « > p » seul lèverait une
+          // SyntaxError.
+          var vise = etape.selector.split(',').map(function (s) {
+            return ':scope ' + s.trim();
+          }).join(',');
+          bloc.querySelectorAll(vise).forEach(function (el) {
+            if (revealTargets.has(el)) return;
+            revealTargets.set(el, etape.delai);
+            if (etape.media) mediaFromSequence.push(el);
+          });
         });
       });
     });
@@ -446,7 +509,9 @@ document.addEventListener('DOMContentLoaded', function () {
       var leftSelectorList = leftSelectors.join(',');
       revealTargets.forEach(function (delay, el) {
         el.classList.add('reveal-init');
-        if (el.matches(mediaSelectorList)) el.classList.add('reveal-media');
+        if (el.matches(mediaSelectorList) || mediaFromSequence.indexOf(el) !== -1) {
+          el.classList.add('reveal-media');
+        }
         if (el.matches(leftSelectorList)) {
           el.classList.add('reveal-left');
           if (!delay) delay = 220;

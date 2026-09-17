@@ -371,6 +371,59 @@ avec son titre, sa description et ses vues secondaires.
 
 ---
 
+## Les animations
+
+**Un seul système, deux classes.** `script.js` pose `.reveal-init` sur les
+éléments à animer et `.in-view` quand ils entrent dans l'écran ; `styles.css`
+fait le reste. Aucune des deux n'est écrite dans le HTML : sans JavaScript,
+sans `IntersectionObserver`, ou si le visiteur a demandé moins d'animations,
+le contenu s'affiche simplement, d'emblée et en entier.
+
+Deux propriétés sont animées, `opacity` et `transform`, et jamais rien
+d'autre. Ce sont les deux que le navigateur compose sans repasser par la
+mise en page : animer une hauteur ou une marge ferait recalculer la page à
+chaque image. Le décalage de mise en page mesuré est de **0,0000 sur les
+six pages**.
+
+La courbe et la durée vivent dans deux variables, `--entree` et
+`--entree-duree`. Les changer change tout le site d'un coup — c'est le
+but.
+
+### Trois façons de déclarer une entrée
+
+Tout se règle dans trois tables en tête du bloc d'animation de
+`script.js`. Ajouter une animation, c'est ajouter une ligne, jamais du
+code.
+
+| Table           | Pour quoi                                                |
+| --------------- | -------------------------------------------------------- |
+| `staggerGroups` | Des frères qui se posent l'un après l'autre : cartes, vues de galerie, étapes de l'atelier. `step` est l'écart, `max` le plafonne, `base` retarde toute la série. |
+| `sequences`     | Une suite ordonnée **dans** un bloc : surtitre, titre, texte, boutons — ou grande photo puis informations. |
+| `soloSelectors` | Un bloc qui se pose d'un seul tenant.                     |
+
+`max` n'est pas un détail : sans lui, une galerie de trente vues finirait
+d'apparaître trois secondes après la première. Sur une collection à six
+vues, la cascade complète dure 475 ms.
+
+### Ce que le système ne fait pas
+
+**Une entrée ne se joue qu'une fois.** L'observateur cesse de surveiller
+l'élément dès qu'il l'a révélé. Monter et descendre la page ne relance
+rien — c'est vérifié par les tests, pas seulement par construction.
+
+**Rien ne bouge en permanence.** Aucune animation en boucle, aucun
+parallaxe, aucune rotation. Un site qui bouge encore une fois qu'on le
+lit n'est plus un portfolio, c'est une démonstration.
+
+**Les survols sont plafonnés à `scale(1.02)` et réservés aux vrais
+pointeurs**, par `@media (hover: hover)`. Sur un écran tactile, `:hover`
+se colle à l'élément après le tap et n'en repart plus.
+
+Un filet de sécurité révèle au bout de six secondes tout ce qui serait
+resté caché : une animation ratée ne doit jamais coûter du contenu.
+
+---
+
 ## Le fond du site
 
 Le fond est empilé en trois couches par `body::before`, dans `styles.css` :
