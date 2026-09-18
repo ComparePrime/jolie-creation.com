@@ -82,6 +82,7 @@
         { "fichier": "vue-5.webp", "alt": "Feuille d’érable blanche mouchetée d’or et feuillages orange sur un set tressé" },
         { "fichier": "vue-6.webp", "alt": "Biscuit tasse terracotta à la citrouille orange, vu de près, avec un feuillage d’automne" }
       ],
+      "packagesResume": "Une sélection de biscuits aux couleurs douces et chaleureuses de la saison.",
       "packages": [
         { "ref": "essentiel", "nom": "L’Essentiel", "prix": 2990,
           "resume": "De quoi goûter à la collection : un de chaque, sans se décider.",
@@ -157,21 +158,57 @@
       "saison": true,
       "description": "Une collection à la fois effrayante et adorable pour célébrer Halloween. Entre citrouilles, petit fantôme, squelette, toile d’araignée et personnages rigolos, chaque biscuit est décoré à la main dans des teintes orange, violet, noir et blanc. Parfaite pour une fête d’Halloween, un goûter d’enfants ou une jolie box gourmande.",
       "alt": "Biscuits d’Halloween personnalisés : citrouilles, fantôme et toile d’araignée",
-      // Les trois packages d’Halloween attendent leur composition et leurs
-      // prix. Le tableau vide est un état valable : la collection se
-      // commande à l’unité, exactement comme avant, et les cartes de
-      // package n’apparaissent pas. Les inventer reviendrait à annoncer
-      // un assortiment que l’atelier ne prépare pas.
-      "packages": [],
+      "galerie": [
+        { "fichier": "vue-1.webp", "alt": "Biscuit « Boo » violet à l’araignée, fantôme aux grands yeux et chauve-souris lilas sur fond de fleurs séchées" },
+        { "fichier": "vue-2.webp", "alt": "Squelette détaillé, courge orange aux grands yeux, fantôme et chauve-souris violette décorés à la main" },
+        { "fichier": "vue-3.webp", "alt": "Toile d’araignée, « Boo » violet et orange, crâne blanc et citrouille au glaçage royal" }
+      ],
+      "packagesResume": "Une sélection de biscuits d’Halloween, entre l’effrayant et l’adorable.",
+      "packages": [
+        { "ref": "essentiel", "nom": "L’Essentiel", "prix": 2990,
+          "resume": "Les incontournables de la collection, un de chaque.",
+          "composition": [
+            { "ref": "citrouille", "qte": 1 },
+            { "ref": "crane", "qte": 1 },
+            { "ref": "boo-violet", "qte": 1 },
+            { "ref": "toile-araignee", "qte": 1 },
+            { "ref": "fantome", "qte": 1 }
+          ] },
+        { "ref": "gourmande", "nom": "La Gourmande", "prix": 4290,
+          "resume": "Les deux « Boo », violet et orange, et de quoi garnir une table.",
+          "composition": [
+            { "ref": "citrouille", "qte": 2 },
+            { "ref": "crane", "qte": 1 },
+            { "ref": "boo-violet", "qte": 1 },
+            { "ref": "boo-orange", "qte": 1 },
+            { "ref": "toile-araignee", "qte": 1 },
+            { "ref": "fantome", "qte": 1 }
+          ] },
+        { "ref": "complete", "nom": "Frissons d’Halloween", "prix": 5990,
+          "complet": true, "horsSuisse": true,
+          "resume": "Toute la collection, squelette et courge compris.",
+          "composition": [
+            { "ref": "citrouille", "qte": 3 },
+            { "ref": "crane", "qte": 1 },
+            { "ref": "boo-violet", "qte": 1 },
+            { "ref": "boo-orange", "qte": 1 },
+            { "ref": "squelette", "qte": 1 },
+            { "ref": "chauve-souris", "qte": 1 },
+            { "ref": "toile-araignee", "qte": 1 },
+            { "ref": "fantome", "qte": 1 },
+            { "ref": "courge-yeux", "qte": 1 }
+          ] }
+      ],
       "produits": [
-        { "ref": "crane", "nom": "Petit crâne blanc", "prix": 450 },
-        { "ref": "citrouille-pastel", "nom": "Citrouille pastel avec détails en relief", "prix": 450 },
-        { "ref": "fantome", "nom": "Petit fantôme", "prix": 500 },
-        { "ref": "citrouille-orange", "nom": "Citrouille orange personnage", "prix": 500 },
-        { "ref": "boo", "nom": "« Boo »", "prix": 600 },
-        { "ref": "squelette", "nom": "Squelette détaillé noir et blanc", "prix": 600 },
-        { "ref": "toile-araignee", "nom": "Toile d’araignée avec araignée en relief", "prix": 600 },
-        { "ref": "chauve-souris", "nom": "Chauve-souris violette", "prix": 650 }
+        { "ref": "citrouille", "nom": "Citrouille", "prix": 400 },
+        { "ref": "crane", "nom": "Crâne", "prix": 400 },
+        { "ref": "courge-yeux", "nom": "Courge avec des yeux", "prix": 500 },
+        { "ref": "boo-violet", "nom": "Boo violet", "prix": 600 },
+        { "ref": "boo-orange", "nom": "Boo orange", "prix": 600 },
+        { "ref": "toile-araignee", "nom": "Toile d’araignée", "prix": 600 },
+        { "ref": "fantome", "nom": "Fantôme", "prix": 600 },
+        { "ref": "chauve-souris", "nom": "Chauve-souris", "prix": 650 },
+        { "ref": "squelette", "nom": "Squelette", "prix": 850 }
       ]
     },
     {

@@ -60,10 +60,8 @@ const COLLECTIONS_ATTENDUES = [
 
 /* Nombre de modèles par collection, relu sur la liste fournie. */
 const MODELES_ATTENDUS = {
-  // Automne est publiée mais pas encore tarifée : ses modèles et leurs
-  // prix n'ont pas été fournis, et rien ne doit les inventer.
   'automne': 7,
-  'magie-noel': 16, 'frissons-halloween': 8, 'douceurs-paques': 9,
+  'magie-noel': 16, 'frissons-halloween': 9, 'douceurs-paques': 9,
   'merci-maitresse': 4, 'bonne-fete-maman': 2, 'bapteme-douceur': 1,
   'annonce-grossesse': 5, 'douceur-personnalisee': 2, 'girls-club': 1,
   'american-road-trip': 12, 'petit-chantier': 9, 'passion-cheval': 10,
@@ -78,7 +76,7 @@ const MODELES_ATTENDUS = {
    Si une transcription dérape, c'est ici que cela se voit. */
 const PRIX_TEMOINS = {
   'magie-noel-sucre-orge': 500, 'magie-noel-joyeux-noel': 700,
-  'frissons-halloween-crane': 450, 'frissons-halloween-chauve-souris': 650,
+  'frissons-halloween-crane': 400, 'frissons-halloween-chauve-souris': 650,
   'douceurs-paques-lapin-dos': 500, 'douceurs-paques-joyeuses-paques': 800,
   'merci-maitresse-avion': 600, 'merci-maitresse-crayon': 650,
   'bonne-fete-maman-coeur-maman': 600, 'bonne-fete-maman-marguerite-relief': 700,
@@ -111,8 +109,8 @@ const PRIX_TEMOINS = {
         c.id + ' : ' + c.produits.length + ' modèles');
     });
     const biscuits = Catalogue.ARTICLES.filter((a) => a.categorie === 'biscuit');
-    assert.strictEqual(biscuits.length, 144);
-    assert.strictEqual(Catalogue.ARTICLES.length, 147);   // 144 biscuits + 3 packages
+    assert.strictEqual(biscuits.length, 145);
+    assert.strictEqual(Catalogue.ARTICLES.length, 151);   // 145 biscuits + 6 packages
   });
 
   await cas('les prix témoins sont exacts', () => {
@@ -129,7 +127,9 @@ const PRIX_TEMOINS = {
       assert.ok(Number.isInteger(a.prix), a.id + ' : prix non entier');
       // Un package coûte plusieurs biscuits : sa fourchette n'est pas
       // celle d'un modèle à l'unité.
-      const [bas, haut] = a.categorie === 'package' ? [1000, 12000] : [400, 800];
+      // Le squelette d'Halloween, grand et très travaillé, monte à 8.50 :
+      // la fourchette d'un biscuit va jusqu'à 9 CHF.
+      const [bas, haut] = a.categorie === 'package' ? [1000, 12000] : [400, 900];
       assert.ok(a.prix >= bas && a.prix <= haut, a.id + ' : prix hors de la fourchette annoncée');
       // Le pas de 50 centimes vaut pour un biscuit vendu à l'unité. Un
       // package se fixe au franc près, en .90 : ce n'est pas un tarif au
@@ -447,13 +447,84 @@ const PRIX_TEMOINS = {
     assert.strictEqual(Catalogue.minimumRequis(panier, 'Suisse'), 0);
   });
 
-  await cas('Halloween garde ses huit modèles et aucun package inventé', () => {
+  /* ---------- Les packages d'Halloween ---------- */
+  const HALLOWEEN_ATTENDUS = {
+    'frissons-halloween-pack-essentiel': {
+      nom: 'L’Essentiel', prix: 2990, biscuits: 5, horsSuisse: false,
+      composition: { 'citrouille': 1, 'crane': 1, 'boo-violet': 1,
+                     'toile-araignee': 1, 'fantome': 1 }
+    },
+    'frissons-halloween-pack-gourmande': {
+      nom: 'La Gourmande', prix: 4290, biscuits: 7, horsSuisse: false,
+      composition: { 'citrouille': 2, 'crane': 1, 'boo-violet': 1, 'boo-orange': 1,
+                     'toile-araignee': 1, 'fantome': 1 }
+    },
+    'frissons-halloween-pack-complete': {
+      nom: 'Frissons d’Halloween', prix: 5990, biscuits: 11, horsSuisse: true,
+      composition: { 'citrouille': 3, 'crane': 1, 'boo-violet': 1, 'boo-orange': 1,
+                     'squelette': 1, 'chauve-souris': 1, 'toile-araignee': 1,
+                     'fantome': 1, 'courge-yeux': 1 }
+    }
+  };
+
+  await cas('les trois packages d’Halloween ont le prix annoncé', () => {
+    Object.keys(HALLOWEEN_ATTENDUS).forEach((id) => {
+      const a = Catalogue.article(id);
+      assert.ok(a, 'package introuvable : ' + id);
+      assert.strictEqual(a.categorie, 'package', id);
+      assert.strictEqual(a.nom, HALLOWEEN_ATTENDUS[id].nom, id);
+      assert.strictEqual(a.prix, HALLOWEEN_ATTENDUS[id].prix,
+        id + ' : ' + Catalogue.formater(a.prix));
+    });
+  });
+
+  await cas('la composition de chaque package d’Halloween est exacte', () => {
+    Object.keys(HALLOWEEN_ATTENDUS).forEach((id) => {
+      const a = Catalogue.article(id);
+      const vu = {};
+      a.detail.forEach((d) => {
+        assert.ok(d.connu, id + ' : modèle inconnu dans la composition — ' + d.ref);
+        vu[d.ref] = d.qte;
+      });
+      assert.deepStrictEqual(vu, HALLOWEEN_ATTENDUS[id].composition, id);
+      assert.strictEqual(a.biscuits, HALLOWEEN_ATTENDUS[id].biscuits,
+        id + ' : ' + a.biscuits + ' biscuits');
+    });
+  });
+
+  await cas('les prix unitaires d’Halloween sont ceux annoncés', () => {
+    const UNITAIRES = {
+      'frissons-halloween-citrouille': 400, 'frissons-halloween-crane': 400,
+      'frissons-halloween-courge-yeux': 500, 'frissons-halloween-boo-violet': 600,
+      'frissons-halloween-boo-orange': 600, 'frissons-halloween-toile-araignee': 600,
+      'frissons-halloween-fantome': 600, 'frissons-halloween-chauve-souris': 650,
+      'frissons-halloween-squelette': 850
+    };
+    Object.keys(UNITAIRES).forEach((id) => {
+      assert.strictEqual(Catalogue.article(id).prix, UNITAIRES[id], id);
+    });
     const h = Catalogue.COLLECTIONS.find((c) => c.id === 'frissons-halloween');
-    assert.strictEqual(h.produits.length, 8);
-    assert.deepStrictEqual(h.packages, [], 'aucune composition ne doit être inventée');
+    assert.strictEqual(h.produits.length, 9);
+  });
+
+  await cas('un package d’Halloween lève le minimum comme celui d’Automne', () => {
+    ['frissons-halloween-pack-essentiel', 'frissons-halloween-pack-gourmande',
+     'frissons-halloween-pack-complete'].forEach((id) => {
+      const panier = [{ id: id, qte: 1 }];
+      assert.strictEqual(Catalogue.minimumRequis(panier, 'Suisse'), 0, id);
+    });
+    // Hors de Suisse, même règle qu'Automne : seul le complet dispense.
     assert.strictEqual(
-      Catalogue.ARTICLES.filter((a) => a.collectionId === h.id && a.categorie === 'package').length,
-      0);
+      Catalogue.minimumRequis([{ id: 'frissons-halloween-pack-essentiel', qte: 1 }], 'France'), 12);
+    assert.strictEqual(
+      Catalogue.minimumRequis([{ id: 'frissons-halloween-pack-complete', qte: 1 }], 'France'), 0);
+  });
+
+  await cas('un package d’Halloween se complète de biscuits à l’unité', () => {
+    const panier = [{ id: 'frissons-halloween-pack-complete', qte: 1 },
+                    { id: 'frissons-halloween-squelette', qte: 2 }];
+    assert.strictEqual(total(panier), 5990 + 1700);
+    assert.strictEqual(biscuits(panier), 13);
   });
 
   await cas('les packages ne touchent que les collections du moment', () => {
@@ -463,7 +534,7 @@ const PRIX_TEMOINS = {
         c.id + ' : une collection classique ne se vend pas en package');
     });
     const avecPackages = Catalogue.COLLECTIONS.filter((c) => (c.packages || []).length);
-    assert.deepStrictEqual(avecPackages.map((c) => c.id), ['automne']);
+    assert.deepStrictEqual(avecPackages.map((c) => c.id), ['automne', 'frissons-halloween']);
   });
 
   console.log(`\n${vert} test(s) au vert, ${rouge} en échec.`);

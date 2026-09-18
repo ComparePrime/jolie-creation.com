@@ -551,6 +551,7 @@ pour commander petit sans atteindre les douze biscuits. Ils se déclarent
 à côté de `produits` :
 
 ```js
+"packagesResume": "Une sélection de biscuits aux couleurs…",
 "packages": [
   { "ref": "complete", "nom": "L’Automne Complète", "prix": 5990,
     "complet": true, "horsSuisse": true,
@@ -561,6 +562,10 @@ pour commander petit sans atteindre les douze biscuits. Ils se déclarent
     ] }
 ]
 ```
+
+**Deux collections en ont** : Automne et Frissons d'Halloween. Ajouter la
+troisième ne demandera pas une ligne de code — un `packagesResume`, un
+tableau `packages`, et les modèles que les compositions nomment.
 
 **Sur la page, un cartouche ; le choix, dans une modale.** Le bloc de la
 collection porte deux lignes et un bouton « Découvrir les packages ». Les
