@@ -193,19 +193,30 @@ def apercu(c):
 
 
 def produit_structure(c):
-    p = {'@type': 'Product',
+    """La collection en donnees structurees.
+
+    Une collection tarifee est un Product : elle a des modeles, des prix,
+    et un panier. Une collection sur devis n'en est pas un — annoncer un
+    Product sans prix revient a promettre a Google un produit qu'il ne
+    peut pas afficher, et il le refuse. On la declare alors pour ce
+    qu'elle est : une creation montree en portfolio.
+    """
+    p = {'@type': 'Product' if c['produits'] else 'CreativeWork',
          'name': 'Biscuits personnalisés — collection ' + c['nom'],
          'description': c['description'],
          'url': SITE + 'mes-realisations.html#' + c['id'],
-         'image': SITE + c['image'],
-         'brand': {'@type': 'Brand', 'name': 'Jolie Création'}}
+         'image': SITE + c['image']}
     if c['produits']:
         prix = [x['prix'] for x in c['produits']]
+        p['brand'] = {'@type': 'Brand', 'name': 'Jolie Création'}
         p['offers'] = {'@type': 'AggregateOffer', 'priceCurrency': 'CHF',
                        'lowPrice': f'{min(prix) / 100:.2f}',
                        'highPrice': f'{max(prix) / 100:.2f}',
                        'offerCount': len(prix),
                        'availability': 'https://schema.org/InStock'}
+    else:
+        # Pas de prix public : l'auteur remplace la marque vendeuse.
+        p['creator'] = {'@id': 'https://jolie-creation.com/#entreprise'}
     return p
 
 
