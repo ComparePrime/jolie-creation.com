@@ -29,12 +29,20 @@
       "item": {
         "@type": "Product",
         "name": "Biscuits personnalisés — collection Automne",
-        "description": "Une collection aux teintes de saison : terracotta, orange brûlé, blanc cassé et éclats dorés. Feuilles d’érable nervurées, citrouilles, tasses fumantes et petits feuillages, tous décorés à la main au glaçage royal. Les modèles et leurs tarifs arrivent très bientôt ; d’ici là, les photos ci-dessous montrent l’assortiment tel qu’il sort de l’atelier.",
+        "description": "Une collection aux teintes de saison : terracotta, orange brûlé, blanc cassé et éclats dorés. Feuilles d’érable nervurées, citrouilles, tasses fumantes et petits feuillages, tous décorés à la main au glaçage royal. Elle se commande en package prêt à offrir, ou modèle par modèle.",
         "url": "https://jolie-creation.com/mes-realisations.html#automne",
         "image": "https://jolie-creation.com/images/collections/automne/principale.webp",
         "brand": {
           "@type": "Brand",
           "name": "Jolie Création"
+        },
+        "offers": {
+          "@type": "AggregateOffer",
+          "priceCurrency": "CHF",
+          "lowPrice": "4.00",
+          "highPrice": "8.00",
+          "offerCount": 7,
+          "availability": "https://schema.org/InStock"
         }
       }
     },
@@ -661,12 +669,59 @@
         <div class="collection-corps">
           <p class="collection-meta"><span class="collection-saison-pastille">Collection du moment</span></p>
           <h3 id="t-automne">Automne</h3>
-          <p class="collection-texte">Une collection aux teintes de saison : terracotta, orange brûlé, blanc cassé et éclats dorés. Feuilles d’érable nervurées, citrouilles, tasses fumantes et petits feuillages, tous décorés à la main au glaçage royal. Les modèles et leurs tarifs arrivent très bientôt ; d’ici là, les photos ci-dessous montrent l’assortiment tel qu’il sort de l’atelier.</p>
+          <p class="collection-texte">Une collection aux teintes de saison : terracotta, orange brûlé, blanc cassé et éclats dorés. Feuilles d’érable nervurées, citrouilles, tasses fumantes et petits feuillages, tous décorés à la main au glaçage royal. Elle se commande en package prêt à offrir, ou modèle par modèle.</p>
           <ul class="collection-faits">
-            <li>Sur devis, composé avec vous</li>
-            <li>Formes, couleurs et quantité sur mesure</li>
+            <li>7 modèles au choix, à commander à l’unité</li>
           </ul>
-          <a class="btn btn-primary btn-small" href="contact.html?formule=biscuits&amp;theme=Collection%20Automne">Demander un devis</a>
+          <button type="button" class="btn btn-primary btn-small" data-collection="automne">Choisir mes biscuits</button>
+        </div>
+        <div class="packages">
+          <p class="packages-titre">Commander un package</p>
+          <article class="package-carte">
+            <h4>L’Essentiel</h4>
+            <p class="package-prix">29.90 CHF <span class="package-nombre">5 biscuits</span></p>
+            <p class="package-resume">De quoi goûter à la collection : un de chaque, sans se décider.</p>
+            <ul class="package-composition">
+              <li><span class="package-qte">1&nbsp;×</span> Grande feuille blanche</li>
+              <li><span class="package-qte">1&nbsp;×</span> Mug</li>
+              <li><span class="package-qte">1&nbsp;×</span> Branche</li>
+              <li><span class="package-qte">1&nbsp;×</span> Citrouille</li>
+              <li><span class="package-qte">1&nbsp;×</span> Citrouilles empilées</li>
+            </ul>
+            <button type="button" class="btn btn-primary btn-small" data-package="automne-pack-essentiel">Ajouter au panier</button>
+          </article>
+          <article class="package-carte">
+            <h4>La Gourmande</h4>
+            <p class="package-prix">42.90 CHF <span class="package-nombre">7 biscuits</span></p>
+            <p class="package-resume">Les deux feuilles, deux mugs et le grand pull : de quoi garnir une table.</p>
+            <ul class="package-composition">
+              <li><span class="package-qte">1&nbsp;×</span> Grande feuille blanche</li>
+              <li><span class="package-qte">1&nbsp;×</span> Grande feuille orange</li>
+              <li><span class="package-qte">2&nbsp;×</span> Mug</li>
+              <li><span class="package-qte">1&nbsp;×</span> Branche</li>
+              <li><span class="package-qte">1&nbsp;×</span> Citrouille</li>
+              <li><span class="package-qte">1&nbsp;×</span> Grand pull</li>
+            </ul>
+            <button type="button" class="btn btn-primary btn-small" data-package="automne-pack-gourmande">Ajouter au panier</button>
+          </article>
+          <article class="package-carte package-complet">
+            <p class="package-mention">Collection complète</p>
+            <h4>L’Automne Complète</h4>
+            <p class="package-prix">59.90 CHF <span class="package-nombre">10 biscuits</span></p>
+            <p class="package-resume">Toute la collection, dans ses deux coloris.</p>
+            <ul class="package-composition">
+              <li><span class="package-qte">1&nbsp;×</span> Grande feuille blanche</li>
+              <li><span class="package-qte">1&nbsp;×</span> Grande feuille orange</li>
+              <li><span class="package-qte">2&nbsp;×</span> Mug</li>
+              <li><span class="package-qte">2&nbsp;×</span> Branche</li>
+              <li><span class="package-qte">2&nbsp;×</span> Citrouille</li>
+              <li><span class="package-qte">1&nbsp;×</span> Citrouilles empilées</li>
+              <li><span class="package-qte">1&nbsp;×</span> Grand pull</li>
+            </ul>
+            <button type="button" class="btn btn-primary btn-small" data-package="automne-pack-complete">Ajouter au panier</button>
+          </article>
+          <p class="package-ajout"><strong>Envie d’en ajouter&nbsp;?</strong> Les packages peuvent être complétés avec des biscuits supplémentaires de la collection, au prix indiqué pour chaque modèle.</p>
+          <p class="package-note-zone">Les packages sont proposés pour une livraison en Suisse. Depuis l’étranger, seul le package complet se commande tel quel&nbsp;; sinon la commande suit la règle habituelle de douze biscuits.</p>
         </div>
         <div class="collection-galerie" role="group" aria-label="Autres vues de la collection Automne">
           <figure><img src="images/collections/automne/vue-1.webp" alt="Feuilles d’érable en biscuit, l’une terracotta mouchetée d’or, l’autre blanche nervurée" loading="lazy" decoding="async" width="399" height="600"></figure>

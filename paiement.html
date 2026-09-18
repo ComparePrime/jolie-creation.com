@@ -117,6 +117,7 @@
 
             <div class="field"><label for="pay-message">Précisions sur votre commande</label><textarea id="pay-message" name="message" placeholder="Date souhaitée, prénom à inscrire, couleurs…"></textarea></div>
             <p class="form-note">Les champs marqués d’un <span class="req">*</span> sont obligatoires. Vos coordonnées servent uniquement à traiter votre commande.</p>
+            <p class="pay-alerte-zone" id="pay-alerte-zone" role="alert" hidden></p>
             <button type="submit" class="btn btn-primary" id="pay-bouton">Continuer</button>
             <p class="paiement-note" id="pay-note"></p>
             <ul class="moyens-paiement" id="pay-moyens" hidden>
@@ -289,21 +290,50 @@
     }
   }
 
-  for (var i = 0; i < radios.length; i++) radios[i].addEventListener('change', majMode);
+  for (var i = 0; i < radios.length; i++) {
+    radios[i].addEventListener('change', function () { majMode(); rendreRecap(); });
+  }
+
+  /* Le pays retenu pour la règle de commande. Un retrait se fait dans le
+     canton de Fribourg : c'est la Suisse. Tant que rien n'est choisi en
+     livraison, on ne renvoie rien — le panier raisonne alors comme en
+     Suisse plutôt que de bloquer sur une adresse encore vide. */
+  function paysChoisi() {
+    // modeChoisi() est le seul point de vérité : « mode » est une variable
+    // locale des deux gestionnaires, elle n'existe pas ici.
+    if (modeChoisi() === 'retrait') return 'Suisse';
+    var champ = document.getElementById('pay-pays');
+    return (champ && champ.value) || '';
+  }
 
   /* ---------- Récapitulatif ---------- */
   function rendreRecap() {
-    var t = Panier.totaux();
-    var probleme = Panier.blocage();
-    var utilisable = t.lignes.length > 0 && !probleme;
+    var pays = paysChoisi();
+    var t = Panier.totaux(pays);
+    /* Deux blocages, et il ne faut pas les confondre.
+
+       Celui du panier — vide, sous le minimum — cache le formulaire : il
+       n'y a rien à commander, et c'est au panier qu'il faut retourner.
+
+       Celui du pays, lui, laisse le formulaire en place. Masquer la page
+       parce que le client vient de choisir « France » l'enfermerait :
+       le sélecteur de pays disparaîtrait avec elle, et il n'aurait plus
+       aucun moyen de revenir en arrière. */
+    var problemePanier = Panier.blocage();
+    var problemePays = Panier.blocage(pays);
+    var utilisable = t.lignes.length > 0 && !problemePanier;
     document.getElementById('paiement-contenu').hidden = !utilisable;
     document.getElementById('paiement-vide').hidden = utilisable;
     if (!utilisable) {
       // Dire ce qui manque, plutôt que « rien à payer » : sous le minimum,
       // le client doit savoir combien de biscuits il lui reste à choisir.
-      document.getElementById('vide-texte').textContent = probleme || 'Votre panier est vide.';
+      document.getElementById('vide-texte').textContent = problemePanier || 'Votre panier est vide.';
       return;
     }
+    var alerte = document.getElementById('pay-alerte-zone');
+    alerte.textContent = problemePays || '';
+    alerte.hidden = !problemePays;
+    bouton.disabled = !!problemePays;
 
     var zone = document.getElementById('pay-recap-lignes');
     zone.innerHTML = '';
@@ -422,9 +452,9 @@
     if (email && !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) manquants.push('une adresse e-mail valide');
     if (manquants.length) { message('Merci de renseigner : ' + manquants.join(', ') + '.'); return; }
 
-    // Le minimum de biscuits est revérifié ici : on ne part pas payer
-    // une commande que le serveur refusera.
-    var probleme = Panier.blocage();
+    // Le minimum de biscuits est revérifié ici, pays compris : on ne part
+    // pas payer une commande que le serveur refusera.
+    var probleme = Panier.blocage(paysChoisi());
     if (probleme) { message(probleme); return; }
 
     var reference = nouvelleReference();
@@ -460,7 +490,7 @@
           lignes: Panier.lire().map(function (l) {
             return { id: l.id, qte: l.qte, option: l.option };
           }),
-          client: { reception: mode }
+          client: { reception: mode, pays: paysChoisi() }
         })
       }).then(function (r) {
         // Une réponse illisible (page 404 d'un hébergeur sans fonctions,
@@ -507,6 +537,12 @@
   });
 
   document.addEventListener('panier:maj', rendreRecap);
+  // Changer de pays peut changer la règle de commande : les packages
+  // saisonniers ne dispensent du minimum qu'en Suisse, le complet mis à
+  // part. Le récapitulatif doit le dire tout de suite, pas au moment de
+  // payer.
+  var champPays = document.getElementById('pay-pays');
+  if (champPays) champPays.addEventListener('change', rendreRecap);
   majMode();
   rendreRecap();
 })();

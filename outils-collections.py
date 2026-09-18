@@ -39,6 +39,12 @@ console.log(JSON.stringify(C.COLLECTIONS.map((c) => ({
     prix: p.prix,
     perso: (p.champs || []).map((ch) => ch.libelle),
     option: !!p.option
+  })),
+  packages: (c.packages || []).map((pk) => ({
+    id: pk.id, nom: pk.nom, prix: pk.prix, prixTexte: C.formater(pk.prix),
+    biscuits: pk.biscuits, resume: pk.resume || '', complet: !!pk.complet,
+    horsSuisse: !!pk.horsSuisse,
+    detail: pk.detail.map((d) => ({ qte: d.qte, nom: d.nom }))
   }))
 }))));
 """
@@ -127,6 +133,50 @@ def reperes(c):
     return '\n          <p class="collection-meta">' + ''.join(marques) + '</p>'
 
 
+def packages(c, marge):
+    """Les trois packages d'une collection de saison.
+
+    Une collection sans package n'en écrit aucun : le tableau vide est un
+    état valable, pas un manque à combler. Halloween attend sa composition
+    et ses prix ; d'ici là elle se commande à l'unité, comme avant."""
+    if not c.get('packages'):
+        return ''
+    cartes = []
+    for pk in c['packages']:
+        composition = '\n'.join(
+            f'{marge}      <li><span class="package-qte">{d["qte"]}&nbsp;×</span> {e(d["nom"])}</li>'
+            for d in pk['detail'])
+        classe = 'package-carte' + (' package-complet' if pk['complet'] else '')
+        mention = (f'\n{marge}    <p class="package-mention">Collection complète</p>'
+                   if pk['complet'] else '')
+        cartes.append(
+            f'{marge}  <article class="{classe}">{mention}\n'
+            f'{marge}    <h4>{e(pk["nom"])}</h4>\n'
+            f'{marge}    <p class="package-prix">{e(pk["prixTexte"])} '
+            f'<span class="package-nombre">{pk["biscuits"]} biscuits</span></p>\n'
+            + (f'{marge}    <p class="package-resume">{e(pk["resume"])}</p>\n' if pk['resume'] else '')
+            + f'{marge}    <ul class="package-composition">\n{composition}\n{marge}    </ul>\n'
+            f'{marge}    <button type="button" class="btn btn-primary btn-small" '
+            f'data-package="{e(pk["id"])}">Ajouter au panier</button>\n'
+            f'{marge}  </article>')
+    # Seuls les packages marqués « horsSuisse » partent à l'étranger : le
+    # dire ici, une fois, plutôt qu'au moment de payer.
+    limites = [pk for pk in c['packages'] if not pk['horsSuisse']]
+    note = ''
+    if limites:
+        note = (f'\n{marge}  <p class="package-note-zone">Les packages sont proposés pour une '
+                f'livraison en Suisse. Depuis l’étranger, seul le package complet se commande '
+                f'tel quel&nbsp;; sinon la commande suit la règle habituelle de douze biscuits.</p>')
+    return (f'\n{marge}<div class="packages">\n'
+            f'{marge}  <p class="packages-titre">Commander un package</p>\n'
+            + '\n'.join(cartes)
+            + f'\n{marge}  <p class="package-ajout"><strong>Envie d’en ajouter&nbsp;?</strong> '
+            f'Les packages peuvent être complétés avec des biscuits supplémentaires de la '
+            f'collection, au prix indiqué pour chaque modèle.</p>'
+            + note
+            + f'\n{marge}</div>')
+
+
 def bloc(c):
     """Une collection dans la galerie : photo, texte, vues, modèles, bouton."""
     return f'''      <article class="collection-bloc" id="{c['id']}" aria-labelledby="t-{c['id']}">
@@ -139,7 +189,7 @@ def bloc(c):
           <p class="collection-texte">{e(c['description'])}</p>
 {modeles(c, '          ')}
 {action(c, '          ')}
-        </div>{galerie(c, '        ')}
+        </div>{packages(c, '        ')}{galerie(c, '        ')}
       </article>'''
 
 

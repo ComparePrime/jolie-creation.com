@@ -117,13 +117,25 @@ exports.handler = async (event) => {
     libelles.push(qte + '× ' + article.court);
   }
 
-  /* Le minimum porte sur le total, toutes collections confondues.
+  /* Le minimum porte sur le total, toutes collections confondues — sauf
+     si le panier contient un package saisonnier, qui vaut commande à lui
+     seul. Le pays compte : hors de Suisse, seuls les packages complets
+     dispensent du minimum.
+
      Le panier le fait déjà respecter ; on le revérifie ici parce que
-     c'est ici que l'argent change de main. */
-  if (biscuits < Catalogue.MIN_BISCUITS) {
+     c'est ici que l'argent change de main, et parce qu'un panier
+     fabriqué à la main n'a aucune raison de respecter quoi que ce soit.
+     C'est la même fonction des deux côtés : les deux ne peuvent pas
+     compter différemment. */
+  const pays = texte(charge.client && charge.client.pays, 60) || '';
+  const minimum = Catalogue.minimumRequis(lignesRecues, pays);
+  if (biscuits < minimum) {
+    const refuses = Catalogue.packagesHorsZone(lignesRecues, pays);
     return reponse(400, {
       erreur: 'minimum_biscuits',
-      message: `La commande démarre à ${Catalogue.MIN_BISCUITS} biscuits, toutes collections confondues.`
+      message: refuses.length
+        ? `Les packages saisonniers ne sont proposés que pour une livraison en Suisse. Pour ${pays}, la commande démarre à ${minimum} biscuits, ou passe par le package complet.`
+        : `La commande démarre à ${minimum} biscuits, toutes collections confondues.`
     });
   }
 

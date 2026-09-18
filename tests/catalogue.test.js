@@ -62,7 +62,7 @@ const COLLECTIONS_ATTENDUES = [
 const MODELES_ATTENDUS = {
   // Automne est publiée mais pas encore tarifée : ses modèles et leurs
   // prix n'ont pas été fournis, et rien ne doit les inventer.
-  'automne': 0,
+  'automne': 7,
   'magie-noel': 16, 'frissons-halloween': 8, 'douceurs-paques': 9,
   'merci-maitresse': 4, 'bonne-fete-maman': 2, 'bapteme-douceur': 1,
   'annonce-grossesse': 5, 'douceur-personnalisee': 2, 'girls-club': 1,
@@ -110,7 +110,9 @@ const PRIX_TEMOINS = {
       assert.strictEqual(c.produits.length, MODELES_ATTENDUS[c.id],
         c.id + ' : ' + c.produits.length + ' modèles');
     });
-    assert.strictEqual(Catalogue.ARTICLES.length, 137);
+    const biscuits = Catalogue.ARTICLES.filter((a) => a.categorie === 'biscuit');
+    assert.strictEqual(biscuits.length, 144);
+    assert.strictEqual(Catalogue.ARTICLES.length, 147);   // 144 biscuits + 3 packages
   });
 
   await cas('les prix témoins sont exacts', () => {
@@ -125,8 +127,16 @@ const PRIX_TEMOINS = {
   await cas('tous les prix sont des entiers de centimes plausibles', () => {
     Catalogue.ARTICLES.forEach((a) => {
       assert.ok(Number.isInteger(a.prix), a.id + ' : prix non entier');
-      assert.ok(a.prix >= 400 && a.prix <= 800, a.id + ' : prix hors de la fourchette annoncée');
-      assert.strictEqual(a.prix % 50, 0, a.id + ' : prix hors du pas de 50 centimes');
+      // Un package coûte plusieurs biscuits : sa fourchette n'est pas
+      // celle d'un modèle à l'unité.
+      const [bas, haut] = a.categorie === 'package' ? [1000, 12000] : [400, 800];
+      assert.ok(a.prix >= bas && a.prix <= haut, a.id + ' : prix hors de la fourchette annoncée');
+      // Le pas de 50 centimes vaut pour un biscuit vendu à l'unité. Un
+      // package se fixe au franc près, en .90 : ce n'est pas un tarif au
+      // modèle, c'est un prix d'assortiment.
+      if (a.categorie === 'biscuit') {
+        assert.strictEqual(a.prix % 50, 0, a.id + ' : prix hors du pas de 50 centimes');
+      }
     });
   });
 
@@ -139,7 +149,8 @@ const PRIX_TEMOINS = {
   });
 
   await cas('chaque biscuit compte pour un dans le minimum', () => {
-    Catalogue.ARTICLES.forEach((a) => assert.strictEqual(a.biscuits, 1, a.id));
+    Catalogue.ARTICLES.filter((a) => a.categorie === 'biscuit')
+      .forEach((a) => assert.strictEqual(a.biscuits, 1, a.id));
   });
 
   await cas('le seul supplément est celui du Girls Club', () => {
@@ -226,11 +237,11 @@ const PRIX_TEMOINS = {
 
   await cas('une collection sans modèle n’ajoute aucun article achetable', () => {
     const surDevis = Catalogue.COLLECTIONS.filter((c) => !c.produits.length);
-    assert.strictEqual(surDevis.length, 6, surDevis.map((c) => c.id).join(' '));
+    assert.strictEqual(surDevis.length, 5, surDevis.map((c) => c.id).join(' '));
     surDevis.forEach((c) => {
       assert.strictEqual(Catalogue.ARTICLES.filter((a) => a.collectionId === c.id).length, 0, c.id);
     });
-    assert.strictEqual(Catalogue.article('automne-citrouille'), null);
+    assert.strictEqual(Catalogue.article('logo-entreprise-quoi-que-ce-soit'), null);
   });
 
   /* ---------- La fonction de paiement ---------- */
@@ -296,7 +307,163 @@ const PRIX_TEMOINS = {
   });
 
   await cas('aucune micro-scénographie ne s’achète en ligne', () => {
-    assert.strictEqual(Catalogue.ARTICLES.filter((a) => a.categorie !== 'biscuit').length, 0);
+    // Deux catégories seulement, et pas une de plus : un biscuit, ou un
+    // package de biscuits. Une prestation ne se met pas au panier.
+    const categories = [...new Set(Catalogue.ARTICLES.map((a) => a.categorie))].sort();
+    assert.deepStrictEqual(categories, ['biscuit', 'package']);
+  });
+
+  /* ---------- Les packages saisonniers ----------
+     Un package est un article comme un autre : toute la chaîne le traite
+     sans le connaître. Ce qui se teste ici, c'est ce qui le distingue —
+     sa composition, son compte de biscuits, et la règle de minimum qu'il
+     lève. */
+  const PACKAGES_ATTENDUS = {
+    'automne-pack-essentiel': {
+      nom: 'L’Essentiel', prix: 2990, biscuits: 5, complet: false, horsSuisse: false,
+      composition: { 'feuille-blanche': 1, 'mug': 1, 'branche': 1, 'citrouille': 1,
+                     'citrouilles-empilees': 1 }
+    },
+    'automne-pack-gourmande': {
+      nom: 'La Gourmande', prix: 4290, biscuits: 7, complet: false, horsSuisse: false,
+      composition: { 'feuille-blanche': 1, 'feuille-orange': 1, 'mug': 2, 'branche': 1,
+                     'citrouille': 1, 'grand-pull': 1 }
+    },
+    'automne-pack-complete': {
+      nom: 'L’Automne Complète', prix: 5990, biscuits: 10, complet: true, horsSuisse: true,
+      composition: { 'feuille-blanche': 1, 'feuille-orange': 1, 'mug': 2, 'branche': 2,
+                     'citrouille': 2, 'citrouilles-empilees': 1, 'grand-pull': 1 }
+    }
+  };
+
+  await cas('les trois packages d’Automne ont le prix annoncé', () => {
+    Object.keys(PACKAGES_ATTENDUS).forEach((id) => {
+      const a = Catalogue.article(id);
+      assert.ok(a, 'package introuvable : ' + id);
+      assert.strictEqual(a.categorie, 'package', id);
+      assert.strictEqual(a.nom, PACKAGES_ATTENDUS[id].nom, id);
+      assert.strictEqual(a.prix, PACKAGES_ATTENDUS[id].prix,
+        id + ' : ' + Catalogue.formater(a.prix));
+    });
+    assert.strictEqual(Catalogue.formater(2990), '29.90 CHF');
+    assert.strictEqual(Catalogue.formater(4290), '42.90 CHF');
+    assert.strictEqual(Catalogue.formater(5990), '59.90 CHF');
+  });
+
+  await cas('la composition de chaque package est exacte', () => {
+    Object.keys(PACKAGES_ATTENDUS).forEach((id) => {
+      const a = Catalogue.article(id);
+      const vu = {};
+      a.detail.forEach((d) => {
+        assert.ok(d.connu, id + ' : modèle inconnu dans la composition — ' + d.ref);
+        vu[d.ref] = d.qte;
+      });
+      assert.deepStrictEqual(vu, PACKAGES_ATTENDUS[id].composition, id);
+    });
+  });
+
+  await cas('le nombre de biscuits se déduit de la composition', () => {
+    Object.keys(PACKAGES_ATTENDUS).forEach((id) => {
+      const a = Catalogue.article(id);
+      const somme = a.composition.reduce((n, x) => n + x.qte, 0);
+      assert.strictEqual(a.biscuits, somme, id + ' : total incohérent');
+      assert.strictEqual(a.biscuits, PACKAGES_ATTENDUS[id].biscuits, id);
+    });
+  });
+
+  await cas('seul le package complet part à l’étranger', () => {
+    Object.keys(PACKAGES_ATTENDUS).forEach((id) => {
+      assert.strictEqual(!!Catalogue.article(id).horsSuisse,
+        PACKAGES_ATTENDUS[id].horsSuisse, id);
+    });
+  });
+
+  /* Le total d'un panier, calculé comme le fait le serveur. */
+  const total = (lignes) => lignes.reduce((s, l) =>
+    s + Catalogue.prixUnitaire(Catalogue.article(l.id), l.option) * l.qte, 0);
+  const biscuits = (lignes) => lignes.reduce((s, l) =>
+    s + (Catalogue.article(l.id).biscuits || 0) * l.qte, 0);
+
+  await cas('un package se complète de biscuits à l’unité', () => {
+    // L'exemple du cahier des charges : la Complète, puis deux mugs.
+    const panier = [{ id: 'automne-pack-complete', qte: 1 },
+                    { id: 'automne-mug', qte: 2 }];
+    assert.strictEqual(total(panier), 7390, Catalogue.formater(total(panier)));
+    assert.strictEqual(biscuits(panier), 12);
+  });
+
+  await cas('plusieurs suppléments s’additionnent correctement', () => {
+    const panier = [{ id: 'automne-pack-essentiel', qte: 1 },
+                    { id: 'automne-branche', qte: 1 },
+                    { id: 'automne-grand-pull', qte: 1 }];
+    assert.strictEqual(total(panier), 2990 + 500 + 800);
+    assert.strictEqual(biscuits(panier), 7);
+  });
+
+  await cas('les prix unitaires d’Automne sont ceux annoncés', () => {
+    const UNITAIRES = {
+      'automne-feuille-blanche': 700, 'automne-feuille-orange': 700,
+      'automne-mug': 700, 'automne-branche': 500, 'automne-citrouille': 400,
+      'automne-citrouilles-empilees': 650, 'automne-grand-pull': 800
+    };
+    Object.keys(UNITAIRES).forEach((id) => {
+      assert.strictEqual(Catalogue.article(id).prix, UNITAIRES[id], id);
+    });
+  });
+
+  await cas('le minimum de douze reste la règle sans package', () => {
+    const panier = [{ id: 'magie-noel-sapin', qte: 5 }];
+    assert.strictEqual(Catalogue.minimumRequis(panier), 12);
+    assert.strictEqual(Catalogue.minimumRequis(panier, 'Suisse'), 12);
+    assert.strictEqual(Catalogue.minimumRequis(panier, 'France'), 12);
+  });
+
+  await cas('un package saisonnier lève le minimum en Suisse', () => {
+    ['automne-pack-essentiel', 'automne-pack-gourmande', 'automne-pack-complete']
+      .forEach((id) => {
+        const panier = [{ id: id, qte: 1 }];
+        assert.strictEqual(Catalogue.minimumRequis(panier, 'Suisse'), 0, id);
+        assert.strictEqual(Catalogue.minimumRequis(panier), 0, id + ' (pays non choisi)');
+      });
+  });
+
+  await cas('hors de Suisse, seul le package complet lève le minimum', () => {
+    const petit = [{ id: 'automne-pack-essentiel', qte: 1 }];
+    const moyen = [{ id: 'automne-pack-gourmande', qte: 1 }];
+    const complet = [{ id: 'automne-pack-complete', qte: 1 }];
+    ['France', 'Allemagne', 'Autre pays d’Europe'].forEach((pays) => {
+      assert.strictEqual(Catalogue.minimumRequis(petit, pays), 12, pays);
+      assert.strictEqual(Catalogue.minimumRequis(moyen, pays), 12, pays);
+      assert.strictEqual(Catalogue.minimumRequis(complet, pays), 0, pays);
+      assert.strictEqual(Catalogue.packagesHorsZone(petit, pays).length, 1, pays);
+      assert.strictEqual(Catalogue.packagesHorsZone(complet, pays).length, 0, pays);
+    });
+  });
+
+  await cas('un package complété reste commandable sous douze biscuits', () => {
+    const panier = [{ id: 'automne-pack-essentiel', qte: 1 },
+                    { id: 'automne-mug', qte: 1 }];
+    assert.strictEqual(biscuits(panier), 6);
+    assert.strictEqual(Catalogue.minimumRequis(panier, 'Suisse'), 0);
+  });
+
+  await cas('Halloween garde ses huit modèles et aucun package inventé', () => {
+    const h = Catalogue.COLLECTIONS.find((c) => c.id === 'frissons-halloween');
+    assert.strictEqual(h.produits.length, 8);
+    assert.deepStrictEqual(h.packages, [], 'aucune composition ne doit être inventée');
+    assert.strictEqual(
+      Catalogue.ARTICLES.filter((a) => a.collectionId === h.id && a.categorie === 'package').length,
+      0);
+  });
+
+  await cas('les packages ne touchent que les collections du moment', () => {
+    Catalogue.COLLECTIONS.forEach((c) => {
+      if (c.saison) return;
+      assert.ok(!c.packages || !c.packages.length,
+        c.id + ' : une collection classique ne se vend pas en package');
+    });
+    const avecPackages = Catalogue.COLLECTIONS.filter((c) => (c.packages || []).length);
+    assert.deepStrictEqual(avecPackages.map((c) => c.id), ['automne']);
   });
 
   console.log(`\n${vert} test(s) au vert, ${rouge} en échec.`);

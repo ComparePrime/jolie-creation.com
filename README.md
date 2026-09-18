@@ -544,6 +544,62 @@ peut pas commander revient à le promettre.
 Une collection sans galerie n'affiche que sa grande photo. C'est un état
 normal, pas un manque à combler.
 
+### Les packages saisonniers
+
+Une collection du moment peut se vendre en assortiments composés d'avance,
+pour commander petit sans atteindre les douze biscuits. Ils se déclarent
+à côté de `produits` :
+
+```js
+"packages": [
+  { "ref": "complete", "nom": "L’Automne Complète", "prix": 5990,
+    "complet": true, "horsSuisse": true,
+    "resume": "Toute la collection, dans ses deux coloris.",
+    "composition": [
+      { "ref": "feuille-blanche", "qte": 1 },
+      { "ref": "mug", "qte": 2 }
+    ] }
+]
+```
+
+**Un package est un article comme un autre.** Il reçoit un identifiant
+(`automne-pack-complete`), un prix et un nombre de biscuits, puis entre
+dans `ARTICLES`. Toute la chaîne — panier, retarification serveur,
+paiement — le traite donc sans rien connaître de lui. Deux choses
+seulement le distinguent d'un biscuit : sa `categorie`, et le fait qu'il
+compte pour plusieurs.
+
+**Le nombre de biscuits se compte, il ne se saisit pas.** `biscuits` est
+la somme des quantités de la composition : une composition modifiée ne
+peut pas mentir sur son total.
+
+**`complet`** met la carte en avant — un filet doré, pas un bandeau.
+**`horsSuisse`** autorise le package à dispenser du minimum depuis
+l'étranger ; sans lui, il n'est proposé que pour une livraison en Suisse.
+
+### Le minimum de commande, et ce qui en dispense
+
+Douze biscuits sur le total du panier, sauf si celui-ci contient un
+package. `Catalogue.minimumRequis(lignes, pays)` est la seule fonction à
+le dire, et les deux côtés l'appellent : le navigateur pour afficher, le
+serveur pour encaisser. Ils ne peuvent pas compter différemment.
+
+| Panier                              | Suisse | Étranger |
+| ----------------------------------- | ------ | -------- |
+| Biscuits à l'unité                   | 12     | 12       |
+| Package, quel qu'il soit             | 0      | —        |
+| Package marqué `horsSuisse`          | 0      | 0        |
+| Petit package seul                   | 0      | 12       |
+| Package + biscuits supplémentaires   | 0      | selon le package |
+
+Tant que le pays n'est pas choisi, on raisonne comme en Suisse : le panier
+ne doit pas bloquer sur une adresse que le client n'a pas encore saisie.
+
+Sur la page de paiement, un pays qui empêche la commande **n'efface pas le
+formulaire** — il affiche un avertissement et désactive le bouton. Masquer
+la page enfermerait le client : le sélecteur de pays disparaîtrait avec
+elle, et il n'aurait plus aucun moyen de revenir en arrière.
+
 ### Le drapeau « saison »
 
 `"saison": true` fait trois choses, et seulement trois : la collection

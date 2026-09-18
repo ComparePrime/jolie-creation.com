@@ -72,7 +72,7 @@
       "nom": "Automne",
       "occasion": "Automne",
       "saison": true,
-      "description": "Une collection aux teintes de saison : terracotta, orange brûlé, blanc cassé et éclats dorés. Feuilles d’érable nervurées, citrouilles, tasses fumantes et petits feuillages, tous décorés à la main au glaçage royal. Les modèles et leurs tarifs arrivent très bientôt ; d’ici là, les photos ci-dessous montrent l’assortiment tel qu’il sort de l’atelier.",
+      "description": "Une collection aux teintes de saison : terracotta, orange brûlé, blanc cassé et éclats dorés. Feuilles d’érable nervurées, citrouilles, tasses fumantes et petits feuillages, tous décorés à la main au glaçage royal. Elle se commande en package prêt à offrir, ou modèle par modèle.",
       "alt": "Assortiment de biscuits d’automne décorés à la main : feuilles d’érable, citrouilles et tasses sur un set en fibre naturelle",
       "galerie": [
         { "fichier": "vue-1.webp", "alt": "Feuilles d’érable en biscuit, l’une terracotta mouchetée d’or, l’autre blanche nervurée" },
@@ -82,7 +82,48 @@
         { "fichier": "vue-5.webp", "alt": "Feuille d’érable blanche mouchetée d’or et feuillages orange sur un set tressé" },
         { "fichier": "vue-6.webp", "alt": "Biscuit tasse terracotta à la citrouille orange, vu de près, avec un feuillage d’automne" }
       ],
-      "produits": []
+      "packages": [
+        { "ref": "essentiel", "nom": "L’Essentiel", "prix": 2990,
+          "resume": "De quoi goûter à la collection : un de chaque, sans se décider.",
+          "composition": [
+            { "ref": "feuille-blanche", "qte": 1 },
+            { "ref": "mug", "qte": 1 },
+            { "ref": "branche", "qte": 1 },
+            { "ref": "citrouille", "qte": 1 },
+            { "ref": "citrouilles-empilees", "qte": 1 }
+          ] },
+        { "ref": "gourmande", "nom": "La Gourmande", "prix": 4290,
+          "resume": "Les deux feuilles, deux mugs et le grand pull : de quoi garnir une table.",
+          "composition": [
+            { "ref": "feuille-blanche", "qte": 1 },
+            { "ref": "feuille-orange", "qte": 1 },
+            { "ref": "mug", "qte": 2 },
+            { "ref": "branche", "qte": 1 },
+            { "ref": "citrouille", "qte": 1 },
+            { "ref": "grand-pull", "qte": 1 }
+          ] },
+        { "ref": "complete", "nom": "L’Automne Complète", "prix": 5990,
+          "complet": true, "horsSuisse": true,
+          "resume": "Toute la collection, dans ses deux coloris.",
+          "composition": [
+            { "ref": "feuille-blanche", "qte": 1 },
+            { "ref": "feuille-orange", "qte": 1 },
+            { "ref": "mug", "qte": 2 },
+            { "ref": "branche", "qte": 2 },
+            { "ref": "citrouille", "qte": 2 },
+            { "ref": "citrouilles-empilees", "qte": 1 },
+            { "ref": "grand-pull", "qte": 1 }
+          ] }
+      ],
+      "produits": [
+        { "ref": "feuille-blanche", "nom": "Grande feuille blanche", "prix": 700 },
+        { "ref": "feuille-orange", "nom": "Grande feuille orange", "prix": 700 },
+        { "ref": "mug", "nom": "Mug", "prix": 700 },
+        { "ref": "branche", "nom": "Branche", "prix": 500 },
+        { "ref": "citrouille", "nom": "Citrouille", "prix": 400 },
+        { "ref": "citrouilles-empilees", "nom": "Citrouilles empilées", "prix": 650 },
+        { "ref": "grand-pull", "nom": "Grand pull", "prix": 800 }
+      ]
     },
     {
       "id": "magie-noel",
@@ -116,6 +157,12 @@
       "saison": true,
       "description": "Une collection à la fois effrayante et adorable pour célébrer Halloween. Entre citrouilles, petit fantôme, squelette, toile d’araignée et personnages rigolos, chaque biscuit est décoré à la main dans des teintes orange, violet, noir et blanc. Parfaite pour une fête d’Halloween, un goûter d’enfants ou une jolie box gourmande.",
       "alt": "Biscuits d’Halloween personnalisés : citrouilles, fantôme et toile d’araignée",
+      // Les trois packages d’Halloween attendent leur composition et leurs
+      // prix. Le tableau vide est un état valable : la collection se
+      // commande à l’unité, exactement comme avant, et les cartes de
+      // package n’apparaissent pas. Les inventer reviendrait à annoncer
+      // un assortiment que l’atelier ne prépare pas.
+      "packages": [],
       "produits": [
         { "ref": "crane", "nom": "Petit crâne blanc", "prix": 450 },
         { "ref": "citrouille-pastel", "nom": "Citrouille pastel avec détails en relief", "prix": 450 },
@@ -542,6 +589,31 @@
       if (p.option) p.option.champs = (p.option.perso || []).map(function (k) { return CHAMPS[k]; });
       ARTICLES.push(p);
     });
+
+    /* Un package est un article comme un autre : un identifiant, un prix,
+       un nombre de biscuits. Toute la chaîne — panier, retarification
+       serveur, paiement — le traite donc sans rien connaître de lui.
+       Seules deux choses le distinguent d'un biscuit : sa catégorie, et
+       le fait qu'il compte pour plusieurs. */
+    (c.packages || []).forEach(function (pk) {
+      var parRef = {};
+      c.produits.forEach(function (p) { parRef[p.ref] = p; });
+      pk.id = c.id + '-pack-' + pk.ref;
+      pk.collectionId = c.id;
+      pk.collection = c.nom;
+      pk.categorie = 'package';
+      /* Le nombre de biscuits se compte, il ne se saisit pas : une
+         composition modifiée ne peut pas mentir sur son total. */
+      pk.biscuits = pk.composition.reduce(function (n, x) { return n + x.qte; }, 0);
+      pk.detail = pk.composition.map(function (x) {
+        var modele = parRef[x.ref];
+        return { ref: x.ref, qte: x.qte, nom: modele ? modele.nom : x.ref, connu: !!modele };
+      });
+      pk.court = c.nom + ' — ' + pk.nom;
+      pk.perso = [];
+      pk.champs = [];
+      ARTICLES.push(pk);
+    });
   });
 
   var PAR_ID = {};
@@ -580,6 +652,43 @@
     return a.prix + (avecOption && a.option ? a.option.supplement : 0);
   }
 
+  /* ---------- Le minimum de commande ----------
+     Douze biscuits, sur le total du panier — sauf si celui-ci contient un
+     package saisonnier. Un package est composé pour être commandé tel
+     quel : exiger douze biscuits par-dessus reviendrait à ne pas le
+     proposer.
+
+     Le pays compte. Hors de Suisse, seuls les packages marqués
+     « horsSuisse » dispensent du minimum : les petits formats ne partent
+     pas à l'étranger, et la commande y suit alors la règle classique.
+     Tant que le pays n'est pas choisi, on raisonne comme en Suisse : le
+     panier ne doit pas bloquer avant la page de livraison.
+
+     Une seule fonction, appelée des deux côtés : le navigateur et le
+     serveur ne peuvent pas compter différemment. */
+  function packagesDispensant(lignes, pays) {
+    var horsSuisse = !!pays && pays !== 'Suisse';
+    return (lignes || []).filter(function (l) {
+      var a = article(l && l.id);
+      if (!a || a.categorie !== 'package') return false;
+      return horsSuisse ? !!a.horsSuisse : true;
+    });
+  }
+
+  function minimumRequis(lignes, pays) {
+    return packagesDispensant(lignes, pays).length ? 0 : MIN_BISCUITS;
+  }
+
+  /* Un package refusé à l'étranger : ni bloquant en soi, mais il ne
+     dispense plus du minimum, et le client doit le savoir. */
+  function packagesHorsZone(lignes, pays) {
+    if (!pays || pays === 'Suisse') return [];
+    return (lignes || []).filter(function (l) {
+      var a = article(l && l.id);
+      return a && a.categorie === 'package' && !a.horsSuisse;
+    }).map(function (l) { return article(l.id); });
+  }
+
   /* 600 -> « 6 CHF » ; 650 -> « 6.50 CHF ». */
   function formater(centimes) {
     var francs = centimes / 100;
@@ -603,6 +712,9 @@
     article: article,
     collection: collection,
     prixUnitaire: prixUnitaire,
+    minimumRequis: minimumRequis,
+    packagesDispensant: packagesDispensant,
+    packagesHorsZone: packagesHorsZone,
     formater: formater,
     enFrancs: enFrancs
   };
