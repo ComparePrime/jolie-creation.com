@@ -2055,7 +2055,7 @@ body.modale-ouverte{ overflow: hidden; }
 
 .value-heart{ display:flex; gap:14px; margin-bottom:22px; }
 .value-heart .heart{ flex:none; color: var(--blush-deep); font-size:18px; margin-top:3px; }
-.value-heart h3{
+.value-heart h2{
   font-family: var(--font-body); font-weight:600;
   font-size: 14px; letter-spacing:.04em; text-transform:uppercase;
   color: var(--gold-deep); margin-bottom:4px;
@@ -2100,7 +2100,7 @@ body.modale-ouverte{ overflow: hidden; }
   background: var(--paper); border-radius: 22px; padding: 34px 30px;
   box-shadow: var(--shadow-soft); height: fit-content;
 }
-.contact-info-card h3{ font-size: 20px; margin-bottom: 18px; }
+.contact-info-card h2{ font-size: 20px; margin-bottom: 18px; }
 .contact-info-row{ display:flex; gap: 14px; margin-bottom: 18px; align-items:flex-start; }
 .contact-info-row .ic{ font-size: 18px; }
 .contact-info-row strong{ display:block; font-size: 14.5px; }

@@ -156,11 +156,17 @@ def packages(c, marge):
             f'{marge}</div>')
 
 
-def bloc(c):
-    """Une collection dans la galerie : photo, texte, vues, modèles, bouton."""
+def bloc(c, premier=False):
+    """Une collection dans la galerie : photo, texte, vues, modèles, bouton.
+
+    La toute première photo de la page est celle que le visiteur voit
+    d'emblée : la différer retarderait l'affichage au lieu de l'accélérer.
+    """
+    charge = ('loading="eager" fetchpriority="high"' if premier
+              else 'loading="lazy" fetchpriority="auto"')
     return f'''      <article class="collection-bloc" id="{c['id']}" aria-labelledby="t-{c['id']}">
         <div class="collection-photo">
-          <img src="{c['image']}" alt="{e(c['alt'])}" loading="lazy" decoding="async" data-photo-collection>
+          <img src="{c['image']}" alt="{e(c['alt'])}" {charge} decoding="async" data-photo-collection>
           <span class="collection-photo-repli" aria-hidden="true">{e(c['nom'])}</span>
         </div>
         <div class="collection-corps">{reperes(c)}
@@ -229,7 +235,7 @@ def main():
 
     t = GALERIE_PAGE.read_text(encoding='utf-8')
     t = remplacer(GALERIE_PAGE, t, 'collections:saison',
-                  '\n\n'.join(bloc(c) for c in saison))
+                  '\n\n'.join(bloc(c, i == 0) for i, c in enumerate(saison)))
     t = remplacer(GALERIE_PAGE, t, 'collections:toutes',
                   '\n\n'.join(bloc(c) for c in cols if not c['saison']))
     t = remplacer(GALERIE_PAGE, t, 'collections:jsonld',

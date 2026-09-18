@@ -150,6 +150,9 @@ Trois filtres, du plus fiable au moins fiable :
 | `outils-galerie.py`                            | Recompose en rangées les photos d'une micro-scénographie.    |
 | `outils-collections.py`                        | Régénère le catalogue de « Mes réalisations » et l'aperçu de saison depuis `catalogue.js`. |
 | `outils-photos.py`                             | Dérive les vues de galerie et les photos de carte, et convertit en WebP. |
+| `outils-webp.py`                               | Sert en WebP les photos encore servies en JPEG, à dimensions égales. |
+| `outils-jsonld.py`                             | Pose le socle de données structurées (Organization, WebSite, fil d'Ariane) sur les pages indexables. |
+| `outils-sitemap.py`                            | Régénère `sitemap.xml`, avec un `lastmod` tiré de l'historique git. |
 | `images/collections/<id>/principale.webp`      | La grande photo de chaque collection.                        |
 | `images/collections/<id>/vue-1.webp`…          | Les vues secondaires, dérivées des photos pleine taille.     |
 | `images/collections/<id>/*.jpg`                | Les photos pleine taille d'origine, rangées avec leur collection. |
