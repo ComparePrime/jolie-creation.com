@@ -40,6 +40,7 @@ console.log(JSON.stringify(C.COLLECTIONS.map((c) => ({
     perso: (p.champs || []).map((ch) => ch.libelle),
     option: !!p.option
   })),
+  packagesResume: c.packagesResume || '',
   packages: (c.packages || []).map((pk) => ({
     id: pk.id, nom: pk.nom, prix: pk.prix, prixTexte: C.formater(pk.prix),
     biscuits: pk.biscuits, resume: pk.resume || '', complet: !!pk.complet,
@@ -148,8 +149,7 @@ def packages(c, marge):
     return (f'\n{marge}<div class="packages-invite">\n'
             f'{marge}  <div>\n'
             f'{marge}    <h4>Collection {e(c["nom"])}</h4>\n'
-            f'{marge}    <p>Une sélection de biscuits aux couleurs douces et chaleureuses '
-            f'de la saison.</p>\n'
+            f'{marge}    <p>{e(c["packagesResume"])}</p>\n'
             f'{marge}  </div>\n'
             f'{marge}  <button type="button" class="btn btn-primary btn-small" '
             f'data-packages="{e(c["id"])}">Découvrir les packages</button>\n'

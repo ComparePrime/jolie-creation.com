@@ -85,6 +85,8 @@ GALERIES = {
     'automne': ['automne-1.jpeg', 'automne-2.jpeg', 'automne-3.jpeg',
                 'automne-4.jpeg', 'automne-5.jpeg', 'automne-6.jpeg',
                 'automne-7.jpeg'],
+    'frissons-halloween': ['frissons-halloween-1.jpg', 'frissons-halloween-2.JPG',
+                           'frissons-halloween-3.jpg'],
     'petit-ocean': ['anniversaire-ocean-etagere.jpg', 'anniversaire-ocean-leo.jpg',
                     'anniversaire-ocean-chiffre4.jpg', 'anniversaire-ocean-baleine.jpg',
                     'anniversaire-ocean-tortue.jpg', 'anniversaire-ocean-hippocampe.jpg',
