@@ -3,12 +3,12 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>À propos de moi — Jolie Création</title>
-<meta name="description" content="Je m'appelle Julie, fondatrice de Jolie Création. Passionnée par la pâtisserie créative depuis toujours, je crée des biscuits personnalisés et des micro-scénographies en Suisse romande.">
+<title>Julie, artisane biscuitière à Fribourg | Jolie Création</title>
+<meta name="description" content="Julie, fondatrice de Jolie Création : biscuits personnalisés décorés à la main et micro-scénographies événementielles, depuis mon atelier du canton de Fribourg.">
 <link rel="canonical" href="https://jolie-creation.com/a-propos.html">
 <meta property="og:type" content="website">
-<meta property="og:title" content="À propos de moi — Jolie Création">
-<meta property="og:description" content="Je m'appelle Julie, fondatrice de Jolie Création. Passionnée par la pâtisserie créative depuis toujours, je crée des biscuits personnalisés et des micro-scénographies en Suisse romande.">
+<meta property="og:title" content="Julie, artisane biscuitière à Fribourg | Jolie Création">
+<meta property="og:description" content="Julie, fondatrice de Jolie Création : biscuits personnalisés décorés à la main et micro-scénographies événementielles, depuis mon atelier du canton de Fribourg.">
 <meta property="og:image" content="https://jolie-creation.com/images/site/julie.jpeg">
 <meta property="og:locale" content="fr_CH">
 <meta name="twitter:card" content="summary_large_image">
@@ -16,12 +16,95 @@
 <link rel="apple-touch-icon" href="/favicon.png">
 <link rel="stylesheet" href="styles.css">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Alex+Brush&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
+<!-- socle:jsonld -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": [
+        "Organization",
+        "LocalBusiness"
+      ],
+      "@id": "https://jolie-creation.com/#entreprise",
+      "name": "Jolie Création",
+      "url": "https://jolie-creation.com/",
+      "image": "https://jolie-creation.com/images/site/logo.png",
+      "logo": "https://jolie-creation.com/images/site/logo.png",
+      "description": "Biscuits personnalisés décorés à la main et micro-scénographies événementielles, créés dans le canton de Fribourg.",
+      "email": "info@jolie-creation.com",
+      "telephone": "+41783127545",
+      "address": {
+        "@type": "PostalAddress",
+        "addressRegion": "Fribourg",
+        "addressCountry": "CH"
+      },
+      "areaServed": [
+        {
+          "@type": "AdministrativeArea",
+          "name": "Canton de Fribourg"
+        },
+        {
+          "@type": "Country",
+          "name": "Suisse"
+        }
+      ],
+      "currenciesAccepted": "CHF",
+      "founder": {
+        "@id": "https://jolie-creation.com/a-propos.html#julie"
+      },
+      "sameAs": [
+        "https://www.instagram.com/_jolie.creation_/",
+        "https://www.facebook.com/profile.php?id=100064819849220"
+      ]
+    },
+    {
+      "@type": "WebSite",
+      "@id": "https://jolie-creation.com/#site",
+      "url": "https://jolie-creation.com/",
+      "name": "Jolie Création",
+      "inLanguage": "fr-CH",
+      "publisher": {
+        "@id": "https://jolie-creation.com/#entreprise"
+      }
+    },
+    {
+      "@type": "Person",
+      "@id": "https://jolie-creation.com/a-propos.html#julie",
+      "name": "Julie",
+      "jobTitle": "Artisane biscuitière et créatrice de micro-scénographies",
+      "worksFor": {
+        "@id": "https://jolie-creation.com/#entreprise"
+      },
+      "url": "https://jolie-creation.com/a-propos.html"
+    },
+    {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Accueil",
+          "item": "https://jolie-creation.com/"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "À propos",
+          "item": "https://jolie-creation.com/a-propos.html"
+        }
+      ]
+    }
+  ]
+}
+</script>
+<!-- /socle:jsonld -->
 </head>
 <body>
 <header class="site-header">
   <div class="wrap">
     <a href="index.html" class="brand">
-      <img src="images/site/logo.png" alt="Jolie Création">
+      <img src="images/site/logo.png" alt="Jolie Création — retour à l’accueil">
     </a>
     <nav class="nav-desktop" aria-label="Navigation principale">
       <ul>
@@ -45,7 +128,7 @@
 
 <div class="mobile-nav" role="dialog" aria-modal="true" aria-label="Menu">
   <div class="mobile-nav-top">
-    <img src="images/site/logo.png" alt="Jolie Création">
+    <img src="images/site/logo.png" alt="" aria-hidden="true">
     <button class="mobile-nav-close" aria-label="Fermer le menu">&times;</button>
   </div>
   <ul>
@@ -69,17 +152,19 @@
           <div class="divider-heart"><span>♥</span></div>
           <p style="color:var(--ink-soft); font-size:16.5px; margin-bottom:30px;">Je m'appelle Julie, fondatrice de <strong style="color:var(--gold-deep);">Jolie Création</strong>. Passionnée par la pâtisserie créative et le travail manuel depuis toujours, j'ai transformé ma passion en métier pour sublimer vos plus beaux moments.</p>
 
+          <p style="color:var(--ink-soft); font-size:16.5px; margin-bottom:30px;">Depuis le canton de Fribourg, je fais deux choses qui vont bien ensemble&nbsp;: des <a href="biscuits-personnalises.html">biscuits personnalisés</a> décorés un à un au glaçage royal, expédiés partout en Suisse, et des <a href="micro-scenographies.html">micro-scénographies événementielles</a> que j'installe sur place pour un anniversaire, une baby shower, un baptême ou une annonce de naissance. Le plus simple pour vous faire une idée reste de parcourir <a href="mes-realisations.html">mes réalisations</a>.</p>
+
           <div class="value-heart">
             <span class="heart">♥</span>
-            <div><h3>Artisanat &amp; qualité</h3><p>Chaque biscuit est fait main avec des ingrédients de qualité et beaucoup de soin.</p></div>
+            <div><h2>Artisanat &amp; qualité</h2><p>Chaque biscuit est fait main avec des ingrédients de qualité et beaucoup de soin.</p></div>
           </div>
           <div class="value-heart">
             <span class="heart">♥</span>
-            <div><h3>Créativité &amp; personnalisation</h3><p>Des créations uniques et sur mesure, pensées avec vous pour correspondre à votre événement.</p></div>
+            <div><h2>Créativité &amp; personnalisation</h2><p>Des créations uniques et sur mesure, pensées avec vous pour correspondre à votre événement.</p></div>
           </div>
           <div class="value-heart">
             <span class="heart">♥</span>
-            <div><h3>Écoute &amp; bienveillance</h3><p>À votre écoute pour créer des douceurs qui vous ressemblent et qui marquent les esprits.</p></div>
+            <div><h2>Écoute &amp; bienveillance</h2><p>À votre écoute pour créer des douceurs qui vous ressemblent et qui marquent les esprits.</p></div>
           </div>
 
           <div class="objectif-box">
@@ -90,7 +175,7 @@
 
         <div class="about-photo">
           <div class="scallop-frame arch-frame">
-            <img src="images/site/julie.jpeg" alt="Julie, fondatrice de Jolie Création" loading="eager">
+            <img src="images/site/julie.webp" alt="Julie, fondatrice de Jolie Création" loading="eager">
           </div>
         </div>
       </div>
@@ -137,7 +222,7 @@
   <div class="wrap">
     <div class="footer-grid">
       <div>
-        <img src="images/site/logo.png" alt="Jolie Création">
+        <img src="images/site/logo.png" alt="" aria-hidden="true">
         <p>Biscuits personnalisés &amp; décoration événementielle.</p>
         <div class="socials" style="margin-top:16px;">
           <a href="https://www.instagram.com/_jolie.creation_/" target="_blank" rel="noopener" aria-label="Instagram">Instagram</a>
@@ -184,7 +269,7 @@
 </a>
 <div class="lightbox">
   <button class="lightbox-close" aria-label="Fermer">&times;</button>
-  <img src="" alt="">
+  <img alt="">
   <div class="lightbox-cap"></div>
 </div>
 <script src="catalogue.js"></script>

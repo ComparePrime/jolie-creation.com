@@ -58,3 +58,31 @@
   to = "/micro-scenographies.html"
   status = 301
   force = true
+
+# Les memes adresses sans extension : Netlify sert « /creations » a
+# partir de creations.html sans passer par la regle ci-dessus. Sans ces
+# quatre lignes, l'ancienne adresse sans .html repondrait 200 au lieu
+# de rediriger.
+[[redirects]]
+  from = "/evenements"
+  to = "/mes-realisations.html"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/creations"
+  to = "/biscuits-personnalises.html"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/formules"
+  to = "/micro-scenographies.html"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/mini-scenographies"
+  to = "/micro-scenographies.html"
+  status = 301
+  force = true

@@ -68,7 +68,9 @@ document.addEventListener('DOMContentLoaded', function () {
         }
       });
     });
-    function closeLb() { lightbox.classList.remove('open'); lbImg.src = ''; }
+    // src = '' ferait redemander la page courante au serveur : on retire
+    // l'attribut plutot que de le vider.
+    function closeLb() { lightbox.classList.remove('open'); lbImg.removeAttribute('src'); }
     if (lbClose) lbClose.addEventListener('click', closeLb);
     lightbox.addEventListener('click', function (e) {
       if (e.target === lightbox) closeLb();
