@@ -1459,6 +1459,111 @@ img.cadrage-bas{ object-position: center 65%; }
   color: var(--gold-deep);
 }
 
+/* ---------- Le cartouche des packages, sur la page ----------
+   Une invitation, pas une vitrine : deux lignes et un bouton. Le choix se
+   fait dans la modale, où il a la place de se montrer. */
+.packages-invite{
+  grid-column: 1 / -1;
+  margin: 0 24px 26px;
+  padding: 20px 22px 22px;
+  background: var(--cream);
+  border: 1px solid var(--gold);
+  border-radius: 18px;
+}
+@media (min-width: 820px){
+  .packages-invite{
+    margin: 0 36px 32px;
+    display: flex; align-items: center; gap: 28px;
+    padding: 22px 26px;
+  }
+  .packages-invite > div{ flex: 1; }
+}
+.packages-invite h4{
+  font-family: var(--font-display);
+  font-size: 19px; line-height: 1.25;
+  margin: 0 0 6px; color: var(--ink);
+}
+.packages-invite p{
+  margin: 0 0 16px;
+  font-size: 14.5px; line-height: 1.65; color: var(--ink-soft);
+}
+@media (min-width: 820px){ .packages-invite p{ margin-bottom: 0; } }
+.packages-invite .btn{ align-self: flex-start; flex: none; }
+
+/* ---------- Les packages dans la modale ----------
+   Trois cartes sélectionnables : une seule à la fois, comme un choix de
+   formule. L'état retenu se voit au filet doré et à la pastille, pas à
+   une couleur criarde. */
+.package-choix{
+  display: grid; gap: 12px;
+  grid-template-columns: 1fr;
+}
+@media (min-width: 700px){ .package-choix{ grid-template-columns: repeat(3, 1fr); gap: 14px; } }
+.package-option{
+  position: relative;
+  display: flex; flex-direction: column;
+  text-align: left;
+  padding: 16px 16px 18px;
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  cursor: pointer;
+  font-family: inherit; color: inherit;
+  transition: border-color .22s var(--entree), transform .22s var(--entree),
+              box-shadow .22s var(--entree);
+}
+@media (hover: hover){
+  .package-option:hover{ border-color: var(--gold); transform: translateY(-2px); }
+}
+.package-option:focus-visible{ outline: 2px solid var(--gold-deep); outline-offset: 2px; }
+.package-option[aria-pressed="true"]{
+  border-color: var(--gold);
+  box-shadow: 0 0 0 2px var(--gold) inset;
+  background: var(--cream);
+}
+.package-option-nom{
+  font-size: 11.5px; letter-spacing: .14em; text-transform: uppercase;
+  color: var(--gold-deep); margin-bottom: 8px;
+  /* La pastille de sélection occupe le coin : lui laisser la place plutôt
+     que de lui passer dessous. */
+  padding-right: 26px;
+}
+.package-option-prix{
+  font-family: var(--font-display); font-size: 21px;
+  color: var(--ink); line-height: 1;
+}
+.package-option-nombre{
+  margin-top: 5px; font-size: 13px; color: var(--ink-soft);
+}
+.package-option-composition{
+  list-style: none; margin: 12px 0 0; padding: 12px 0 0;
+  border-top: 1px solid var(--line);
+  font-size: 13px; line-height: 1.55; color: var(--ink);
+  /* La carte entière est la cible : sans cela, un clic sur une ligne de
+     composition atterrit sur le <li> et la sélection semble ne pas
+     répondre là où le doigt s'est posé. */
+  pointer-events: none;
+}
+.package-option-composition li{ display: flex; gap: 7px; padding: 1px 0; }
+.package-option-coche{
+  position: absolute; top: 14px; right: 14px;
+  width: 18px; height: 18px; border-radius: 50%;
+  border: 1px solid var(--line);
+}
+.package-option[aria-pressed="true"] .package-option-coche{
+  border-color: var(--gold);
+  background: var(--gold)
+    linear-gradient(transparent, transparent);
+  box-shadow: inset 0 0 0 3px var(--paper);
+}
+.package-modale-note{
+  margin: 16px 0 0;
+  padding-top: 14px;
+  border-top: 1px solid var(--line);
+  font-size: 13px; line-height: 1.6; color: var(--ink-soft);
+}
+.package-modale-note strong{ color: var(--ink); }
+
 /* ---------- Packages saisonniers ----------
    Trois assortiments composés d'avance, pour commander petit sans
    atteindre les douze biscuits. Ils vivent dans le bloc de leur
@@ -1590,8 +1695,19 @@ img.cadrage-bas{ object-position: center 65%; }
    C'est ici que se compose la commande : elle doit rester lisible
    avec quatre modèles comme avec seize. Sur mobile, elle prend tout
    l'écran, et le résumé plus le bouton restent collés en bas. */
+/* Le verrou de défilement. boutique.js posait déjà la classe sur <body>,
+   mais rien ne la lisait : la page continuait de défiler derrière la
+   modale. Sur mobile, on perdait sa place en la refermant. */
+body.modale-ouverte{ overflow: hidden; }
+
 .choix-modale{ position: fixed; inset: 0; z-index: 120; display:flex; align-items:center; justify-content:center; }
 .choix-fond{ position:absolute; inset:0; background: rgba(58,44,30,.42); backdrop-filter: blur(2px); }
+/* Ouverture : le fond se pose, la boîte monte de dix pixels. Rien de
+   plus — une modale qui rebondit fait attendre pour rien. */
+.choix-modale:not([hidden]) .choix-fond{ animation: modale-fond .28s var(--entree) both; }
+.choix-modale:not([hidden]) .choix-boite{ animation: modale-boite var(--entree-duree) var(--entree) both; }
+@keyframes modale-fond{ from{ opacity: 0; } to{ opacity: 1; } }
+@keyframes modale-boite{ from{ opacity: 0; transform: translateY(10px); } to{ opacity: 1; transform: none; } }
 .choix-boite{
   position: relative;
   display:flex; flex-direction: column;
