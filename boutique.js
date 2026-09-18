@@ -116,19 +116,38 @@
     return Cat.prixUnitaire(Cat.article(ligne.id), ligne.option);
   }
 
-  function totauxLigne(ligne) {
-    return { unitaire: prixLigne(ligne), payable: prixLigne(ligne) * ligne.qte, biscuits: ligne.qte };
+  /* Un package compte pour sa composition, un biscuit pour un. C'est le
+     catalogue qui le dit, pas le panier : article.biscuits. */
+  function biscuitsLigne(ligne) {
+    var a = Cat.article(ligne.id);
+    return (a && a.biscuits ? a.biscuits : 1) * ligne.qte;
   }
 
-  function totaux() {
+  function totauxLigne(ligne) {
+    return {
+      unitaire: prixLigne(ligne),
+      payable: prixLigne(ligne) * ligne.qte,
+      biscuits: biscuitsLigne(ligne)
+    };
+  }
+
+  /* Le pays n'est connu qu'à la page de livraison. Avant, on compte comme
+     en Suisse : le panier ne doit pas bloquer sur une adresse que le
+     client n'a pas encore saisie. */
+  function totaux(pays) {
     var lignes = lire();
-    var t = { lignes: lignes, nbArticles: 0, payable: 0, biscuits: 0 };
+    var t = { lignes: lignes, nbArticles: 0, payable: 0, biscuits: 0, packages: 0 };
     lignes.forEach(function (l) {
+      var a = Cat.article(l.id);
       t.nbArticles += l.qte;
       t.payable += prixLigne(l) * l.qte;
-      t.biscuits += l.qte;
+      t.biscuits += biscuitsLigne(l);
+      if (a && a.categorie === 'package') t.packages += l.qte;
     });
-    t.manquants = Math.max(0, Cat.MIN_BISCUITS - t.biscuits);
+    t.minimum = Cat.minimumRequis(lignes, pays);
+    t.dispenses = Cat.packagesDispensant(lignes, pays);
+    t.horsZone = Cat.packagesHorsZone(lignes, pays);
+    t.manquants = Math.max(0, t.minimum - t.biscuits);
     return t;
   }
 
@@ -144,17 +163,25 @@
       }
       var g = index[a.collectionId];
       g.lignes.push(l);
-      g.biscuits += l.qte;
+      g.biscuits += biscuitsLigne(l);
       g.total += prixLigne(l) * l.qte;
     });
     return groupes;
   }
 
   /* Ce qui empêche de passer à la commande, ou null si tout va bien. */
-  function blocage() {
-    var t = totaux();
+  function blocage(pays) {
+    var t = totaux(pays);
     if (!t.lignes.length) return 'Votre panier est vide.';
     if (t.manquants > 0) {
+      // Hors de Suisse, un petit package ne dispense plus du minimum :
+      // le dire, sinon le client ne comprend pas ce qui a changé.
+      if (t.horsZone.length) {
+        return 'Les packages ' + t.horsZone.map(function (p) { return '« ' + p.nom + ' »'; }).join(' et ') +
+          ' ne sont proposés que pour une livraison en Suisse. Pour ' + pays +
+          ', la commande suit la règle habituelle : il vous reste ' + t.manquants +
+          ' biscuit' + (t.manquants > 1 ? 's' : '') + ' à choisir, ou vous pouvez prendre le package complet.';
+      }
       return 'Il vous reste ' + t.manquants + ' biscuit' + (t.manquants > 1 ? 's' : '') +
         ' pour atteindre le minimum de commande de ' + Cat.MIN_BISCUITS + ' biscuits.';
     }
@@ -163,12 +190,15 @@
   }
 
   /* La même information, formulée positivement quand le compte y est. */
-  function messageMinimum() {
-    var t = totaux();
+  function messageMinimum(pays) {
+    var t = totaux(pays);
     if (!t.lignes.length) return '';
     if (t.manquants > 0) {
       return 'Il vous reste ' + t.manquants + ' biscuit' + (t.manquants > 1 ? 's' : '') +
-        ' pour atteindre le minimum de commande de ' + Cat.MIN_BISCUITS + ' biscuits.';
+        ' pour atteindre le minimum de commande de ' + t.minimum + ' biscuits.';
+    }
+    if (t.dispenses.length) {
+      return 'Package saisonnier : cette commande se passe sans minimum.';
     }
     return 'Minimum de ' + Cat.MIN_BISCUITS + ' biscuits atteint.';
   }
@@ -453,13 +483,16 @@
         resume.textContent = 'Aucun biscuit sélectionné pour l’instant.';
         return;
       }
-      var dejaAuPanier = totaux().biscuits;
-      var apres = dejaAuPanier + n;
-      var reste = Math.max(0, Cat.MIN_BISCUITS - apres);
+      var t = totaux();
+      // Un package déjà au panier lève le minimum : ne pas réclamer des
+      // biscuits que la commande n'exige plus.
+      var reste = Math.max(0, t.minimum - (t.biscuits + n));
       resume.textContent = n + ' biscuit' + (n > 1 ? 's' : '') + ' · ' + Cat.formater(total) +
         (reste > 0
-          ? ' — il en manquera ' + reste + ' pour atteindre le minimum de ' + Cat.MIN_BISCUITS + '.'
-          : ' — minimum de ' + Cat.MIN_BISCUITS + ' biscuits atteint.');
+          ? ' — il en manquera ' + reste + ' pour atteindre le minimum de ' + t.minimum + '.'
+          : (t.dispenses.length
+            ? ' — package saisonnier au panier : pas de minimum.'
+            : ' — minimum de ' + Cat.MIN_BISCUITS + ' biscuits atteint.'));
     }
 
     valider.onclick = function () {
@@ -491,6 +524,24 @@
     document.body.classList.add('modale-ouverte');
     d.querySelector('.choix-boite').scrollTop = 0;
     d.querySelector('.choix-fermer').focus();
+  }
+
+  /* ---------- Boutons « Ajouter le package » ----------
+     Un package n'ouvre pas de modale : sa composition est fixe et déjà
+     écrite sur la carte. Le client ne choisit rien, il prend l'assortiment
+     tel qu'il est composé — c'est tout l'intérêt. */
+  function brancherPackages() {
+    document.querySelectorAll('[data-package]').forEach(function (bouton) {
+      if (bouton.dataset.branche) return;
+      bouton.dataset.branche = '1';
+      bouton.addEventListener('click', function (e) {
+        e.preventDefault();
+        var a = Cat.article(bouton.getAttribute('data-package'));
+        if (!a || a.categorie !== 'package') return;
+        ajouter(a.id, 1, null, false);
+        annoncer('Package « ' + a.nom + ' » (' + a.biscuits + ' biscuits) ajouté au panier.');
+      });
+    });
   }
 
   /* ---------- Boutons « Choisir mes biscuits » ---------- */
@@ -592,5 +643,6 @@
     majCompteurs();
     surveillerPhotos();
     brancherBoutons();
+    brancherPackages();
   });
 })();

@@ -1439,6 +1439,111 @@ img.cadrage-bas{ object-position: center 65%; }
 }
 @media (hover: hover){ .collection-galerie figure:hover img{ transform: scale(1.02); } }
 
+/* Le pays choisi empêche la commande telle quelle : le dire ici, au-dessus
+   du bouton, sans masquer le formulaire — le client doit pouvoir changer
+   de pays ou retourner au panier. */
+.pay-alerte-zone{
+  margin: 0 0 14px;
+  padding: 12px 14px;
+  border: 1px solid var(--gold);
+  border-radius: 12px;
+  background: var(--cream);
+  font-size: 13.5px; line-height: 1.6; color: var(--ink);
+}
+
+/* Une ligne de panier qui est un package : la mention la distingue d'un
+   biscuit à l'unité, sa composition dit ce qu'elle contient. */
+.ligne-package{
+  margin: 2px 0 4px;
+  font-size: 11.5px; letter-spacing: .12em; text-transform: uppercase;
+  color: var(--gold-deep);
+}
+
+/* ---------- Packages saisonniers ----------
+   Trois assortiments composés d'avance, pour commander petit sans
+   atteindre les douze biscuits. Ils vivent dans le bloc de leur
+   collection, sous les repères : ce sont deux façons d'acheter la même
+   collection, pas deux offres concurrentes. */
+.packages{
+  grid-column: 1 / -1;
+  display: grid;
+  gap: 14px;
+  grid-template-columns: 1fr;
+  padding: 0 24px 26px;
+}
+.packages-titre{
+  grid-column: 1 / -1;
+  margin: 0;
+  font-size: 11.5px; letter-spacing: .18em; text-transform: uppercase;
+  color: var(--gold-deep);
+}
+@media (min-width: 820px){
+  .packages{ grid-template-columns: repeat(3, 1fr); padding: 0 36px 32px; gap: 16px; }
+}
+.package-carte{
+  display: flex; flex-direction: column;
+  padding: 20px 20px 22px;
+  background: var(--cream);
+  border: 1px solid var(--line);
+  border-radius: 18px;
+}
+/* Le complet se distingue par un filet doré et un fond de papier, pas
+   par un bandeau : une collection entière n'a pas besoin qu'on crie. */
+.package-complet{
+  background: var(--paper);
+  border-color: var(--gold);
+}
+.package-mention{
+  margin: 0 0 8px;
+  font-size: 10.5px; letter-spacing: .14em; text-transform: uppercase;
+  color: var(--gold-deep);
+}
+.package-carte h4{
+  font-family: var(--font-display);
+  font-size: 20px; line-height: 1.2;
+  margin: 0 0 6px;
+  color: var(--ink);
+}
+.package-prix{
+  margin: 0 0 10px;
+  font-family: var(--font-display);
+  font-size: 19px;
+  color: var(--gold-deep);
+}
+.package-nombre{
+  display: block;           /* le nombre de biscuits tient sa ligne */
+  font-family: var(--font-body);
+  font-size: 13px; color: var(--ink-soft);
+  margin-top: 2px;
+}
+.package-resume{
+  margin: 0 0 12px;
+  font-size: 13.5px; line-height: 1.6; color: var(--ink-soft);
+}
+.package-composition{
+  list-style: none; margin: 0 0 18px; padding: 0;
+  font-size: 13.5px; line-height: 1.6; color: var(--ink);
+  /* Elle pousse le bouton en bas : les trois boutons s'alignent d'une
+     carte à l'autre même quand les compositions n'ont pas la même
+     longueur. */
+  flex: 1;
+}
+.package-composition li{ display: flex; gap: 8px; padding: 2px 0; }
+.package-qte{ color: var(--gold-deep); font-variant-numeric: tabular-nums; }
+.package-carte .btn{ align-self: flex-start; }
+.package-ajout,
+.package-note-zone{
+  grid-column: 1 / -1;
+  margin: 4px 0 0;
+  font-size: 13.5px; line-height: 1.65; color: var(--ink-soft);
+}
+.package-ajout strong{ color: var(--ink); }
+.package-note-zone{
+  padding-top: 10px;
+  border-top: 1px solid var(--line);
+  font-size: 12.5px;
+}
+
 /* ---------- Ordres de grandeur ----------
    Une information, pas un tarif contractuel : trois repères de taille,
    sans cadre, sans bouton, sans panier. Le prix exact d'un modèle vit

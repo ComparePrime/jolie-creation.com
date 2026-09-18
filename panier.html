@@ -170,12 +170,22 @@
     var r = Panier.totauxLigne(ligne);
     var bloc = el('div', 'panier-ligne');
 
+    var estPackage = a.categorie === 'package';
     var haut = el('div', 'ligne-haut');
     var titre = el('div');
     titre.appendChild(el('h3', null, a.nom + (ligne.option ? ' (personnalisé)' : '')));
+    if (estPackage) {
+      // Un package se lit à sa composition : sans elle, « 59.90 CHF »
+      // ne dit pas ce qu'on reçoit.
+      titre.appendChild(el('p', 'ligne-package', 'Package · ' + a.biscuits + ' biscuits'));
+      titre.appendChild(el('p', 'ligne-perso', a.detail.map(function (d) {
+        return d.qte + '× ' + d.nom;
+      }).join(', ')));
+    }
     var perso = Panier.resumeDetails(ligne);
     if (perso) titre.appendChild(el('p', 'ligne-perso', perso));
-    titre.appendChild(el('p', 'ligne-unitaire', Cat.formater(r.unitaire) + ' l’unité'));
+    titre.appendChild(el('p', 'ligne-unitaire',
+      Cat.formater(r.unitaire) + (estPackage ? ' le package' : ' l’unité')));
     haut.appendChild(titre);
     haut.appendChild(el('span', 'ligne-montant', Cat.formater(r.payable)));
     bloc.appendChild(haut);
@@ -239,7 +249,8 @@
       detail.appendChild(d);
     }
     recapLigne('Biscuits', String(t.biscuits));
-    recapLigne('Modèles', String(t.lignes.length));
+    if (t.packages) recapLigne('Dont packages', String(t.packages));
+    recapLigne('Lignes', String(t.lignes.length));
     document.getElementById('recap-total').textContent = Cat.formater(t.payable);
 
     /* Compteur du minimum : il porte sur l'ensemble du panier, toutes
