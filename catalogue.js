@@ -119,7 +119,7 @@
         { "ref": "feuille-blanche", "nom": "Grande feuille blanche", "prix": 700 },
         { "ref": "feuille-orange", "nom": "Grande feuille orange", "prix": 700 },
         { "ref": "mug", "nom": "Mug", "prix": 700 },
-        { "ref": "branche", "nom": "Branche", "prix": 500 },
+        { "ref": "branche", "nom": "Petite branche", "prix": 500 },
         { "ref": "citrouille", "nom": "Citrouille", "prix": 400 },
         { "ref": "citrouilles-empilees", "nom": "Citrouilles empilées", "prix": 650 },
         { "ref": "grand-pull", "nom": "Grand pull", "prix": 800 }

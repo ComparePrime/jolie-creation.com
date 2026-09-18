@@ -562,6 +562,21 @@ pour commander petit sans atteindre les douze biscuits. Ils se déclarent
 ]
 ```
 
+**Sur la page, un cartouche ; le choix, dans une modale.** Le bloc de la
+collection porte deux lignes et un bouton « Découvrir les packages ». Les
+trois assortiments dépliés dans la page en faisaient une affiche, au
+milieu d'un portfolio.
+
+La modale réutilise **la coquille du choix à l'unité** — même ouverture,
+même fermeture (croix, clic à côté, Échap), même verrou de défilement,
+mêmes emplacements à remplir. Seul le contenu change. Deux modales qui se
+ressemblent doivent partager leur mécanique, sinon l'une des deux finit
+par diverger. La seule précaution : la modale des packages change le
+libellé du bouton, donc celle des collections le remet.
+
+Sous 700 px la boîte occupe tout l'écran : il n'y a pas d'extérieur où
+cliquer, et c'est la croix qui sert.
+
 **Un package est un article comme un autre.** Il reçoit un identifiant
 (`automne-pack-complete`), un prix et un nombre de biscuits, puis entre
 dans `ARTICLES`. Toute la chaîne — panier, retarification serveur,
