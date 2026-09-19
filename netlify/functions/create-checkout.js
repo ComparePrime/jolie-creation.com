@@ -117,33 +117,43 @@ exports.handler = async (event) => {
     libelles.push(qte + '× ' + article.court);
   }
 
-  /* Le minimum porte sur les biscuits commandés à l'unité, toutes
-     collections confondues. Un package saisonnier est une offre fermée :
-     il vaut commande à lui seul et sort du compte — mais il ne dispense
-     pas ce qui l'accompagne. Le pays compte : hors de Suisse, seuls les
-     packages complets dispensent du minimum, les autres y retombent
-     dans le compte général.
+  /* Trois contrôles, dans cet ordre : ce qui ne se vend plus à l'unité,
+     ce qui ne part pas à la destination choisie, puis le minimum.
 
-     Le panier le fait déjà respecter ; on le revérifie ici parce que
+     Le panier les fait déjà respecter ; on les revérifie ici parce que
      c'est ici que l'argent change de main, et parce qu'un panier
      fabriqué à la main n'a aucune raison de respecter quoi que ce soit.
-     C'est la même fonction des deux côtés : les deux ne peuvent pas
+     Ce sont les mêmes fonctions des deux côtés : les deux ne peuvent pas
      compter différemment. */
   const pays = texte(charge.client && charge.client.pays, 60) || '';
-  const minimum = Catalogue.minimumRequis(lignesRecues, pays);
-  const comptes = Catalogue.biscuitsComptes(lignesRecues, pays);
-  if (comptes < minimum) {
-    const refuses = Catalogue.packagesHorsZone(lignesRecues, pays);
-    const dispenses = Catalogue.packagesDispensant(lignesRecues, pays);
-    let message;
-    if (refuses.length) {
-      message = `Les packages saisonniers ne sont proposés que pour une livraison en Suisse. Pour ${pays}, la commande démarre à ${minimum} biscuits, ou passe par le package complet.`;
-    } else if (dispenses.length) {
-      message = `Un package se commande tel quel. Les biscuits choisis à l'unité à côté forment une commande à part, qui démarre à ${minimum} biscuits.`;
-    } else {
-      message = `La commande démarre à ${minimum} biscuits, toutes collections confondues.`;
-    }
-    return reponse(400, { erreur: 'minimum_biscuits', message });
+
+  /* Une collection du moment se vend en assortiments : ses modèles
+     restent au catalogue pour les compositions, pas pour la vente. */
+  const horsVente = Catalogue.lignesHorsVente(lignesRecues);
+  if (horsVente.length) {
+    return reponse(400, {
+      erreur: 'article_hors_vente',
+      message: 'Les collections du moment se commandent en packages : leurs biscuits ne se vendent pas à l’unité.'
+    });
+  }
+
+  const refuses = Catalogue.packagesHorsZone(lignesRecues, pays);
+  if (refuses.length) {
+    return reponse(400, {
+      erreur: 'package_hors_zone',
+      message: `Ces packages ne sont proposés que pour une livraison en Suisse. Pour ${pays}, seul le package complet est disponible.`
+    });
+  }
+
+  /* Le minimum ne regarde que les biscuits pris à l'unité. Le contenu
+     d'un package n'y entre jamais, et n'en dispense pas davantage. */
+  const minimum = Catalogue.minimumRequis(lignesRecues);
+  const individuels = Catalogue.biscuitsIndividuels(lignesRecues);
+  if (individuels < minimum) {
+    return reponse(400, {
+      erreur: 'minimum_biscuits',
+      message: `La commande démarre à ${minimum} biscuits à l’unité, toutes collections confondues. Les packages n’y sont pas soumis.`
+    });
   }
 
   if (centimes <= 0) {

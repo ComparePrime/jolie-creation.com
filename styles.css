@@ -1353,7 +1353,12 @@ img.cadrage-bas{ object-position: center 65%; }
   list-style: none; margin: 0 0 22px; padding: 0;
   font-size: 13.5px; color: var(--ink);
 }
+/* Ces 22 px séparaient la liste du bouton. Une collection du moment n'en
+   a plus : sans cette règle, la marge resterait en vide sous le texte et
+   décalerait le bloc par rapport à sa photo. */
+.collection-corps > .collection-faits:last-child{ margin-bottom: 0; }
 .collection-faits li{ position: relative; padding-left: 16px; margin-bottom: 6px; line-height: 1.5; }
+.collection-corps > .collection-faits:last-child li:last-child{ margin-bottom: 0; }
 .collection-faits li::before{
   content:""; position: absolute; left: 0; top: .68em;
   width: 6px; height: 1px; background: var(--gold);

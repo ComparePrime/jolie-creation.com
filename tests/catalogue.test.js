@@ -384,12 +384,133 @@ const PRIX_TEMOINS = {
   const biscuits = (lignes) => lignes.reduce((s, l) =>
     s + (Catalogue.article(l.id).biscuits || 0) * l.qte, 0);
 
-  await cas('un package seul se commande tel quel', () => {
-    const panier = [{ id: 'automne-pack-complete', qte: 1 }];
-    assert.strictEqual(total(panier), 6490, Catalogue.formater(total(panier)));
-    assert.strictEqual(biscuits(panier), 10);
-    assert.strictEqual(Catalogue.minimumRequis(panier, 'Suisse'), 0);
-    assert.strictEqual(Catalogue.biscuitsComptes(panier, 'Suisse'), 0);
+
+  /* ---------- Les treize cas de la règle ----------
+     Le minimum ne regarde que les biscuits pris à l'unité. Un package
+     n'y entre pas et n'en dispense pas : les deux règles cohabitent
+     sans se parler. Les biscuits à l'unité viennent d'autres
+     collections, puisque celles du moment ne s'y vendent plus. */
+  const AUTOMNE = 'automne-pack-essentiel';
+  const HALLOWEEN = 'frissons-halloween-pack-complete';
+  const CHANTIER = 'petit-chantier-cone';
+  const DOLCE = 'dolce-vita-citron';
+  const passe = (panier) =>
+    Catalogue.biscuitsIndividuels(panier) >= Catalogue.minimumRequis(panier);
+
+  await cas('1 · un package Automne seul suffit', () => {
+    const panier = [{ id: AUTOMNE, qte: 1 }];
+    assert.strictEqual(Catalogue.biscuitsIndividuels(panier), 0);
+    assert.strictEqual(Catalogue.minimumRequis(panier), 0);
+    assert.ok(passe(panier));
+  });
+
+  await cas('2 · un package Halloween seul suffit', () => {
+    assert.ok(passe([{ id: HALLOWEEN, qte: 1 }]));
+  });
+
+  await cas('3 · les deux packages ensemble suffisent', () => {
+    const panier = [{ id: AUTOMNE, qte: 1 }, { id: HALLOWEEN, qte: 1 }];
+    assert.strictEqual(Catalogue.biscuitsIndividuels(panier), 0);
+    assert.ok(passe(panier));
+  });
+
+  await cas('4 · package + 12 biscuits d’une autre collection', () => {
+    const panier = [{ id: AUTOMNE, qte: 1 }, { id: CHANTIER, qte: 12 }];
+    assert.strictEqual(Catalogue.biscuitsIndividuels(panier), 12);
+    assert.ok(passe(panier));
+  });
+
+  await cas('5 · package + 6 biscuits d’une autre : refusé', () => {
+    const panier = [{ id: AUTOMNE, qte: 1 }, { id: CHANTIER, qte: 6 }];
+    assert.strictEqual(Catalogue.biscuitsIndividuels(panier), 6);
+    assert.strictEqual(Catalogue.minimumRequis(panier), 12);
+    assert.ok(!passe(panier));
+  });
+
+  await cas('6 · package + 6 + 6 de deux collections : accepté', () => {
+    const panier = [{ id: AUTOMNE, qte: 1 },
+                    { id: CHANTIER, qte: 6 }, { id: DOLCE, qte: 6 }];
+    assert.strictEqual(Catalogue.biscuitsIndividuels(panier), 12);
+    assert.ok(passe(panier));
+  });
+
+  await cas('7 · package + 4 biscuits d’une autre : refusé', () => {
+    const panier = [{ id: AUTOMNE, qte: 1 }, { id: CHANTIER, qte: 4 }];
+    assert.ok(!passe(panier));
+  });
+
+  await cas('8 · deux packages + 12 biscuits à l’unité', () => {
+    const panier = [{ id: AUTOMNE, qte: 1 }, { id: HALLOWEEN, qte: 1 },
+                    { id: CHANTIER, qte: 12 }];
+    assert.strictEqual(Catalogue.biscuitsIndividuels(panier), 12);
+    assert.ok(passe(panier));
+  });
+
+  await cas('9 à 12 · aucun biscuit du moment ne se vend à l’unité', () => {
+    ['automne', 'frissons-halloween'].forEach((id) => {
+      const c = Catalogue.COLLECTIONS.find((x) => x.id === id);
+      assert.ok(c.packagesSeuls, id + ' : la collection devrait être en packages seuls');
+      assert.ok(c.produits.length, id + ' : ses modèles restent décrits');
+      c.produits.forEach((p) => {
+        const a = Catalogue.article(p.id);
+        assert.strictEqual(a.seulEnPackage, true, p.id);
+        assert.strictEqual(Catalogue.lignesHorsVente([{ id: p.id, qte: 1 }]).length, 1, p.id);
+        // Leur contenu ne compte jamais pour le minimum, même seul.
+        assert.strictEqual(Catalogue.biscuitsIndividuels([{ id: p.id, qte: 20 }]), 20, p.id);
+      });
+    });
+    // Les nommés du brief, un par un.
+    ['automne-citrouille', 'frissons-halloween-boo-violet'].forEach((id) => {
+      assert.strictEqual(Catalogue.article(id).seulEnPackage, true, id);
+    });
+  });
+
+  await cas('13 · les autres collections restent vendables à l’unité', () => {
+    const autres = Catalogue.COLLECTIONS.filter((c) => !c.packagesSeuls);
+    assert.strictEqual(autres.length, Catalogue.COLLECTIONS.length - 2);
+    autres.forEach((c) => {
+      c.produits.forEach((p) => {
+        assert.ok(!Catalogue.article(p.id).seulEnPackage, p.id);
+      });
+      assert.strictEqual(Catalogue.lignesHorsVente(
+        c.produits.map((p) => ({ id: p.id, qte: 1 }))).length, 0, c.id);
+    });
+    // Et leur règle n'a pas bougé : douze biscuits, ni plus ni moins.
+    assert.strictEqual(Catalogue.minimumRequis([{ id: CHANTIER, qte: 5 }]), 12);
+    assert.ok(!passe([{ id: CHANTIER, qte: 11 }]));
+    assert.ok(passe([{ id: CHANTIER, qte: 12 }]));
+  });
+
+  await cas('le contenu d’un package n’entre jamais dans les douze', () => {
+    // Onze biscuits dans le package, zéro à l'unité : rien à atteindre.
+    assert.strictEqual(Catalogue.article(HALLOWEEN).biscuits, 11);
+    assert.strictEqual(Catalogue.biscuitsIndividuels([{ id: HALLOWEEN, qte: 1 }]), 0);
+    // Et il n'en dispense pas non plus : un biscuit à côté rouvre les douze.
+    const panier = [{ id: HALLOWEEN, qte: 1 }, { id: CHANTIER, qte: 1 }];
+    assert.strictEqual(Catalogue.minimumRequis(panier), 12);
+    assert.ok(!passe(panier));
+  });
+
+  await cas('hors de Suisse, seul le package complet est proposé', () => {
+    const petit = [{ id: 'automne-pack-essentiel', qte: 1 }];
+    const complet = [{ id: 'automne-pack-complete', qte: 1 }];
+    ['France', 'Allemagne', 'Autre pays d’Europe'].forEach((pays) => {
+      assert.strictEqual(Catalogue.packagesHorsZone(petit, pays).length, 1, pays);
+      assert.strictEqual(Catalogue.packagesHorsZone(complet, pays).length, 0, pays);
+    });
+    assert.strictEqual(Catalogue.packagesHorsZone(petit, 'Suisse').length, 0);
+    assert.strictEqual(Catalogue.packagesHorsZone(petit).length, 0);
+  });
+
+  await cas('une quantité fabriquée à la main ne fait pas sauter le minimum', () => {
+    // Le serveur contrôle un panier venu du réseau : « NaN < 12 » étant
+    // faux, une quantité non numérique laisserait passer la commande.
+    ['abc', null, undefined, -3, 0, NaN, Infinity, -Infinity].forEach((qte) => {
+      const panier = [{ id: CHANTIER, qte }];
+      assert.strictEqual(Catalogue.biscuitsIndividuels(panier), 0, String(qte));
+    });
+    assert.strictEqual(Catalogue.biscuitsIndividuels([{ id: CHANTIER, qte: '12' }]), 12);
+    assert.strictEqual(Catalogue.biscuitsIndividuels([{ id: CHANTIER, qte: 2.7 }]), 2);
   });
 
   await cas('deux packages se commandent ensemble, sans minimum', () => {
@@ -427,58 +548,10 @@ const PRIX_TEMOINS = {
       });
   });
 
-  await cas('hors de Suisse, seul le package complet lève le minimum', () => {
-    const petit = [{ id: 'automne-pack-essentiel', qte: 1 }];
-    const moyen = [{ id: 'automne-pack-gourmande', qte: 1 }];
-    const complet = [{ id: 'automne-pack-complete', qte: 1 }];
-    ['France', 'Allemagne', 'Autre pays d’Europe'].forEach((pays) => {
-      assert.strictEqual(Catalogue.minimumRequis(petit, pays), 12, pays);
-      assert.strictEqual(Catalogue.minimumRequis(moyen, pays), 12, pays);
-      assert.strictEqual(Catalogue.minimumRequis(complet, pays), 0, pays);
-      assert.strictEqual(Catalogue.packagesHorsZone(petit, pays).length, 1, pays);
-      assert.strictEqual(Catalogue.packagesHorsZone(complet, pays).length, 0, pays);
-    });
-  });
 
-  await cas('un package ne dispense pas les biscuits pris à côté', () => {
-    // Le package se suffit ; le mug choisi à l'unité est une commande
-    // classique, et repart donc de douze.
-    const panier = [{ id: 'automne-pack-essentiel', qte: 1 },
-                    { id: 'automne-mug', qte: 1 }];
-    assert.strictEqual(biscuits(panier), 6);
-    assert.strictEqual(Catalogue.biscuitsHorsPackage(panier), 1);
-    assert.strictEqual(Catalogue.biscuitsComptes(panier, 'Suisse'), 1);
-    assert.strictEqual(Catalogue.minimumRequis(panier, 'Suisse'), 12);
-  });
 
-  await cas('à côté d’un package, douze biscuits à l’unité passent', () => {
-    const panier = [{ id: 'automne-pack-essentiel', qte: 1 },
-                    { id: 'automne-mug', qte: 12 }];
-    assert.strictEqual(Catalogue.biscuitsComptes(panier, 'Suisse'), 12);
-    assert.strictEqual(Catalogue.minimumRequis(panier, 'Suisse'), 12);
-  });
 
-  await cas('une quantité fabriquée à la main ne fait pas sauter le minimum', () => {
-    // Le serveur contrôle un panier venu du réseau : « NaN < 12 » étant
-    // faux, une quantité non numérique laisserait passer la commande.
-    ['abc', null, undefined, -3, 0, NaN, Infinity, -Infinity].forEach((qte) => {
-      const panier = [{ id: 'automne-mug', qte }];
-      assert.strictEqual(Catalogue.biscuitsComptes(panier, 'Suisse'), 0, String(qte));
-      assert.ok(Catalogue.biscuitsComptes(panier, 'Suisse') < Catalogue.minimumRequis(panier, 'Suisse'),
-        'la commande devrait être refusée pour qte = ' + String(qte));
-    });
-    // Les quantités honnêtes, elles, comptent normalement.
-    assert.strictEqual(Catalogue.biscuitsComptes([{ id: 'automne-mug', qte: '12' }], 'Suisse'), 12);
-    assert.strictEqual(Catalogue.biscuitsComptes([{ id: 'automne-mug', qte: 2.7 }], 'Suisse'), 2);
-  });
 
-  await cas('hors zone, le package retombe dans le compte général', () => {
-    // En France, l'Essentiel ne dispense pas : ses cinq biscuits
-    // comptent alors comme n'importe quels autres.
-    const panier = [{ id: 'automne-pack-essentiel', qte: 1 }];
-    assert.strictEqual(Catalogue.biscuitsComptes(panier, 'France'), 5);
-    assert.strictEqual(Catalogue.minimumRequis(panier, 'France'), 12);
-  });
 
   /* ---------- Les packages d'Halloween ---------- */
   const HALLOWEEN_ATTENDUS = {
@@ -540,28 +613,7 @@ const PRIX_TEMOINS = {
     assert.strictEqual(h.produits.length, 9);
   });
 
-  await cas('un package d’Halloween lève le minimum comme celui d’Automne', () => {
-    ['frissons-halloween-pack-essentiel', 'frissons-halloween-pack-gourmande',
-     'frissons-halloween-pack-complete'].forEach((id) => {
-      const panier = [{ id: id, qte: 1 }];
-      assert.strictEqual(Catalogue.minimumRequis(panier, 'Suisse'), 0, id);
-    });
-    // Hors de Suisse, même règle qu'Automne : seul le complet dispense.
-    assert.strictEqual(
-      Catalogue.minimumRequis([{ id: 'frissons-halloween-pack-essentiel', qte: 1 }], 'France'), 12);
-    assert.strictEqual(
-      Catalogue.minimumRequis([{ id: 'frissons-halloween-pack-complete', qte: 1 }], 'France'), 0);
-  });
 
-  await cas('un package d’Halloween ne se complète pas non plus', () => {
-    const panier = [{ id: 'frissons-halloween-pack-complete', qte: 1 },
-                    { id: 'frissons-halloween-squelette', qte: 2 }];
-    assert.strictEqual(total(panier), 6490 + 1700);
-    assert.strictEqual(biscuits(panier), 13);
-    // Treize biscuits en tout, mais deux seulement à l'unité : refusé.
-    assert.strictEqual(Catalogue.biscuitsComptes(panier, 'Suisse'), 2);
-    assert.strictEqual(Catalogue.minimumRequis(panier, 'Suisse'), 12);
-  });
 
   await cas('les packages ne touchent que les collections du moment', () => {
     Catalogue.COLLECTIONS.forEach((c) => {

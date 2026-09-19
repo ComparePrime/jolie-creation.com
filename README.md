@@ -549,13 +549,21 @@ normal, pas un manque à combler.
 
 ### Les packages saisonniers
 
-Une collection du moment peut se vendre en assortiments composés d'avance,
-pour commander petit sans atteindre les douze biscuits.
+Une collection du moment se vend **uniquement** en assortiments composés
+d'avance. Le drapeau ne se saisit pas : `c.packagesSeuls` vaut vrai dès
+qu'une collection porte un tableau `packages`, et ses modèles reçoivent
+alors `seulEnPackage`.
 
 **Un package est une offre fermée.** Sa composition ne se modifie pas,
-rien ne s'y ajoute, et on n'y choisit pas les modèles un par un : le
-client prend l'assortiment tel qu'il est, ou il commande à l'unité comme
-dans n'importe quelle collection. C'est ce qui rend le prix tenable.
+rien ne s'y ajoute, et on n'y choisit pas les modèles un par un.
+
+**Ses modèles restent au catalogue, mais sortent de la vente.** Les
+compositions les nomment, le récapitulatif de commande les affiche, leur
+prix unitaire sert aux données internes — mais la page n'a plus de bouton
+« Choisir mes biscuits », `ajouter()` les refuse, `valide()` les retire
+d'un panier gardé de la veille, et le serveur rejette la commande qui en
+porterait. Quatre portes, parce qu'un panier fabriqué à la main n'entre
+par aucune des trois premières.
 
 Ils se déclarent à côté de `produits` :
 
@@ -608,29 +616,35 @@ l'étranger ; sans lui, il n'est proposé que pour une livraison en Suisse.
 
 ### Le minimum de commande, et ce qui en dispense
 
-Douze biscuits — mais un package n'y est pas soumis, et **il ne dispense
-que lui-même**. Ce qui l'accompagne au panier reste une commande
-classique, et repart donc de douze : un package à 32.90 n'est pas un
-laissez-passer pour trois biscuits à côté.
+Douze biscuits, et ce sont **les biscuits pris à l'unité**. Un package
+n'entre pas dans les douze, et n'en dispense pas non plus : les deux
+règles cohabitent sans se parler.
 
-Deux fonctions le disent, et les deux côtés les appellent — le navigateur
-pour afficher, le serveur pour encaisser. Ils ne peuvent pas compter
-différemment.
+`Catalogue.biscuitsIndividuels(lignes)` compte ce qui est soumis au
+minimum ; `Catalogue.minimumRequis(lignes)` dit le seuil — douze dès
+qu'il y a un biscuit à l'unité, zéro sinon. Les deux côtés les appellent,
+le navigateur pour afficher, le serveur pour encaisser : ils ne peuvent
+pas compter différemment.
 
-- `Catalogue.minimumRequis(lignes, pays)` : le seuil à atteindre.
-- `Catalogue.biscuitsComptes(lignes, pays)` : ce qui compte pour ce
-  seuil. Dès qu'un package valable dans la zone est au panier, il en
-  sort et seuls les biscuits pris à l'unité restent comptés ; sinon tout
-  compte, package refusé à l'étranger compris.
+| Panier                                          | À l'unité | Minimum | Passe |
+| ----------------------------------------------- | --------- | ------- | ----- |
+| Un package                                       | 0         | 0       | oui   |
+| Deux packages                                    | 0         | 0       | oui   |
+| Package + 12 biscuits d'une autre collection      | 12        | 12      | oui   |
+| Package + 6 + 6 de deux collections               | 12        | 12      | oui   |
+| Package + 8 biscuits d'une autre collection       | 8         | 12      | non   |
+| 12 biscuits à l'unité, sans package               | 12        | 12      | oui   |
+| 5 biscuits à l'unité, sans package                | 5         | 12      | non   |
 
-| Panier                                   | Suisse | Étranger |
-| ---------------------------------------- | ------ | -------- |
-| Biscuits à l'unité                        | 12     | 12       |
-| Package seul, quel qu'il soit             | 0      | —        |
-| Package seul marqué `horsSuisse`          | 0      | 0        |
-| Petit package seul                        | 0      | 12       |
-| Plusieurs packages, rien d'autre          | 0      | selon les packages |
-| Package + biscuits à l'unité              | 12 sur les biscuits à l'unité | selon le package |
+Les biscuits à l'unité viennent de n'importe quelle collection qui en
+vend, et se cumulent entre collections.
+
+**La destination est une règle à part.** Seuls les packages marqués
+`horsSuisse` partent à l'étranger. Cette règle passait autrefois par le
+minimum — refuser un package revenait à exiger douze biscuits. Depuis que
+le minimum ne regarde plus que l'unité, un petit package seul n'aurait
+plus rien à atteindre : c'est devenu un refus à part entière,
+`Catalogue.packagesHorsZone(lignes, pays)`, dit comme tel au client.
 
 Tant que le pays n'est pas choisi, on raisonne comme en Suisse : le panier
 ne doit pas bloquer sur une adresse que le client n'a pas encore saisie.

@@ -36,7 +36,11 @@
   function valide(ligne) {
     if (!ligne || typeof ligne.id !== 'string') return false;
     var a = Cat.article(ligne.id);
-    return !!a && typeof ligne.qte === 'number' && ligne.qte > 0;
+    if (!a || typeof ligne.qte !== 'number' || ligne.qte <= 0) return false;
+    /* Un modèle d'une collection du moment ne se commande plus à
+       l'unité. Le filtre est ici, à la lecture : un panier gardé de la
+       veille le perd de lui-même, sans que le client ait à le vider. */
+    return !a.seulEnPackage;
   }
 
   function ecrire(lignes) {
@@ -62,7 +66,7 @@
 
   function ajouter(id, qte, details, option) {
     var a = Cat.article(id);
-    if (!a) return null;
+    if (!a || a.seulEnPackage) return null;
     qte = Math.max(1, parseInt(qte, 10) || 1);
     option = !!(option && a.option);
     var lignes = lire();
@@ -82,7 +86,7 @@
     var nb = 0;
     choix.forEach(function (c) {
       var a = Cat.article(c.id);
-      if (!a || c.qte <= 0) return;
+      if (!a || a.seulEnPackage || c.qte <= 0) return;
       var option = !!(c.option && a.option);
       var cle = cleLigne(c.id, c.details, option);
       var existante = null;
@@ -141,15 +145,13 @@
       t.biscuits += biscuitsLigne(l);
       if (a && a.categorie === 'package') t.packages += l.qte;
     });
-    t.minimum = Cat.minimumRequis(lignes, pays);
-    t.dispenses = Cat.packagesDispensant(lignes, pays);
+    /* Le minimum ne regarde que les biscuits pris à l'unité : le
+       contenu d'un package n'en fait jamais partie, et n'en dispense
+       pas non plus. */
+    t.individuels = Cat.biscuitsIndividuels(lignes);
+    t.minimum = Cat.minimumRequis(lignes);
     t.horsZone = Cat.packagesHorsZone(lignes, pays);
-    /* Le minimum ne regarde pas toujours le total : un package fermé
-       sort du compte, et seuls les biscuits pris à l'unité restent à
-       atteindre douze. */
-    t.horsPackage = Cat.biscuitsHorsPackage(lignes);
-    t.comptes = Cat.biscuitsComptes(lignes, pays);
-    t.manquants = Math.max(0, t.minimum - t.comptes);
+    t.manquants = Math.max(0, t.minimum - t.individuels);
     return t;
   }
 
@@ -175,36 +177,36 @@
      Une seule explication, utilisée par le panier comme par le blocage :
      deux formulations différentes du même refus finissent toujours par
      se contredire. */
-  function manqueMinimum(t, pays) {
+  function manqueMinimum(t) {
     if (t.manquants <= 0) return null;
     var s = t.manquants > 1 ? 's' : '';
-    // Hors de Suisse, un petit package ne dispense plus du minimum :
-    // le dire, sinon le client ne comprend pas ce qui a changé.
-    if (t.horsZone.length) {
-      return 'Les packages ' + t.horsZone.map(function (p) { return '« ' + p.nom + ' »'; }).join(' et ') +
-        ' ne sont proposés que pour une livraison en Suisse. Pour ' + pays +
-        ', la commande suit la règle habituelle : il vous reste ' + t.manquants +
-        ' biscuit' + s + ' à choisir, ou vous pouvez prendre le package complet.';
-    }
-    // Un package se commande tel quel : il ne dispense que lui-même, et
-    // ce qui l'accompagne reste une commande classique.
-    if (t.dispenses.length) {
-      var seul = t.horsPackage === 1;
-      return 'Votre package se commande tel quel. ' +
-        (seul ? 'Le biscuit choisi à l’unité à côté forme'
-              : 'Les ' + t.horsPackage + ' biscuits choisis à l’unité à côté forment') +
-        ' une commande à part : il en manque ' + t.manquants +
-        ' pour atteindre le minimum de ' + Cat.MIN_BISCUITS + ' biscuits.';
-    }
+    /* Le message ne parle que des biscuits à l'unité : présenter le
+       contenu d'un package comme un acompte sur les douze ferait
+       attendre au client un compte qui ne viendra pas. */
     return 'Il vous reste ' + t.manquants + ' biscuit' + s +
-      ' pour atteindre le minimum de commande de ' + Cat.MIN_BISCUITS + ' biscuits.';
+      ' à l’unité pour atteindre le minimum de commande de ' +
+      Cat.MIN_BISCUITS + ' biscuits.';
+  }
+
+  /* Un package que la destination n'accepte pas : c'est un refus en soi,
+     sans rapport avec le minimum. */
+  function refusDeZone(t, pays) {
+    if (!t.horsZone.length) return null;
+    var un = t.horsZone.length === 1;
+    return 'Le' + (un ? '' : 's') + ' package' + (un ? '' : 's') + ' ' +
+      t.horsZone.map(function (p) { return '« ' + p.nom + ' »'; }).join(' et ') +
+      (un ? ' n’est proposé' : ' ne sont proposés') +
+      ' que pour une livraison en Suisse. Pour ' + pays +
+      ', choisissez le package complet, ou retirez-le de votre panier.';
   }
 
   /* Ce qui empêche de passer à la commande, ou null si tout va bien. */
   function blocage(pays) {
     var t = totaux(pays);
     if (!t.lignes.length) return 'Votre panier est vide.';
-    var manque = manqueMinimum(t, pays);
+    var zone = refusDeZone(t, pays);
+    if (zone) return zone;
+    var manque = manqueMinimum(t);
     if (manque) return manque;
     if (t.payable <= 0) return 'Votre panier ne contient aucun article facturable.';
     return null;
@@ -214,12 +216,12 @@
   function messageMinimum(pays) {
     var t = totaux(pays);
     if (!t.lignes.length) return '';
-    var manque = manqueMinimum(t, pays);
+    var manque = manqueMinimum(t);
     if (manque) return manque;
-    if (t.dispenses.length && !t.horsPackage) {
+    if (!t.individuels) {
       return 'Package saisonnier : cette commande se passe sans minimum.';
     }
-    return 'Minimum de ' + Cat.MIN_BISCUITS + ' biscuits atteint.';
+    return 'Minimum de ' + Cat.MIN_BISCUITS + ' biscuits à l’unité atteint.';
   }
 
   /* ---------- Compteur du header ---------- */
@@ -506,15 +508,16 @@
         return;
       }
       var t = totaux();
-      // Un package déjà au panier lève le minimum : ne pas réclamer des
-      // biscuits que la commande n'exige plus.
-      var reste = Math.max(0, t.minimum - (t.biscuits + n));
+      /* On choisit ici des biscuits à l'unité : le minimum s'appliquera
+         donc, quels que soient les packages déjà au panier. Ce qui
+         compte, c'est ce qui s'y trouve déjà à l'unité, plus ce que
+         cette modale va ajouter. */
+      var reste = Math.max(0, Cat.MIN_BISCUITS - (t.individuels + n));
       resume.textContent = n + ' biscuit' + (n > 1 ? 's' : '') + ' · ' + Cat.formater(total) +
         (reste > 0
-          ? ' — il en manquera ' + reste + ' pour atteindre le minimum de ' + t.minimum + '.'
-          : (t.dispenses.length
-            ? ' — package saisonnier au panier : pas de minimum.'
-            : ' — minimum de ' + Cat.MIN_BISCUITS + ' biscuits atteint.'));
+          ? ' — il en manquera ' + reste + ' pour atteindre le minimum de ' +
+            Cat.MIN_BISCUITS + '.'
+          : ' — minimum de ' + Cat.MIN_BISCUITS + ' biscuits à l’unité atteint.');
     }
 
     valider.onclick = function () {
