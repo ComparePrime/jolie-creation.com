@@ -320,17 +320,17 @@ const PRIX_TEMOINS = {
      lève. */
   const PACKAGES_ATTENDUS = {
     'automne-pack-essentiel': {
-      nom: 'L’Essentiel', prix: 2990, biscuits: 5, complet: false, horsSuisse: false,
+      nom: 'L’Essentiel', prix: 3290, biscuits: 5, complet: false, horsSuisse: false,
       composition: { 'feuille-blanche': 1, 'mug': 1, 'branche': 1, 'citrouille': 1,
                      'citrouilles-empilees': 1 }
     },
     'automne-pack-gourmande': {
-      nom: 'La Gourmande', prix: 4290, biscuits: 7, complet: false, horsSuisse: false,
+      nom: 'La Gourmande', prix: 4490, biscuits: 7, complet: false, horsSuisse: false,
       composition: { 'feuille-blanche': 1, 'feuille-orange': 1, 'mug': 2, 'branche': 1,
                      'citrouille': 1, 'grand-pull': 1 }
     },
     'automne-pack-complete': {
-      nom: 'L’Automne Complète', prix: 5990, biscuits: 10, complet: true, horsSuisse: true,
+      nom: 'L’Automne Complète', prix: 6490, biscuits: 10, complet: true, horsSuisse: true,
       composition: { 'feuille-blanche': 1, 'feuille-orange': 1, 'mug': 2, 'branche': 2,
                      'citrouille': 2, 'citrouilles-empilees': 1, 'grand-pull': 1 }
     }
@@ -345,9 +345,9 @@ const PRIX_TEMOINS = {
       assert.strictEqual(a.prix, PACKAGES_ATTENDUS[id].prix,
         id + ' : ' + Catalogue.formater(a.prix));
     });
-    assert.strictEqual(Catalogue.formater(2990), '29.90 CHF');
-    assert.strictEqual(Catalogue.formater(4290), '42.90 CHF');
-    assert.strictEqual(Catalogue.formater(5990), '59.90 CHF');
+    assert.strictEqual(Catalogue.formater(3290), '32.90 CHF');
+    assert.strictEqual(Catalogue.formater(4490), '44.90 CHF');
+    assert.strictEqual(Catalogue.formater(6490), '64.90 CHF');
   });
 
   await cas('la composition de chaque package est exacte', () => {
@@ -384,20 +384,20 @@ const PRIX_TEMOINS = {
   const biscuits = (lignes) => lignes.reduce((s, l) =>
     s + (Catalogue.article(l.id).biscuits || 0) * l.qte, 0);
 
-  await cas('un package se complète de biscuits à l’unité', () => {
-    // L'exemple du cahier des charges : la Complète, puis deux mugs.
-    const panier = [{ id: 'automne-pack-complete', qte: 1 },
-                    { id: 'automne-mug', qte: 2 }];
-    assert.strictEqual(total(panier), 7390, Catalogue.formater(total(panier)));
-    assert.strictEqual(biscuits(panier), 12);
+  await cas('un package seul se commande tel quel', () => {
+    const panier = [{ id: 'automne-pack-complete', qte: 1 }];
+    assert.strictEqual(total(panier), 6490, Catalogue.formater(total(panier)));
+    assert.strictEqual(biscuits(panier), 10);
+    assert.strictEqual(Catalogue.minimumRequis(panier, 'Suisse'), 0);
+    assert.strictEqual(Catalogue.biscuitsComptes(panier, 'Suisse'), 0);
   });
 
-  await cas('plusieurs suppléments s’additionnent correctement', () => {
+  await cas('deux packages se commandent ensemble, sans minimum', () => {
     const panier = [{ id: 'automne-pack-essentiel', qte: 1 },
-                    { id: 'automne-branche', qte: 1 },
-                    { id: 'automne-grand-pull', qte: 1 }];
-    assert.strictEqual(total(panier), 2990 + 500 + 800);
-    assert.strictEqual(biscuits(panier), 7);
+                    { id: 'frissons-halloween-pack-essentiel', qte: 1 }];
+    assert.strictEqual(total(panier), 3290 + 3290);
+    assert.strictEqual(biscuits(panier), 10);
+    assert.strictEqual(Catalogue.minimumRequis(panier, 'Suisse'), 0);
   });
 
   await cas('les prix unitaires d’Automne sont ceux annoncés', () => {
@@ -440,27 +440,60 @@ const PRIX_TEMOINS = {
     });
   });
 
-  await cas('un package complété reste commandable sous douze biscuits', () => {
+  await cas('un package ne dispense pas les biscuits pris à côté', () => {
+    // Le package se suffit ; le mug choisi à l'unité est une commande
+    // classique, et repart donc de douze.
     const panier = [{ id: 'automne-pack-essentiel', qte: 1 },
                     { id: 'automne-mug', qte: 1 }];
     assert.strictEqual(biscuits(panier), 6);
-    assert.strictEqual(Catalogue.minimumRequis(panier, 'Suisse'), 0);
+    assert.strictEqual(Catalogue.biscuitsHorsPackage(panier), 1);
+    assert.strictEqual(Catalogue.biscuitsComptes(panier, 'Suisse'), 1);
+    assert.strictEqual(Catalogue.minimumRequis(panier, 'Suisse'), 12);
+  });
+
+  await cas('à côté d’un package, douze biscuits à l’unité passent', () => {
+    const panier = [{ id: 'automne-pack-essentiel', qte: 1 },
+                    { id: 'automne-mug', qte: 12 }];
+    assert.strictEqual(Catalogue.biscuitsComptes(panier, 'Suisse'), 12);
+    assert.strictEqual(Catalogue.minimumRequis(panier, 'Suisse'), 12);
+  });
+
+  await cas('une quantité fabriquée à la main ne fait pas sauter le minimum', () => {
+    // Le serveur contrôle un panier venu du réseau : « NaN < 12 » étant
+    // faux, une quantité non numérique laisserait passer la commande.
+    ['abc', null, undefined, -3, 0, NaN, Infinity, -Infinity].forEach((qte) => {
+      const panier = [{ id: 'automne-mug', qte }];
+      assert.strictEqual(Catalogue.biscuitsComptes(panier, 'Suisse'), 0, String(qte));
+      assert.ok(Catalogue.biscuitsComptes(panier, 'Suisse') < Catalogue.minimumRequis(panier, 'Suisse'),
+        'la commande devrait être refusée pour qte = ' + String(qte));
+    });
+    // Les quantités honnêtes, elles, comptent normalement.
+    assert.strictEqual(Catalogue.biscuitsComptes([{ id: 'automne-mug', qte: '12' }], 'Suisse'), 12);
+    assert.strictEqual(Catalogue.biscuitsComptes([{ id: 'automne-mug', qte: 2.7 }], 'Suisse'), 2);
+  });
+
+  await cas('hors zone, le package retombe dans le compte général', () => {
+    // En France, l'Essentiel ne dispense pas : ses cinq biscuits
+    // comptent alors comme n'importe quels autres.
+    const panier = [{ id: 'automne-pack-essentiel', qte: 1 }];
+    assert.strictEqual(Catalogue.biscuitsComptes(panier, 'France'), 5);
+    assert.strictEqual(Catalogue.minimumRequis(panier, 'France'), 12);
   });
 
   /* ---------- Les packages d'Halloween ---------- */
   const HALLOWEEN_ATTENDUS = {
     'frissons-halloween-pack-essentiel': {
-      nom: 'L’Essentiel', prix: 2990, biscuits: 5, horsSuisse: false,
+      nom: 'L’Essentiel', prix: 3290, biscuits: 5, horsSuisse: false,
       composition: { 'citrouille': 1, 'crane': 1, 'boo-violet': 1,
                      'toile-araignee': 1, 'fantome': 1 }
     },
     'frissons-halloween-pack-gourmande': {
-      nom: 'La Gourmande', prix: 4290, biscuits: 7, horsSuisse: false,
+      nom: 'La Gourmande', prix: 4490, biscuits: 7, horsSuisse: false,
       composition: { 'citrouille': 2, 'crane': 1, 'boo-violet': 1, 'boo-orange': 1,
                      'toile-araignee': 1, 'fantome': 1 }
     },
     'frissons-halloween-pack-complete': {
-      nom: 'Frissons d’Halloween', prix: 5990, biscuits: 11, horsSuisse: true,
+      nom: 'Frissons d’Halloween', prix: 6490, biscuits: 11, horsSuisse: true,
       composition: { 'citrouille': 3, 'crane': 1, 'boo-violet': 1, 'boo-orange': 1,
                      'squelette': 1, 'chauve-souris': 1, 'toile-araignee': 1,
                      'fantome': 1, 'courge-yeux': 1 }
@@ -520,11 +553,14 @@ const PRIX_TEMOINS = {
       Catalogue.minimumRequis([{ id: 'frissons-halloween-pack-complete', qte: 1 }], 'France'), 0);
   });
 
-  await cas('un package d’Halloween se complète de biscuits à l’unité', () => {
+  await cas('un package d’Halloween ne se complète pas non plus', () => {
     const panier = [{ id: 'frissons-halloween-pack-complete', qte: 1 },
                     { id: 'frissons-halloween-squelette', qte: 2 }];
-    assert.strictEqual(total(panier), 5990 + 1700);
+    assert.strictEqual(total(panier), 6490 + 1700);
     assert.strictEqual(biscuits(panier), 13);
+    // Treize biscuits en tout, mais deux seulement à l'unité : refusé.
+    assert.strictEqual(Catalogue.biscuitsComptes(panier, 'Suisse'), 2);
+    assert.strictEqual(Catalogue.minimumRequis(panier, 'Suisse'), 12);
   });
 
   await cas('les packages ne touchent que les collections du moment', () => {

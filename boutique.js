@@ -117,11 +117,8 @@
   }
 
   /* Un package compte pour sa composition, un biscuit pour un. C'est le
-     catalogue qui le dit, pas le panier : article.biscuits. */
-  function biscuitsLigne(ligne) {
-    var a = Cat.article(ligne.id);
-    return (a && a.biscuits ? a.biscuits : 1) * ligne.qte;
-  }
+     catalogue qui le dit, pas le panier. */
+  function biscuitsLigne(ligne) { return Cat.biscuitsLigne(ligne); }
 
   function totauxLigne(ligne) {
     return {
@@ -147,7 +144,12 @@
     t.minimum = Cat.minimumRequis(lignes, pays);
     t.dispenses = Cat.packagesDispensant(lignes, pays);
     t.horsZone = Cat.packagesHorsZone(lignes, pays);
-    t.manquants = Math.max(0, t.minimum - t.biscuits);
+    /* Le minimum ne regarde pas toujours le total : un package fermé
+       sort du compte, et seuls les biscuits pris à l'unité restent à
+       atteindre douze. */
+    t.horsPackage = Cat.biscuitsHorsPackage(lignes);
+    t.comptes = Cat.biscuitsComptes(lignes, pays);
+    t.manquants = Math.max(0, t.minimum - t.comptes);
     return t;
   }
 
@@ -169,22 +171,41 @@
     return groupes;
   }
 
+  /* Pourquoi le compte n'y est pas encore, ou null s'il y est.
+     Une seule explication, utilisée par le panier comme par le blocage :
+     deux formulations différentes du même refus finissent toujours par
+     se contredire. */
+  function manqueMinimum(t, pays) {
+    if (t.manquants <= 0) return null;
+    var s = t.manquants > 1 ? 's' : '';
+    // Hors de Suisse, un petit package ne dispense plus du minimum :
+    // le dire, sinon le client ne comprend pas ce qui a changé.
+    if (t.horsZone.length) {
+      return 'Les packages ' + t.horsZone.map(function (p) { return '« ' + p.nom + ' »'; }).join(' et ') +
+        ' ne sont proposés que pour une livraison en Suisse. Pour ' + pays +
+        ', la commande suit la règle habituelle : il vous reste ' + t.manquants +
+        ' biscuit' + s + ' à choisir, ou vous pouvez prendre le package complet.';
+    }
+    // Un package se commande tel quel : il ne dispense que lui-même, et
+    // ce qui l'accompagne reste une commande classique.
+    if (t.dispenses.length) {
+      var seul = t.horsPackage === 1;
+      return 'Votre package se commande tel quel. ' +
+        (seul ? 'Le biscuit choisi à l’unité à côté forme'
+              : 'Les ' + t.horsPackage + ' biscuits choisis à l’unité à côté forment') +
+        ' une commande à part : il en manque ' + t.manquants +
+        ' pour atteindre le minimum de ' + Cat.MIN_BISCUITS + ' biscuits.';
+    }
+    return 'Il vous reste ' + t.manquants + ' biscuit' + s +
+      ' pour atteindre le minimum de commande de ' + Cat.MIN_BISCUITS + ' biscuits.';
+  }
+
   /* Ce qui empêche de passer à la commande, ou null si tout va bien. */
   function blocage(pays) {
     var t = totaux(pays);
     if (!t.lignes.length) return 'Votre panier est vide.';
-    if (t.manquants > 0) {
-      // Hors de Suisse, un petit package ne dispense plus du minimum :
-      // le dire, sinon le client ne comprend pas ce qui a changé.
-      if (t.horsZone.length) {
-        return 'Les packages ' + t.horsZone.map(function (p) { return '« ' + p.nom + ' »'; }).join(' et ') +
-          ' ne sont proposés que pour une livraison en Suisse. Pour ' + pays +
-          ', la commande suit la règle habituelle : il vous reste ' + t.manquants +
-          ' biscuit' + (t.manquants > 1 ? 's' : '') + ' à choisir, ou vous pouvez prendre le package complet.';
-      }
-      return 'Il vous reste ' + t.manquants + ' biscuit' + (t.manquants > 1 ? 's' : '') +
-        ' pour atteindre le minimum de commande de ' + Cat.MIN_BISCUITS + ' biscuits.';
-    }
+    var manque = manqueMinimum(t, pays);
+    if (manque) return manque;
     if (t.payable <= 0) return 'Votre panier ne contient aucun article facturable.';
     return null;
   }
@@ -193,11 +214,9 @@
   function messageMinimum(pays) {
     var t = totaux(pays);
     if (!t.lignes.length) return '';
-    if (t.manquants > 0) {
-      return 'Il vous reste ' + t.manquants + ' biscuit' + (t.manquants > 1 ? 's' : '') +
-        ' pour atteindre le minimum de commande de ' + t.minimum + ' biscuits.';
-    }
-    if (t.dispenses.length) {
+    var manque = manqueMinimum(t, pays);
+    if (manque) return manque;
+    if (t.dispenses.length && !t.horsPackage) {
       return 'Package saisonnier : cette commande se passe sans minimum.';
     }
     return 'Minimum de ' + Cat.MIN_BISCUITS + ' biscuits atteint.';
@@ -608,14 +627,13 @@
     });
     liste.appendChild(grille);
 
+    // Un package est une offre fermée : sa composition ne se modifie pas
+    // et rien ne s'y ajoute. Le dire ici évite que le client cherche un
+    // bouton qui n'existe pas.
     var note = document.createElement('p');
     note.className = 'package-modale-note';
-    var fort = document.createElement('strong');
-    fort.textContent = 'Envie d’en ajouter ? ';
-    note.appendChild(fort);
-    note.appendChild(document.createTextNode(
-      'Les packages peuvent être complétés avec des biscuits supplémentaires ' +
-      'de la collection, au prix indiqué pour chaque modèle.'));
+    note.textContent = 'Chaque package est une offre complète, prête à offrir : '
+      + 'sa composition est fixée et se commande telle quelle.';
     liste.appendChild(note);
 
     function majResume() {
@@ -696,6 +714,13 @@
     try { window.localStorage.removeItem(CLE_COMMANDE); } catch (e) { /* mémoire seule */ }
   }
 
+  /* La composition d'un package, en une ligne lisible. */
+  function composition(a) {
+    return (a.detail || []).map(function (d) {
+      return d.qte + ' × ' + d.nom;
+    }).join(', ');
+  }
+
   /* Détails de personnalisation d'une ligne, en une phrase lisible. */
   function resumeDetails(ligne) {
     var d = ligne.details || {};
@@ -716,7 +741,9 @@
         var a = Cat.article(l.id);
         lignes.push({
           nom: a.nom + (l.option ? ' (personnalisé)' : ''),
-          details: resumeDetails(l),
+          // Un package part en cuisine par sa composition : sans elle,
+          // la commande ne dit pas quoi décorer.
+          details: a.categorie === 'package' ? composition(a) : resumeDetails(l),
           qte: l.qte,
           unitaire: prixLigne(l),
           montant: prixLigne(l) * l.qte,

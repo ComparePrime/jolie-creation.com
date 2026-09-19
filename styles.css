@@ -1527,6 +1527,17 @@ img.cadrage-bas{ object-position: center 65%; }
   /* La pastille de sélection occupe le coin : lui laisser la place plutôt
      que de lui passer dessous. */
   padding-right: 26px;
+  /* Deux lignes réservées : « Frissons d'Halloween » en prend deux là où
+     « L'Essentiel » n'en prend qu'une. Sans cette réserve, les prix des
+     trois cartes ne s'alignent plus. L'interligne est posé ici même, sinon
+     la réserve et la hauteur réelle d'une ligne ne coïncident pas. */
+  line-height: 1.45;
+  min-height: 2.9em;
+}
+@media (max-width: 699px){
+  /* Une carte sous l'autre : il n'y a plus rien à aligner, et la ligne
+     vide ne ferait que creuser. */
+  .package-option-nom{ min-height: 0; }
 }
 .package-option-prix{
   font-family: var(--font-display); font-size: 21px;
@@ -1562,7 +1573,6 @@ img.cadrage-bas{ object-position: center 65%; }
   border-top: 1px solid var(--line);
   font-size: 13px; line-height: 1.6; color: var(--ink-soft);
 }
-.package-modale-note strong{ color: var(--ink); }
 
 /* ---------- Packages saisonniers ----------
    Trois assortiments composés d'avance, pour commander petit sans

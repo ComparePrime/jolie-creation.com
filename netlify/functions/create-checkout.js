@@ -117,10 +117,12 @@ exports.handler = async (event) => {
     libelles.push(qte + '× ' + article.court);
   }
 
-  /* Le minimum porte sur le total, toutes collections confondues — sauf
-     si le panier contient un package saisonnier, qui vaut commande à lui
-     seul. Le pays compte : hors de Suisse, seuls les packages complets
-     dispensent du minimum.
+  /* Le minimum porte sur les biscuits commandés à l'unité, toutes
+     collections confondues. Un package saisonnier est une offre fermée :
+     il vaut commande à lui seul et sort du compte — mais il ne dispense
+     pas ce qui l'accompagne. Le pays compte : hors de Suisse, seuls les
+     packages complets dispensent du minimum, les autres y retombent
+     dans le compte général.
 
      Le panier le fait déjà respecter ; on le revérifie ici parce que
      c'est ici que l'argent change de main, et parce qu'un panier
@@ -129,14 +131,19 @@ exports.handler = async (event) => {
      compter différemment. */
   const pays = texte(charge.client && charge.client.pays, 60) || '';
   const minimum = Catalogue.minimumRequis(lignesRecues, pays);
-  if (biscuits < minimum) {
+  const comptes = Catalogue.biscuitsComptes(lignesRecues, pays);
+  if (comptes < minimum) {
     const refuses = Catalogue.packagesHorsZone(lignesRecues, pays);
-    return reponse(400, {
-      erreur: 'minimum_biscuits',
-      message: refuses.length
-        ? `Les packages saisonniers ne sont proposés que pour une livraison en Suisse. Pour ${pays}, la commande démarre à ${minimum} biscuits, ou passe par le package complet.`
-        : `La commande démarre à ${minimum} biscuits, toutes collections confondues.`
-    });
+    const dispenses = Catalogue.packagesDispensant(lignesRecues, pays);
+    let message;
+    if (refuses.length) {
+      message = `Les packages saisonniers ne sont proposés que pour une livraison en Suisse. Pour ${pays}, la commande démarre à ${minimum} biscuits, ou passe par le package complet.`;
+    } else if (dispenses.length) {
+      message = `Un package se commande tel quel. Les biscuits choisis à l'unité à côté forment une commande à part, qui démarre à ${minimum} biscuits.`;
+    } else {
+      message = `La commande démarre à ${minimum} biscuits, toutes collections confondues.`;
+    }
+    return reponse(400, { erreur: 'minimum_biscuits', message });
   }
 
   if (centimes <= 0) {

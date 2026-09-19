@@ -84,7 +84,7 @@
       ],
       "packagesResume": "Une sélection de biscuits aux couleurs douces et chaleureuses de la saison.",
       "packages": [
-        { "ref": "essentiel", "nom": "L’Essentiel", "prix": 2990,
+        { "ref": "essentiel", "nom": "L’Essentiel", "prix": 3290,
           "resume": "De quoi goûter à la collection : un de chaque, sans se décider.",
           "composition": [
             { "ref": "feuille-blanche", "qte": 1 },
@@ -93,7 +93,7 @@
             { "ref": "citrouille", "qte": 1 },
             { "ref": "citrouilles-empilees", "qte": 1 }
           ] },
-        { "ref": "gourmande", "nom": "La Gourmande", "prix": 4290,
+        { "ref": "gourmande", "nom": "La Gourmande", "prix": 4490,
           "resume": "Les deux feuilles, deux mugs et le grand pull : de quoi garnir une table.",
           "composition": [
             { "ref": "feuille-blanche", "qte": 1 },
@@ -103,7 +103,7 @@
             { "ref": "citrouille", "qte": 1 },
             { "ref": "grand-pull", "qte": 1 }
           ] },
-        { "ref": "complete", "nom": "L’Automne Complète", "prix": 5990,
+        { "ref": "complete", "nom": "L’Automne Complète", "prix": 6490,
           "complet": true, "horsSuisse": true,
           "resume": "Toute la collection, dans ses deux coloris.",
           "composition": [
@@ -165,7 +165,7 @@
       ],
       "packagesResume": "Une sélection de biscuits d’Halloween, entre l’effrayant et l’adorable.",
       "packages": [
-        { "ref": "essentiel", "nom": "L’Essentiel", "prix": 2990,
+        { "ref": "essentiel", "nom": "L’Essentiel", "prix": 3290,
           "resume": "Les incontournables de la collection, un de chaque.",
           "composition": [
             { "ref": "citrouille", "qte": 1 },
@@ -174,7 +174,7 @@
             { "ref": "toile-araignee", "qte": 1 },
             { "ref": "fantome", "qte": 1 }
           ] },
-        { "ref": "gourmande", "nom": "La Gourmande", "prix": 4290,
+        { "ref": "gourmande", "nom": "La Gourmande", "prix": 4490,
           "resume": "Les deux « Boo », violet et orange, et de quoi garnir une table.",
           "composition": [
             { "ref": "citrouille", "qte": 2 },
@@ -184,7 +184,7 @@
             { "ref": "toile-araignee", "qte": 1 },
             { "ref": "fantome", "qte": 1 }
           ] },
-        { "ref": "complete", "nom": "Frissons d’Halloween", "prix": 5990,
+        { "ref": "complete", "nom": "Frissons d’Halloween", "prix": 6490,
           "complet": true, "horsSuisse": true,
           "resume": "Toute la collection, squelette et courge compris.",
           "composition": [
@@ -690,16 +690,22 @@
   }
 
   /* ---------- Le minimum de commande ----------
-     Douze biscuits, sur le total du panier — sauf si celui-ci contient un
-     package saisonnier. Un package est composé pour être commandé tel
-     quel : exiger douze biscuits par-dessus reviendrait à ne pas le
+     Douze biscuits — mais un package saisonnier n'y est pas soumis. Un
+     package est une offre fermée, composée pour être commandée telle
+     quelle : exiger douze biscuits par-dessus reviendrait à ne pas la
      proposer.
+
+     Ce qui reste soumis au minimum, ce sont les biscuits pris à l'unité.
+     Un package ne sert donc pas de laissez-passer pour en ajouter trois
+     à côté : à côté d'un package, une commande classique reste une
+     commande classique, et repart de douze.
 
      Le pays compte. Hors de Suisse, seuls les packages marqués
      « horsSuisse » dispensent du minimum : les petits formats ne partent
-     pas à l'étranger, et la commande y suit alors la règle classique.
-     Tant que le pays n'est pas choisi, on raisonne comme en Suisse : le
-     panier ne doit pas bloquer avant la page de livraison.
+     pas à l'étranger, et la commande y suit alors la règle classique,
+     package compris dans le compte. Tant que le pays n'est pas choisi,
+     on raisonne comme en Suisse : le panier ne doit pas bloquer avant la
+     page de livraison.
 
      Une seule fonction, appelée des deux côtés : le navigateur et le
      serveur ne peuvent pas compter différemment. */
@@ -712,8 +718,43 @@
     });
   }
 
+  /* Combien de biscuits une ligne apporte : un package vaut sa
+     composition, un modèle vaut un.
+
+     La quantité est ramenée à un entier positif avant tout calcul. Cette
+     fonction sert aussi à contrôler un panier reçu par le réseau, et un
+     panier fabriqué à la main n'a aucune raison d'envoyer un nombre :
+     sans cette précaution, une quantité non numérique donnerait NaN, et
+     « NaN < minimum » étant faux, le minimum sauterait. */
+  function biscuitsLigne(ligne) {
+    var a = article(ligne && ligne.id);
+    if (!a) return 0;
+    var qte = Math.floor(Number(ligne.qte));
+    if (!isFinite(qte) || qte <= 0) return 0;
+    return (a.biscuits || 1) * qte;
+  }
+
+  /* Les biscuits commandés à l'unité, packages exclus. */
+  function biscuitsHorsPackage(lignes) {
+    return (lignes || []).reduce(function (n, l) {
+      var a = article(l && l.id);
+      return a && a.categorie === 'package' ? n : n + biscuitsLigne(l);
+    }, 0);
+  }
+
+  /* Les biscuits que le minimum regarde. Dès qu'un package fermé est au
+     panier, il se suffit et sort du compte ; seuls les biscuits pris à
+     l'unité doivent encore atteindre douze. Sans package valable dans la
+     zone, tout compte, y compris un package refusé à l'étranger. */
+  function biscuitsComptes(lignes, pays) {
+    if (packagesDispensant(lignes, pays).length) return biscuitsHorsPackage(lignes);
+    return (lignes || []).reduce(function (n, l) { return n + biscuitsLigne(l); }, 0);
+  }
+
   function minimumRequis(lignes, pays) {
-    return packagesDispensant(lignes, pays).length ? 0 : MIN_BISCUITS;
+    if (!packagesDispensant(lignes, pays).length) return MIN_BISCUITS;
+    /* Le package seul se passe de minimum. Ce qui l'accompagne, non. */
+    return biscuitsHorsPackage(lignes) ? MIN_BISCUITS : 0;
   }
 
   /* Un package refusé à l'étranger : ni bloquant en soi, mais il ne
@@ -750,6 +791,9 @@
     collection: collection,
     prixUnitaire: prixUnitaire,
     minimumRequis: minimumRequis,
+    biscuitsLigne: biscuitsLigne,
+    biscuitsHorsPackage: biscuitsHorsPackage,
+    biscuitsComptes: biscuitsComptes,
     packagesDispensant: packagesDispensant,
     packagesHorsZone: packagesHorsZone,
     formater: formater,
