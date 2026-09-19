@@ -62,6 +62,17 @@ def poser_ratio(m):
                   f'<figure class="folio-item" style="--r:{largeur / haut:.4f}">', bloc, count=1)
 
 
+def poser_rang(figure, rang):
+    """Numérote la photo dans l'ensemble, rangées confondues.
+
+    Les rangées sont recomposées à chaque exécution : une photo ne peut
+    donc pas se repérer à sa place dans la sienne. Le téléphone n'en
+    montre que les trois premières, et c'est ce numéro qui le lui dit —
+    la CSS ne sait pas compter à travers deux parents."""
+    return re.sub(r'<figure class="folio-item"',
+                  f'<figure class="folio-item" data-rang="{rang}"', figure, count=1)
+
+
 resume = []
 
 
@@ -85,7 +96,7 @@ def refaire(m):
     hauteurs = [hauteur(rs) for _, rs in rangees[:-1]]
     plafond = sorted(hauteurs)[len(hauteurs) // 2] if hauteurs else H_CIBLE
 
-    sortie, mesures = [], []
+    sortie, mesures, rang = [], [], 0
     for j, (figs, rs) in enumerate(rangees):
         h = hauteur(rs)
         style = ''
@@ -94,8 +105,12 @@ def refaire(m):
             style = f' style="max-width:{largeur / CONTENEUR * 100:.1f}%"'
             h = plafond
         mesures.append((len(figs), round(h)))
+        posees = []
+        for fig in figs:
+            rang += 1
+            posees.append(reindenter(poser_rang(fig, rang)) + '\n')
         sortie.append(f'            <div class="folio-rangee"{style}>\n' +
-                      ''.join(reindenter(f) + '\n' for f in figs) +
+                      ''.join(posees) +
                       '            </div>\n')
     resume.append(mesures)
     return (bloc[:bloc.index('<figure')].rstrip() + '\n' + ''.join(sortie) +

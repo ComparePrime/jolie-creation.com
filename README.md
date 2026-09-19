@@ -147,7 +147,7 @@ Trois filtres, du plus fiable au moins fiable :
 | `netlify/functions/envoyer-message.js`         | Envoie devis et commandes par e-mail. Seul endroit où vivent les identifiants SMTP. |
 | `tests/catalogue.test.js`                      | Tests de la fonction de paiement (`npm test`).               |
 | `tests/envoi.test.js`                          | Tests de la fonction d'envoi (`npm test`).                   |
-| `outils-galerie.py`                            | Recompose en rangées les photos d'une micro-scénographie.    |
+| `outils-galerie.py`                            | Recompose en rangées les photos d'une micro-scénographie et les numérote (`data-rang`). |
 | `outils-collections.py`                        | Régénère le catalogue de « Mes réalisations » et l'aperçu de saison depuis `catalogue.js`. |
 | `outils-photos.py`                             | Dérive les vues de galerie et les photos de carte, et convertit en WebP. |
 | `outils-webp.py`                               | Sert en WebP les photos encore servies en JPEG, à dimensions égales. |
@@ -371,6 +371,24 @@ Une section peut s'ouvrir sur une grande photo, comme celle des micro-
 scénographies : un bloc `univers-layout` pour la photo principale et le
 texte, puis un `folio-group` où chaque `folio-set` est une réalisation,
 avec son titre, sa description et ses vues secondaires.
+
+**Sur téléphone, une réalisation montre quatre photos au plus** : celle
+d'ouverture et trois vues. Sept vues sur trois colonnes faisaient trois
+rangées et une carte interminable ; trois en font une, pleine, et la
+collection suivante arrive tout de suite. La règle vaut pour les vues
+d'une collection (`.collection-galerie figure:nth-child(n+4)`) comme
+pour les photos d'une réalisation (`.folio-item[data-rang]`), sous
+700 px, et rien n'est retiré du dépôt ni de la page.
+
+Les vues écartées ne sont pas seulement cachées : elles portent
+`loading="lazy"`, et un élément en `display:none` n'entre jamais dans le
+champ de vision — le navigateur ne les demande donc pas. Mesuré à
+390 px, la page passe de 91 à 71 images et de 2836 à 2380 ko ; élargir
+la fenêtre les révèle et les charge à ce moment-là.
+
+Le numéro `data-rang` vient d'`outils-galerie.py`, parce qu'il compte à
+travers les rangées — recomposées à chaque exécution — là où la CSS ne
+sait compter que dans un seul parent.
 
 ---
 

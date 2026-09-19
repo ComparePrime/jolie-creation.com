@@ -871,6 +871,13 @@ body.page-accueil .hero-question{ margin-top: 40px; padding-top: 26px; }
     -webkit-column-break-inside: avoid;
     margin-bottom: 14px;
   }
+  /* Même règle que pour les collections : la photo d'ouverture, puis
+     trois vues. Le numéro vient d'outils-galerie.py, parce qu'il compte
+     à travers les rangées et que la CSS, elle, ne sait compter que dans
+     un seul parent. */
+  .folio-item[data-rang]:not([data-rang="1"]):not([data-rang="2"]):not([data-rang="3"]){
+    display: none;
+  }
 }
 
 /* Le cadre remplit la case que le flex lui a attribuée ; l'image le
@@ -1427,6 +1434,18 @@ img.cadrage-bas{ object-position: center 65%; }
   padding: 10px 24px 26px;
 }
 @media (min-width: 820px){ .collection-galerie{ gap: 12px; padding: 12px 36px 36px; } }
+/* ---------- Ce qu'un téléphone montre d'une collection ----------
+   Sa photo d'ouverture et trois vues, pas davantage. Sept vues sur trois
+   colonnes faisaient trois rangées et une carte interminable ; trois en
+   font une, pleine, et la collection suivante arrive tout de suite.
+
+   Les vues écartées ne sont pas seulement cachées : elles portent
+   loading="lazy", et un élément en display:none n'entre jamais dans le
+   champ de vision. Le navigateur ne les demande donc pas. Élargir la
+   fenêtre les révèle et les charge à ce moment-là. */
+@media (max-width: 699px){
+  .collection-galerie figure:nth-child(n+4){ display: none; }
+}
 /* Six de front seulement quand chaque vue garde au moins 150 px : en
    dessous, deux rangées de trois se lisent mieux qu'une frise de timbres. */
 @media (min-width: 1000px){ .collection-galerie{ grid-template-columns: repeat(6, 1fr); } }
