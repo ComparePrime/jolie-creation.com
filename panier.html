@@ -175,7 +175,7 @@
     var titre = el('div');
     titre.appendChild(el('h3', null, a.nom + (ligne.option ? ' (personnalisé)' : '')));
     if (estPackage) {
-      // Un package se lit à sa composition : sans elle, « 59.90 CHF »
+      // Un package se lit à sa composition : sans elle, « 64.90 CHF »
       // ne dit pas ce qu'on reçoit.
       titre.appendChild(el('p', 'ligne-package', 'Package · ' + a.biscuits + ' biscuits'));
       titre.appendChild(el('p', 'ligne-perso', a.detail.map(function (d) {

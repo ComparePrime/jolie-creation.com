@@ -36,7 +36,11 @@
   function valide(ligne) {
     if (!ligne || typeof ligne.id !== 'string') return false;
     var a = Cat.article(ligne.id);
-    return !!a && typeof ligne.qte === 'number' && ligne.qte > 0;
+    if (!a || typeof ligne.qte !== 'number' || ligne.qte <= 0) return false;
+    /* Un modèle d'une collection du moment ne se commande plus à
+       l'unité. Le filtre est ici, à la lecture : un panier gardé de la
+       veille le perd de lui-même, sans que le client ait à le vider. */
+    return !a.seulEnPackage;
   }
 
   function ecrire(lignes) {
@@ -62,7 +66,7 @@
 
   function ajouter(id, qte, details, option) {
     var a = Cat.article(id);
-    if (!a) return null;
+    if (!a || a.seulEnPackage) return null;
     qte = Math.max(1, parseInt(qte, 10) || 1);
     option = !!(option && a.option);
     var lignes = lire();
@@ -82,7 +86,7 @@
     var nb = 0;
     choix.forEach(function (c) {
       var a = Cat.article(c.id);
-      if (!a || c.qte <= 0) return;
+      if (!a || a.seulEnPackage || c.qte <= 0) return;
       var option = !!(c.option && a.option);
       var cle = cleLigne(c.id, c.details, option);
       var existante = null;
@@ -117,11 +121,8 @@
   }
 
   /* Un package compte pour sa composition, un biscuit pour un. C'est le
-     catalogue qui le dit, pas le panier : article.biscuits. */
-  function biscuitsLigne(ligne) {
-    var a = Cat.article(ligne.id);
-    return (a && a.biscuits ? a.biscuits : 1) * ligne.qte;
-  }
+     catalogue qui le dit, pas le panier. */
+  function biscuitsLigne(ligne) { return Cat.biscuitsLigne(ligne); }
 
   function totauxLigne(ligne) {
     return {
@@ -144,10 +145,13 @@
       t.biscuits += biscuitsLigne(l);
       if (a && a.categorie === 'package') t.packages += l.qte;
     });
-    t.minimum = Cat.minimumRequis(lignes, pays);
-    t.dispenses = Cat.packagesDispensant(lignes, pays);
+    /* Le minimum ne regarde que les biscuits pris à l'unité : le
+       contenu d'un package n'en fait jamais partie, et n'en dispense
+       pas non plus. */
+    t.individuels = Cat.biscuitsIndividuels(lignes);
+    t.minimum = Cat.minimumRequis(lignes);
     t.horsZone = Cat.packagesHorsZone(lignes, pays);
-    t.manquants = Math.max(0, t.minimum - t.biscuits);
+    t.manquants = Math.max(0, t.minimum - t.individuels);
     return t;
   }
 
@@ -169,22 +173,41 @@
     return groupes;
   }
 
+  /* Pourquoi le compte n'y est pas encore, ou null s'il y est.
+     Une seule explication, utilisée par le panier comme par le blocage :
+     deux formulations différentes du même refus finissent toujours par
+     se contredire. */
+  function manqueMinimum(t) {
+    if (t.manquants <= 0) return null;
+    var s = t.manquants > 1 ? 's' : '';
+    /* Le message ne parle que des biscuits à l'unité : présenter le
+       contenu d'un package comme un acompte sur les douze ferait
+       attendre au client un compte qui ne viendra pas. */
+    return 'Il vous reste ' + t.manquants + ' biscuit' + s +
+      ' à l’unité pour atteindre le minimum de commande de ' +
+      Cat.MIN_BISCUITS + ' biscuits.';
+  }
+
+  /* Un package que la destination n'accepte pas : c'est un refus en soi,
+     sans rapport avec le minimum. */
+  function refusDeZone(t, pays) {
+    if (!t.horsZone.length) return null;
+    var un = t.horsZone.length === 1;
+    return 'Le' + (un ? '' : 's') + ' package' + (un ? '' : 's') + ' ' +
+      t.horsZone.map(function (p) { return '« ' + p.nom + ' »'; }).join(' et ') +
+      (un ? ' n’est proposé' : ' ne sont proposés') +
+      ' que pour une livraison en Suisse. Pour ' + pays +
+      ', choisissez le package complet, ou retirez-le de votre panier.';
+  }
+
   /* Ce qui empêche de passer à la commande, ou null si tout va bien. */
   function blocage(pays) {
     var t = totaux(pays);
     if (!t.lignes.length) return 'Votre panier est vide.';
-    if (t.manquants > 0) {
-      // Hors de Suisse, un petit package ne dispense plus du minimum :
-      // le dire, sinon le client ne comprend pas ce qui a changé.
-      if (t.horsZone.length) {
-        return 'Les packages ' + t.horsZone.map(function (p) { return '« ' + p.nom + ' »'; }).join(' et ') +
-          ' ne sont proposés que pour une livraison en Suisse. Pour ' + pays +
-          ', la commande suit la règle habituelle : il vous reste ' + t.manquants +
-          ' biscuit' + (t.manquants > 1 ? 's' : '') + ' à choisir, ou vous pouvez prendre le package complet.';
-      }
-      return 'Il vous reste ' + t.manquants + ' biscuit' + (t.manquants > 1 ? 's' : '') +
-        ' pour atteindre le minimum de commande de ' + Cat.MIN_BISCUITS + ' biscuits.';
-    }
+    var zone = refusDeZone(t, pays);
+    if (zone) return zone;
+    var manque = manqueMinimum(t);
+    if (manque) return manque;
     if (t.payable <= 0) return 'Votre panier ne contient aucun article facturable.';
     return null;
   }
@@ -193,14 +216,12 @@
   function messageMinimum(pays) {
     var t = totaux(pays);
     if (!t.lignes.length) return '';
-    if (t.manquants > 0) {
-      return 'Il vous reste ' + t.manquants + ' biscuit' + (t.manquants > 1 ? 's' : '') +
-        ' pour atteindre le minimum de commande de ' + t.minimum + ' biscuits.';
-    }
-    if (t.dispenses.length) {
+    var manque = manqueMinimum(t);
+    if (manque) return manque;
+    if (!t.individuels) {
       return 'Package saisonnier : cette commande se passe sans minimum.';
     }
-    return 'Minimum de ' + Cat.MIN_BISCUITS + ' biscuits atteint.';
+    return 'Minimum de ' + Cat.MIN_BISCUITS + ' biscuits à l’unité atteint.';
   }
 
   /* ---------- Compteur du header ---------- */
@@ -487,15 +508,16 @@
         return;
       }
       var t = totaux();
-      // Un package déjà au panier lève le minimum : ne pas réclamer des
-      // biscuits que la commande n'exige plus.
-      var reste = Math.max(0, t.minimum - (t.biscuits + n));
+      /* On choisit ici des biscuits à l'unité : le minimum s'appliquera
+         donc, quels que soient les packages déjà au panier. Ce qui
+         compte, c'est ce qui s'y trouve déjà à l'unité, plus ce que
+         cette modale va ajouter. */
+      var reste = Math.max(0, Cat.MIN_BISCUITS - (t.individuels + n));
       resume.textContent = n + ' biscuit' + (n > 1 ? 's' : '') + ' · ' + Cat.formater(total) +
         (reste > 0
-          ? ' — il en manquera ' + reste + ' pour atteindre le minimum de ' + t.minimum + '.'
-          : (t.dispenses.length
-            ? ' — package saisonnier au panier : pas de minimum.'
-            : ' — minimum de ' + Cat.MIN_BISCUITS + ' biscuits atteint.'));
+          ? ' — il en manquera ' + reste + ' pour atteindre le minimum de ' +
+            Cat.MIN_BISCUITS + '.'
+          : ' — minimum de ' + Cat.MIN_BISCUITS + ' biscuits à l’unité atteint.');
     }
 
     valider.onclick = function () {
@@ -608,14 +630,13 @@
     });
     liste.appendChild(grille);
 
+    // Un package est une offre fermée : sa composition ne se modifie pas
+    // et rien ne s'y ajoute. Le dire ici évite que le client cherche un
+    // bouton qui n'existe pas.
     var note = document.createElement('p');
     note.className = 'package-modale-note';
-    var fort = document.createElement('strong');
-    fort.textContent = 'Envie d’en ajouter ? ';
-    note.appendChild(fort);
-    note.appendChild(document.createTextNode(
-      'Les packages peuvent être complétés avec des biscuits supplémentaires ' +
-      'de la collection, au prix indiqué pour chaque modèle.'));
+    note.textContent = 'Chaque package est une offre complète, prête à offrir : '
+      + 'sa composition est fixée et se commande telle quelle.';
     liste.appendChild(note);
 
     function majResume() {
@@ -696,6 +717,13 @@
     try { window.localStorage.removeItem(CLE_COMMANDE); } catch (e) { /* mémoire seule */ }
   }
 
+  /* La composition d'un package, en une ligne lisible. */
+  function composition(a) {
+    return (a.detail || []).map(function (d) {
+      return d.qte + ' × ' + d.nom;
+    }).join(', ');
+  }
+
   /* Détails de personnalisation d'une ligne, en une phrase lisible. */
   function resumeDetails(ligne) {
     var d = ligne.details || {};
@@ -716,7 +744,9 @@
         var a = Cat.article(l.id);
         lignes.push({
           nom: a.nom + (l.option ? ' (personnalisé)' : ''),
-          details: resumeDetails(l),
+          // Un package part en cuisine par sa composition : sans elle,
+          // la commande ne dit pas quoi décorer.
+          details: a.categorie === 'package' ? composition(a) : resumeDetails(l),
           qte: l.qte,
           unitaire: prixLigne(l),
           montant: prixLigne(l) * l.qte,

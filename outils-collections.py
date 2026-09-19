@@ -34,6 +34,7 @@ const C = require('./catalogue.js');
 console.log(JSON.stringify(C.COLLECTIONS.map((c) => ({
   id: c.id, nom: c.nom, occasion: c.occasion, description: c.description,
   alt: c.alt, image: c.image, saison: !!c.saison,
+  packagesSeuls: !!c.packagesSeuls,
   galerie: (c.galerie || []).map((v) => ({ image: v.image, alt: v.alt })),
   produits: c.produits.map((p) => ({
     prix: p.prix,
@@ -82,6 +83,16 @@ def modeles(c, marge):
     """Combien de modèles, et rien de plus. Les prix s'affichent dans la
     modale, au moment de choisir : une liste de tarifs sous chaque
     collection transformait la galerie en catalogue e-commerce."""
+    if c['packagesSeuls']:
+        # Une collection du moment se commande en assortiments. Annoncer
+        # ses modèles « à l'unité » promettrait un parcours qui n'existe
+        # plus : on annonce les packages, qui eux existent.
+        n = len(c['packages'])
+        return (f'{marge}<ul class="collection-faits">\n'
+                f'{marge}  <li>{n} package{"s" if n > 1 else ""} au choix, '
+                f'composé{"s" if n > 1 else ""} d’avance</li>\n'
+                f'{marge}  <li>Sans minimum de commande</li>\n'
+                f'{marge}</ul>')
     if not c['produits']:
         # Pas de prix annoncé veut dire sur devis : la collection se
         # compose avec la cliente, elle ne se commande pas au panier.
@@ -103,6 +114,10 @@ def modeles(c, marge):
 
 
 def action(c, marge):
+    # Une collection du moment n'a pas de bouton ici : son cartouche de
+    # packages, juste en dessous, porte la seule façon de la commander.
+    if c['packagesSeuls']:
+        return ''
     if c['produits']:
         return (f'{marge}<button type="button" class="btn btn-primary btn-small" '
                 f'data-collection="{c["id"]}">Choisir mes biscuits</button>')
@@ -156,6 +171,13 @@ def packages(c, marge):
             f'{marge}</div>')
 
 
+def corps(c):
+    """Les repères et le bouton, sans ligne vide quand il n'y a pas de
+    bouton : une collection du moment n'en a plus."""
+    return '\n'.join(x for x in (modeles(c, '          '),
+                                 action(c, '          ')) if x)
+
+
 def bloc(c, premier=False):
     """Une collection dans la galerie : photo, texte, vues, modèles, bouton.
 
@@ -172,8 +194,7 @@ def bloc(c, premier=False):
         <div class="collection-corps">{reperes(c)}
           <h3 id="t-{c['id']}">{e(c['nom'])}</h3>
           <p class="collection-texte">{e(c['description'])}</p>
-{modeles(c, '          ')}
-{action(c, '          ')}
+{corps(c)}
         </div>{packages(c, '        ')}{galerie(c, '        ')}
       </article>'''
 
@@ -201,18 +222,23 @@ def produit_structure(c):
     peut pas afficher, et il le refuse. On la declare alors pour ce
     qu'elle est : une creation montree en portfolio.
     """
-    p = {'@type': 'Product' if c['produits'] else 'CreativeWork',
+    # Ce qui se vend réellement : les packages pour une collection du
+    # moment, les modèles pour les autres. Annoncer à Google un prix
+    # plancher de 4 CHF sur une collection qui ne se vend plus qu'en
+    # assortiments à 32.90 serait une fausse promesse.
+    vendus = ([x['prix'] for x in c['packages']] if c['packagesSeuls']
+              else [x['prix'] for x in c['produits']])
+    p = {'@type': 'Product' if vendus else 'CreativeWork',
          'name': 'Biscuits personnalisés — collection ' + c['nom'],
          'description': c['description'],
          'url': SITE + 'mes-realisations.html#' + c['id'],
          'image': SITE + c['image']}
-    if c['produits']:
-        prix = [x['prix'] for x in c['produits']]
+    if vendus:
         p['brand'] = {'@type': 'Brand', 'name': 'Jolie Création'}
         p['offers'] = {'@type': 'AggregateOffer', 'priceCurrency': 'CHF',
-                       'lowPrice': f'{min(prix) / 100:.2f}',
-                       'highPrice': f'{max(prix) / 100:.2f}',
-                       'offerCount': len(prix),
+                       'lowPrice': f'{min(vendus) / 100:.2f}',
+                       'highPrice': f'{max(vendus) / 100:.2f}',
+                       'offerCount': len(vendus),
                        'availability': 'https://schema.org/InStock'}
     else:
         # Pas de prix public : l'auteur remplace la marque vendeuse.
