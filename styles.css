@@ -2857,6 +2857,11 @@ form.devis-form{
      sa colonne pendant que la photo, elle, allait jusqu'en bas. */
   .collection-bloc .collection-corps{ padding: 34px 36px 36px; justify-content: center; }
   .collection-bloc .collection-galerie{ grid-column: 1 / -1; }
+  /* Le cartouche occupe sa propre rangée, sous deux colonnes dont l'une
+     est une photo à bord franc. Sans cette marge il s'y collait, alors
+     qu'il respirait de 32 px en dessous : il faut qu'il flotte dans le
+     bloc, pas qu'il pende sous l'image. */
+  .collection-bloc .packages-invite{ margin-top: 32px; }
   /* Une rangée sur deux inverse les colonnes : vingt et un blocs
      identiques défileraient comme un formulaire. */
   .collections-liste .collection-bloc:nth-child(even){
