@@ -3,36 +3,82 @@
 Site vitrine et boutique en ligne d'une artisane suisse : biscuits
 personnalisés décorés à la main, et micro-scénographies événementielles.
 
-HTML, CSS et JavaScript statiques, **sans étape de build**. Ce qui est
-dans le dépôt est ce qui est servi. Le `README.md` détaille chaque
-mécanisme ; ce fichier ne garde que ce qu'on ne peut pas deviner en
-lisant le code.
+**Site statique déployé sur Netlify, sans framework ni étape de build.**
+HTML, CSS et JavaScript servis tels quels. Ce qui est dans le dépôt est
+ce qui est en ligne.
 
-## Commandes
+## Méthode
 
-```bash
-npm test                 # 51 contrôles du catalogue + 13 de l'envoi d'e-mails
-python3 outils-*.py      # régénèrent les zones balisées (voir plus bas)
-```
+**Avant de coder, chercher et comprendre l'existant.** Le code porte ses
+raisons en commentaire : les lire évite de défaire une décision prise
+pour un motif qu'on n'a pas encore rencontré.
 
-`npm run test:navigateur` existe mais son dossier est vide : les suites
-Playwright sont mises de côté, à verser plus tard.
+**Modifier le strict nécessaire.** Une correction se limite à ce que la
+demande exige. Le reste, même perfectible, ne bouge pas.
 
-## Les quatre règles qui ne se devinent pas
+**Ne pas toucher aux règles métier sans demande explicite.** Prix,
+compositions, minimum de commande, conditions de livraison : ce sont des
+décisions commerciales, pas des détails d'implémentation.
+
+**Ne pas ajouter de dépendance sans nécessité.** Le projet n'a qu'une
+dépendance, `nodemailer`, et pas d'étape de build. Ce dénuement est un
+choix : il se défend avant d'être entamé.
+
+## Règles métier en vigueur
+
+**Un package n'est pas un biscuit individuel.** Ce sont deux articles de
+nature différente, et le code les distingue par leur `categorie`.
+
+**Le minimum de douze ne porte que sur les biscuits pris à l'unité**,
+toutes collections confondues. Le contenu d'un package n'entre jamais
+dans le compte des douze, et n'en dispense pas davantage.
+
+**Un package se commande seul.** Sans minimum, et sans rien d'autre au
+panier. Deux packages ensemble aussi.
+
+Un panier mêlant un package et des biscuits à l'unité est accepté dès
+lors que les biscuits à l'unité atteignent douze à eux seuls.
+
+Autres règles en place : une collection du moment ne se vend qu'en
+packages ; les micro-scénographies passent par un devis, jamais par le
+panier.
+
+## Vérifier
+
+**Après toute modification du panier ou du catalogue, lancer `npm test`**
+(51 contrôles du catalogue, 13 de l'envoi d'e-mails).
+
+**Préserver le fonctionnement sur mobile et sur ordinateur.** Vérifier en
+1280 px **et** en 390 px : plusieurs défauts réels ne se voient qu'à
+l'une des deux largeurs.
+
+## Sécurité
+
+**Aucun secret côté client.** Les identifiants SMTP et les clés SumUp
+vivent uniquement dans les variables d'environnement Netlify. Ils ne
+figurent ni dans le dépôt, ni dans un fichier servi, ni dans un
+commentaire. Le paiement se crée dans une fonction serverless, jamais
+depuis le navigateur.
+
+Netlify publie la racine (`publish = "."`) : **tout fichier déposé à la
+racine du dépôt part en ligne.**
+
+## Repères du projet
+
+Le `README.md` détaille chaque mécanisme. Voici seulement ce qui se paie
+cher à redécouvrir.
 
 **`catalogue.js` est la source unique.** Le navigateur et les fonctions
 serverless le lisent tous les deux — esbuild l'embarque dans le bundle
 des fonctions. Ne jamais recalculer un prix, un nombre de biscuits ou un
-minimum ailleurs : les deux côtés se contrediraient.
+minimum ailleurs : les deux côtés finiraient par se contredire.
 
 **Les montants sont des centimes entiers.** La conversion en francs a
 lieu une seule fois, au bord de l'API SumUp, via `Catalogue.enFrancs()`.
-Additionner des francs en virgule flottante finit toujours par produire
-un `6.49999999`.
 
 **Les zones balisées sont générées, jamais écrites à la main.** Entre
-`<!-- nom -->` et `<!-- /nom -->`, tout est réécrit par un outil Python.
-Une correction faite à la main y disparaît à la prochaine exécution.
+`<!-- nom -->` et `<!-- /nom -->`, tout est réécrit par un outil Python ;
+une correction faite à la main y disparaît à la prochaine exécution.
 
 | Repère | Outil |
 | --- | --- |
@@ -40,41 +86,29 @@ Une correction faite à la main y disparaît à la prochaine exécution.
 | `socle:jsonld` | `outils-jsonld.py` |
 | les rangées de `folio-masonry` | `outils-galerie.py` |
 
-`outils-photos.py` dérive les vues et convertit en WebP,
-`outils-webp.py` convertit les photos encore servies en JPEG,
-`outils-sitemap.py` régénère `sitemap.xml`. Tous sont idempotents.
+`outils-photos.py` et `outils-webp.py` dérivent et convertissent les
+photos, `outils-sitemap.py` régénère `sitemap.xml`. Tous sont
+idempotents.
 
-**Netlify publie la racine** (`publish = "."`). Tout fichier déposé à la
-racine du dépôt part en ligne. Les identifiants SMTP et SumUp vivent
-uniquement dans les variables d'environnement Netlify, jamais ici.
+## Préserver le SEO en modifiant le HTML
 
-## Règles métier en vigueur
+Chaque page indexable porte un `title` et une `description` uniques, un
+`canonical`, un seul `h1`, et un socle de données structurées. Une
+modification du HTML les conserve.
 
-- **Minimum de commande : douze biscuits**, et ce sont les biscuits pris
-  à l'unité, toutes collections confondues. Un package n'entre pas dans
-  les douze et n'en dispense pas.
-- **Une collection du moment ne se vend qu'en packages.** Le drapeau se
-  déduit des données : une collection qui porte un tableau `packages`
-  bascule, et ses modèles reçoivent `seulEnPackage`. Ils restent au
-  catalogue pour les compositions, pas pour la vente.
-- Les micro-scénographies passent par un devis, jamais par le panier.
-- Sur téléphone, une réalisation montre quatre photos au plus : celle
-  d'ouverture et trois vues.
-
-## Contenu
-
-- **Ne jamais afficher « Domdidier ».** Écrire « Canton de Fribourg »,
-  et « Suisse » ou « Suisse romande » quand c'est pertinent.
+- **Ne jamais afficher « Domdidier ».** Écrire « Canton de Fribourg », et
+  « Suisse » ou « Suisse romande » quand c'est pertinent.
 - **Aucune donnée inventée dans le JSON-LD** : ni adresse, ni horaires,
-  ni numéro IDE. L'adresse postale complète n'existe pas dans le projet,
-  et le socle ne déclare donc que la région et le pays.
-- Aucun emoji. Aucun bourrage de mots-clés.
+  ni numéro IDE. L'adresse postale complète n'existe pas dans le projet ;
+  le socle ne déclare donc que la région et le pays.
+- Aucun emoji, aucun bourrage de mots-clés.
+- Les anciennes adresses gardent leurs redirections 301 et leur
+  `noindex`.
 
 ## Travail
 
 Développer sur la branche `claude/jolie-creation-homepage-ug6otx`, puis
-pousser. Vérifier au navigateur en 1280 px **et** en 390 px : plusieurs
-défauts réels ne se voient qu'à l'une des deux largeurs.
+pousser.
 
 Un défaut connu, non corrigé : à 390 px, la modale de choix modèle par
 modèle dépasse de 10 px et rogne le bas de son bouton.
