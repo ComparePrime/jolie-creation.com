@@ -4,7 +4,8 @@
   "version": "1.0.0",
   "description": "Site vitrine et boutique en ligne Jolie Création",
   "scripts": {
-    "test": "node tests/catalogue.test.js && node tests/envoi.test.js"
+    "test": "node tests/catalogue.test.js && node tests/envoi.test.js",
+    "test:navigateur": "node tests/navigateur/lancer.js"
   },
   "dependencies": {
     "nodemailer": "^10.0.0"
