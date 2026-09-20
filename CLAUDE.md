@@ -96,6 +96,11 @@ Chaque page indexable porte un `title` et une `description` uniques, un
 `canonical`, un seul `h1`, et un socle de données structurées. Une
 modification du HTML les conserve.
 
+**Une seule exception, à ne pas « corriger » :**
+`google7d9b2945715a70db.html` est le fichier de vérification Google
+Search Console. Il n'a ni titre, ni description, ni `h1`, ni canonical,
+et doit rester tel quel — Google le lit à l'octet près.
+
 - **Ne jamais afficher « Domdidier ».** Écrire « Canton de Fribourg », et
   « Suisse » ou « Suisse romande » quand c'est pertinent.
 - **Aucune donnée inventée dans le JSON-LD** : ni adresse, ni horaires,
@@ -110,5 +115,8 @@ modification du HTML les conserve.
 Développer sur la branche `claude/jolie-creation-homepage-ug6otx`, puis
 pousser.
 
-Un défaut connu, non corrigé : à 390 px, la modale de choix modèle par
-modèle dépasse de 10 px et rogne le bas de son bouton.
+**Les modales entrent en fondu** — `translateY(10px)` vers zéro, en
+trois cents millisecondes environ. Une mesure prise trop tôt trouve leur
+pied dix pixels sous l'écran et conclut à un débordement qui n'existe
+pas. Attendre qu'elles s'installent avant de mesurer quoi que ce soit.
+La même prudence vaut pour les révélations au défilement.
