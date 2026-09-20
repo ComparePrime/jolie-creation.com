@@ -2,3 +2,6 @@ node_modules/
 .netlify/
 .env
 .env.*
+
+# Dépôt tiers cloné pour consultation, hors du site.
+.ecc/
