@@ -1,15 +1,25 @@
 #!/usr/bin/env python3
-"""Génère une vraie page e-commerce par collection, dans collections/.
+"""Génère une vraie page e-commerce pour CHAQUE collection du catalogue,
+dans collections/.
 
     python3 outils-page-collection.py
 
 **Ceci est le gabarit de référence** pour /collections/<slug> : hero,
-présentation courte, grille de produits (photo, prix, personnalisation,
-quantité, ajout au panier), puis les blocs déjà validés ailleurs sur le
-site (ingrédients, occasions, avis, CTA). Pour publier une nouvelle
-collection, il suffit d'ajouter son identifiant catalogue à COLLECTIONS
-ci-dessous et de relancer ce script — jamais de copier-coller une page à
-la main.
+présentation courte, produits ou packages selon le type de la collection,
+puis les blocs déjà validés ailleurs sur le site (ingrédients, occasions,
+avis, CTA). La liste des collections n'est jamais codée en dur ici : le
+script parcourt C.COLLECTIONS au complet, donc aucune collection ne peut
+être oubliée, et en ajouter une au catalogue suffit à lui donner sa page
+au prochain lancement — jamais de copier-coller une page à la main.
+
+Trois types, déduits des données, jamais déclarés à la main :
+
+  TYPE A — classique      : des produits à l'unité, achetables.
+  TYPE B — packagesSeuls  : des packages ; les produits internes
+                             (seulEnPackage) ne sont jamais achetables
+                             seuls, et n'ont donc pas de carte.
+  TYPE C — sur devis      : ni produit ni package tarifé ; la page
+                             renvoie vers la demande de devis.
 
 Une page générée ici vit un niveau plus bas que les autres
 (collections/<slug>.html) : tous les liens et fichiers partagés (styles,
@@ -20,7 +30,7 @@ scripts, images, autres pages) y sont donc écrits en chemin absolu
 Le script ne touche à rien d'autre : ni au panier, ni au paiement, ni
 aux autres pages. Après l'avoir lancé, relancer aussi outils-jsonld.py
 pour poser le socle Organization/LocalBusiness/WebSite de chaque page
-générée.
+générée, et outils-sitemap.py pour les y ajouter.
 """
 import html
 import json
@@ -32,15 +42,6 @@ RACINE = pathlib.Path(__file__).resolve().parent
 DOSSIER = RACINE / 'collections'
 SITE = 'https://jolie-creation.com'
 
-# Identifiant catalogue -> slug d'URL. Par défaut, le slug est
-# l'identifiant lui-même ; une entrée ici ne sert qu'aux collections dont
-# le nom public diffère de l'identifiant technique (ex. « petit-ocean »
-# reste un identifiant interne, mais l'URL demandée est /collections/ocean).
-COLLECTIONS = ['petit-ocean']
-SLUGS = {
-    'petit-ocean': 'ocean'
-}
-
 LECTURE = """
 const C = require('./catalogue.js');
 console.log(JSON.stringify(C.COLLECTIONS));
@@ -48,9 +49,23 @@ console.log(JSON.stringify(C.COLLECTIONS));
 
 
 def collections():
+    """Toutes les collections du catalogue, dans leur ordre — jamais une
+    liste maintenue à la main qui pourrait en oublier une."""
     sortie = subprocess.run(['node', '-e', LECTURE], cwd=RACINE,
                             capture_output=True, text=True, check=True).stdout
-    return {c['id']: c for c in json.loads(sortie)}
+    return json.loads(sortie)
+
+
+def type_collection(c):
+    """A (classique), B (packages), ou C (sur devis) — déduit des
+    données, jamais déclaré à la main. Une collection ne peut être
+    B et vide de packages à la fois : packagesSeuls le garantit déjà
+    côté catalogue.js."""
+    if c.get('packagesSeuls'):
+        return 'B'
+    if c['produits']:
+        return 'A'
+    return 'C'
 
 
 def e(s):
@@ -69,6 +84,20 @@ def prix_depart(c):
     prix = ([pk['prix'] for pk in c.get('packages') or []] if c.get('packagesSeuls')
             else [p['prix'] for p in c['produits']])
     return f'Dès {chf(min(prix))}' if prix else 'Sur devis'
+
+
+def faits_hero(c, type_):
+    """Les repères courts du hero, un par type — jamais de texte qui
+    promette une vente à l'unité sur une collection qui n'en fait pas,
+    ni l'inverse."""
+    if type_ == 'B':
+        n = len(c['packages'])
+        return [f'{n} package{"s" if n > 1 else ""} au choix, composé{"s" if n > 1 else ""} d’avance',
+                'Sans minimum de commande']
+    if type_ == 'C':
+        return ['Sur devis, composé avec vous', 'Formes, couleurs et quantité sur mesure']
+    n = len(c['produits'])
+    return [f'{n} modèle{"s" if n > 1 else ""} au choix, à commander à l’unité']
 
 
 # ------------------------------------------------------------------
@@ -301,7 +330,7 @@ def champ_html(champ, prefixe, attribut):
             </div>'''
 
 
-def carte_produit(p, cid):
+def carte_produit(p):
     champs = p.get('champs') or []
     option = p.get('option')
     badge = '<span class="choix-badge">Personnalisable</span>' if (champs or option) else ''
@@ -347,16 +376,124 @@ def carte_produit(p, cid):
         </article>'''
 
 
+def carte_package(pk, c):
+    """Une offre de la collection : la modale des packages, déjà
+    construite et testée, reste seule responsable de la sélection —
+    cette carte ne fait qu'inviter à l'ouvrir, avec data-packages et
+    ouvrirPackages(), sans rien dupliquer de leur logique. Sans photo
+    propre à l'assortiment, c'est la photo de la collection qui illustre
+    la carte, comme dans la modale elle-même."""
+    composition = '\n'.join(
+        f'              <li><span class="package-qte">{d["qte"]} ×</span> {e(d["nom"])}</li>'
+        for d in pk['detail'])
+    return f'''        <article class="produit-carte">
+          <div class="produit-photo">
+            <img src="/{e(c['image'])}" alt="{e(c['alt'])}" loading="lazy" decoding="async" width="600" height="600">
+          </div>
+          <div class="produit-corps">
+            <h3 class="produit-nom">{e(pk['nom'])}</h3>
+            <span class="produit-prix">{chf(pk['prix'])} &middot; {pk['biscuits']} biscuits</span>
+            <ul class="package-option-composition">
+{composition}
+            </ul>
+            <button type="button" class="btn btn-primary produit-ajouter" data-packages="{e(c['id'])}">Choisir ce package</button>
+          </div>
+        </article>'''
+
+
+def section_produits(c, type_):
+    """Le cœur de la page, différent selon le type — jamais un produit
+    seulEnPackage affiché comme achetable, jamais un prix inventé pour
+    une collection sur devis."""
+    if type_ == 'A':
+        cartes = '\n\n'.join(carte_produit(p) for p in c['produits'])
+        return f'''  <section id="produits" aria-labelledby="produits-title">
+    <div class="wrap">
+      <div class="section-head center section-head-mince">
+        <span class="eyebrow" style="justify-content:center;">La collection</span>
+        <h2 id="produits-title">Les biscuits de la collection</h2>
+        <p class="narrow">Choisissez vos modèles et vos quantités. Le minimum de 12 biscuits à l’unité porte sur l’ensemble du panier, toutes collections confondues : vous pouvez donc compléter avec d’autres collections.</p>
+      </div>
+
+      <div class="produit-grille">
+{cartes}
+      </div>
+
+      <p class="tarifs-note">Livraison offerte dès 150 CHF en Suisse, 9 CHF en dessous. Retrait possible dans le canton de Fribourg.</p>
+    </div>
+  </section>'''
+
+    if type_ == 'B':
+        cartes = '\n\n'.join(carte_package(pk, c) for pk in c['packages'])
+        intro = e(c.get('packagesResume') or '')
+        return f'''  <section id="produits" aria-labelledby="produits-title">
+    <div class="wrap">
+      <div class="section-head center section-head-mince">
+        <span class="eyebrow" style="justify-content:center;">La collection</span>
+        <h2 id="produits-title">Les packages de la collection</h2>
+        <p class="narrow">{intro} Chaque package est une offre complète, prête à offrir : sans minimum de commande, il se commande seul ou en le combinant avec d’autres collections.</p>
+      </div>
+
+      <div class="produit-grille">
+{cartes}
+      </div>
+
+      <p class="tarifs-note">Livraison offerte dès 150 CHF en Suisse, 9 CHF en dessous. Retrait possible dans le canton de Fribourg.</p>
+    </div>
+  </section>'''
+
+    # Type C : sur devis, rien à ajouter au panier.
+    lien = 'contact.html?formule=biscuits&theme=' + urllib.parse.quote('Collection ' + c['nom'])
+    return f'''  <section id="produits" aria-labelledby="produits-title">
+    <div class="wrap">
+      <div class="section-head center section-head-mince">
+        <span class="eyebrow" style="justify-content:center;">Sur devis</span>
+        <h2 id="produits-title">Composons cette collection ensemble</h2>
+        <p class="narrow">Aucun modèle n’est encore fixé pour « {e(c['nom'])} » : formes, couleurs et quantité se décident avec vous.</p>
+        <a href="/{e(lien)}" class="btn btn-primary">Demander un devis</a>
+      </div>
+    </div>
+  </section>'''
+
+
+def entite_principale(c, type_):
+    """L'ItemList de la page : des packages pour le type B, des produits
+    pour le type A, rien pour le type C — jamais un prix ou une offre
+    annoncés là où le catalogue n'en a pas."""
+    if type_ == 'B':
+        items = [(pk['nom'], c['image'], pk['prix']) for pk in c['packages']]
+        nom_liste = f'Packages de la collection {c["nom"]}'
+    elif type_ == 'A':
+        items = [(p['nom'], p['image'], p['prix']) for p in c['produits']]
+        nom_liste = f'Biscuits de la collection {c["nom"]}'
+    else:
+        return None
+    return {
+        '@type': 'ItemList',
+        'name': nom_liste,
+        'numberOfItems': len(items),
+        'itemListElement': [
+            {'@type': 'ListItem', 'position': i + 1, 'item': {
+                '@type': 'Product',
+                'name': nom,
+                'image': SITE + '/' + image,
+                'offers': {
+                    '@type': 'Offer', 'price': f'{prix / 100:.2f}',
+                    'priceCurrency': 'CHF', 'availability': 'https://schema.org/InStock'
+                }
+            }} for i, (nom, image, prix) in enumerate(items)
+        ]
+    }
+
+
 def page(c):
-    slug = SLUGS.get(c['id'], c['id'])
+    type_ = type_collection(c)
+    slug = c['slug']
     url = f'{SITE}/collections/{slug}'
     titre = f'{c["nom"]} — Biscuits personnalisés | Jolie Création'
     description = c['description']
     image_principale = f'/images/collections/{c["id"]}/principale.webp'
     prix = prix_depart(c)
-    produits = c['produits']
-
-    cartes_produits = '\n\n'.join(carte_produit(p, c['id']) for p in produits)
 
     donnees_structurees = {
         '@context': 'https://schema.org',
@@ -372,24 +509,11 @@ def page(c):
                  'item': SITE + '/biscuits-personnalises.html'},
                 {'@type': 'ListItem', 'position': 3, 'name': c['nom'], 'item': url}
             ]
-        },
-        'mainEntity': {
-            '@type': 'ItemList',
-            'name': f'Biscuits de la collection {c["nom"]}',
-            'numberOfItems': len(produits),
-            'itemListElement': [
-                {'@type': 'ListItem', 'position': i + 1, 'item': {
-                    '@type': 'Product',
-                    'name': p['nom'],
-                    'image': SITE + '/' + p['image'],
-                    'offers': {
-                        '@type': 'Offer', 'price': f'{p["prix"] / 100:.2f}',
-                        'priceCurrency': 'CHF', 'availability': 'https://schema.org/InStock'
-                    }
-                }} for i, p in enumerate(produits)
-            ]
         }
     }
+    mainEntity = entite_principale(c, type_)
+    if mainEntity:
+        donnees_structurees['mainEntity'] = mainEntity
 
     return f'''<!DOCTYPE html>
 <html lang="fr-CH">
@@ -435,30 +559,15 @@ def page(c):
           <h1 id="collection-titre">{e(c['nom'])}</h1>
           <p class="collection-texte">{e(description)}</p>
           <ul class="collection-faits">
-            <li>{prix}</li>
-            <li>{len(produits)} modèle{'s' if len(produits) > 1 else ''} au choix, à commander à l’unité</li>
+            {'' if type_ == 'C' else f'<li>{prix}</li>'}{''.join(f'<li>{e(f)}</li>' for f in faits_hero(c, type_))}
           </ul>
-          <a href="#produits" class="btn btn-primary btn-small">Voir les biscuits</a>
+          <a href="#produits" class="btn btn-primary btn-small">{ {'A': 'Voir les biscuits', 'B': 'Voir les packages', 'C': 'Demander un devis'}[type_] }</a>
         </div>
       </article>
     </div>
   </section>
 
-  <section id="produits" aria-labelledby="produits-title">
-    <div class="wrap">
-      <div class="section-head center section-head-mince">
-        <span class="eyebrow" style="justify-content:center;">La collection</span>
-        <h2 id="produits-title">Les biscuits de la collection</h2>
-        <p class="narrow">Choisissez vos modèles et vos quantités. Le minimum de 12 biscuits à l’unité porte sur l’ensemble du panier, toutes collections confondues : vous pouvez donc compléter avec d’autres collections.</p>
-      </div>
-
-      <div class="produit-grille">
-{cartes_produits}
-      </div>
-
-      <p class="tarifs-note">Livraison offerte dès 150 CHF en Suisse, 9 CHF en dessous. Retrait possible dans le canton de Fribourg.</p>
-    </div>
-  </section>
+{section_produits(c, type_)}
 
 {bloc_ingredients()}
 
@@ -470,10 +579,12 @@ def page(c):
     <div class="wrap">
       <div class="cta-final">
         <span class="eyebrow" style="color:var(--gold-light);">Envie de la collection {e(c['nom'])} ?</span>
-        <h2>Composez vos biscuits <span class="script">dès maintenant</span></h2>
-        <p>Ajoutez vos modèles au panier ci-dessus, ou décrivez-moi votre projet si vous avez une envie particulière.</p>
+        <h2>{ {'A': 'Composez vos biscuits', 'B': 'Choisissez votre package', 'C': 'Composons cette collection'}[type_] } <span class="script">{ {'A': 'dès maintenant', 'B': 'dès maintenant', 'C': 'ensemble'}[type_] }</span></h2>
+        <p>{ {'A': 'Ajoutez vos modèles au panier ci-dessus, ou décrivez-moi votre projet si vous avez une envie particulière.',
+               'B': 'Choisissez votre package ci-dessus, ou décrivez-moi votre projet si vous avez une envie particulière.',
+               'C': 'Décrivez-moi votre projet : je reviens vers vous avec une proposition sur mesure.'}[type_] }</p>
         <div class="hero-actions">
-          <a href="#produits" class="btn btn-primary">Voir les biscuits</a>
+          <a href="#produits" class="btn btn-primary">{ {'A': 'Voir les biscuits', 'B': 'Voir les packages', 'C': 'Voir la collection'}[type_] }</a>
           <a href="/contact.html?formule=biscuits" class="btn btn-ghost on-dark">Demander un devis</a>
         </div>
       </div>
@@ -489,14 +600,30 @@ def page(c):
 def main():
     DOSSIER.mkdir(exist_ok=True)
     cols = collections()
-    for cid in COLLECTIONS:
-        c = cols.get(cid)
-        if not c:
-            raise SystemExit(f'Collection introuvable : {cid}')
-        slug = SLUGS.get(cid, cid)
-        cible = DOSSIER / f'{slug}.html'
+    slugs = [c['slug'] for c in cols]
+    doublons = {s for s in slugs if slugs.count(s) > 1}
+    if doublons:
+        raise SystemExit(f'Slugs en double, à corriger dans catalogue.js : {doublons}')
+
+    ecrites = set()
+    for c in cols:
+        type_ = type_collection(c)
+        cible = DOSSIER / f'{c["slug"]}.html'
         cible.write_text(page(c), encoding='utf-8')
-        print(f'{cible.relative_to(RACINE)} — {c["nom"]}, {len(c["produits"])} produit(s), {prix_depart(c)}')
+        ecrites.add(cible.name)
+        if type_ == 'A':
+            detail = f'{len(c["produits"])} produit(s)'
+        elif type_ == 'B':
+            detail = f'{len(c["packages"])} package(s)'
+        else:
+            detail = 'sur devis'
+        print(f'{cible.relative_to(RACINE)} — type {type_} — {c["nom"]}, {detail}, {prix_depart(c)}')
+
+    # Une page dont la collection a disparu du catalogue ne doit pas
+    # rester en ligne, orpheline et non reliée depuis le reste du site.
+    orphelines = [f for f in DOSSIER.glob('*.html') if f.name not in ecrites]
+    for f in orphelines:
+        print(f'  ATTENTION : {f.relative_to(RACINE)} ne correspond plus à aucune collection.', flush=True)
 
 
 if __name__ == '__main__':

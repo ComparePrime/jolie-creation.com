@@ -34,7 +34,7 @@ SITE = 'https://jolie-creation.com/'
 LECTURE = """
 const C = require('./catalogue.js');
 console.log(JSON.stringify(C.COLLECTIONS.map((c) => ({
-  id: c.id, nom: c.nom, occasion: c.occasion, description: c.description,
+  id: c.id, slug: c.slug, nom: c.nom, occasion: c.occasion, description: c.description,
   alt: c.alt, image: c.image, saison: !!c.saison,
   packagesSeuls: !!c.packagesSeuls,
   galerie: (c.galerie || []).map((v) => ({ image: v.image, alt: v.alt })),
@@ -248,7 +248,7 @@ def carte_saison(c, premier=False):
     partout ailleurs sur le site."""
     charge = ('loading="eager" fetchpriority="high"' if premier
               else 'loading="lazy" fetchpriority="auto"')
-    return f'''        <a class="boutique-vedette" href="mes-realisations.html#{c['id']}">
+    return f'''        <a class="boutique-vedette" href="collections/{c['slug']}">
           <span class="boutique-vedette-photo">
             <img src="{c['image']}" alt="{e(c['alt'])}" {charge} decoding="async" width="1000" height="1000">
           </span>
@@ -264,15 +264,10 @@ def carte_saison(c, premier=False):
 def carte_boutique(c):
     """Une collection dans la grille « Toutes les collections » : image,
     nom, prix de départ, lien — rien de plus, le détail vit sur la page
-    de la collection.
-
-    Le lien pointe aujourd'hui vers la galerie existante : les pages
-    /collections/<slug> n'existent pas encore, et il ne s'agit pas d'en
-    fabriquer une fausse pour le principe. Le jour où elles existeront,
-    seul ce lien change."""
+    de la collection."""
     cat = categorie_filtre(c)
     attribut_cat = f' data-cat="{e(cat)}"' if cat else ''
-    return f'''        <a class="gallery-item saison-carte" href="mes-realisations.html#{c['id']}"{attribut_cat}>
+    return f'''        <a class="gallery-item saison-carte" href="collections/{c['slug']}"{attribut_cat}>
           <span class="saison-photo">
             <img src="{c['image']}" alt="{e(c['alt'])}" loading="lazy" decoding="async" width="600" height="600">
           </span>

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """Regenere sitemap.xml. Le lastmod vient de git, jamais d'une date inventee."""
-import datetime, pathlib, subprocess
+import datetime, json, pathlib, subprocess
 
 SITE = 'https://jolie-creation.com'
 
@@ -22,6 +22,16 @@ def git(*args):
                           cwd=pathlib.Path(__file__).resolve().parent).stdout.strip()
 
 
+def slugs_collections(racine):
+    """Un slug par collection du catalogue — jamais une liste tenue à la
+    main, qui pourrait en oublier une ou en garder une supprimée."""
+    sortie = subprocess.run(
+        ['node', '-e', "const C=require('./catalogue.js');"
+                       "console.log(JSON.stringify(C.COLLECTIONS.map((c) => c.slug)));"],
+        cwd=racine, capture_output=True, text=True, check=True).stdout
+    return json.loads(sortie)
+
+
 def date_reelle(fichier):
     """Date du dernier commit touchant le fichier. Si le fichier a des
     modifications non commitees, c'est aujourd'hui qu'il change."""
@@ -32,9 +42,18 @@ def date_reelle(fichier):
 
 def main():
     racine = pathlib.Path(__file__).resolve().parent
+    toutes = list(PAGES) + [
+        (f'collections/{slug}.html', f'/collections/{slug}', '0.7')
+        for slug in slugs_collections(racine)
+    ]
+
+    adresses = [adresse for _, adresse, _ in toutes]
+    doublons = {a for a in adresses if adresses.count(a) > 1}
+    assert not doublons, f'URLs en double dans le sitemap : {doublons}'
+
     lignes = ['<?xml version="1.0" encoding="UTF-8"?>',
               '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">']
-    for fichier, adresse, priorite in PAGES:
+    for fichier, adresse, priorite in toutes:
         chemin = racine / fichier
         assert chemin.exists(), fichier
         assert 'noindex' not in chemin.read_text(encoding='utf-8'), fichier
