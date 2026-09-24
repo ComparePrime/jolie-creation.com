@@ -148,7 +148,7 @@ Trois filtres, du plus fiable au moins fiable :
 | `tests/catalogue.test.js`                      | Tests de la fonction de paiement (`npm test`).               |
 | `tests/envoi.test.js`                          | Tests de la fonction d'envoi (`npm test`).                   |
 | `outils-galerie.py`                            | Recompose en rangées les photos d'une micro-scénographie et les numérote (`data-rang`). |
-| `outils-collections.py`                        | Régénère le catalogue de « Mes réalisations » et l'aperçu de saison depuis `catalogue.js`. |
+| `outils-collections.py`                        | Régénère la boutique (mises en avant de saison et grille) depuis `catalogue.js`. `mes-realisations.html` n'en dépend plus : c'est un portfolio à sélection éditoriale, écrit à la main. |
 | `outils-photos.py`                             | Dérive les vues de galerie et les photos de carte, et convertit en WebP. |
 | `outils-webp.py`                               | Sert en WebP les photos encore servies en JPEG, à dimensions égales. |
 | `outils-jsonld.py`                             | Pose le socle de données structurées (Organization, WebSite, fil d'Ariane) sur les pages indexables. |
@@ -261,56 +261,47 @@ bloc de collection, ni prix de modèle. Huit sections :
    modèle vit dans `catalogue.js` et s'affiche dans la modale, au moment
    de composer la commande. C'est la seule exception à « aucun prix sur
    cette page », et elle ne cite aucun modèle.
-6. **Mes réalisations** — la passerelle vers la galerie.
-7. **Elles en parlent** — les avis clients. Ils vivent ici et nulle part
-   ailleurs.
+6. **Mes réalisations** — la passerelle vers le portfolio.
+7. **Elles en parlent** — les avis clients. Ils vivent ici, sur chaque
+   page collection (`outils-page-collection.py`), et sur une sélection
+   de réalisations de `mes-realisations.html` — nulle part ailleurs.
 8. **Appel final** — devis et WhatsApp.
 
-`mes-realisations.html` **porte le catalogue entier**. Les vingt-six
-collections y vivent, et elles seules : grande photo, nom, présentation,
-vues secondaires, nombre de modèles et bouton d'action. Puis la
-micro-scénographie installée.
+Chaque `collections/<slug>.html` **porte le détail d'une collection** :
+modèles, prix, composition, bouton d'ajout au panier. C'est le seul
+endroit où une collection se commande — voir « Vingt-six pages
+collection » plus bas.
 
-**Le haut de page s'efface devant les créations.** Un surtitre, un titre
-de trois mots, deux phrases, deux liens d'ancre : la première photo
-arrive à 766 px du haut, contre 1355 px auparavant. Il n'y a plus de
-sommaire de vingt-six pastilles avant la première création — vingt-six
-noms alignés avant d'avoir rien vu se lisent comme un menu déroulant, pas
-comme un portfolio. Les deux liens `#collections` et
-`#micro-scenographies` suffisent à la navigation.
+`mes-realisations.html` **est un portfolio, pas un catalogue.** Une
+dizaine de réalisations choisies à la main parmi les commandes
+réellement livrées — grande photo, parfois une ou deux vues secondaires,
+thème, avis client quand un existant s'y prête, lien discret vers la
+collection correspondante — puis la micro-scénographie installée. Aucun
+prix, aucun bouton d'ajout au panier : ce rôle est entièrement passé aux
+pages collection. Cette sélection est éditoriale, pas mécanique : elle
+est écrite à la main dans le HTML, sur le modèle de la section atelier
+de `a-propos.html`, plutôt que générée pour les vingt-six collections.
+`outils-collections.py` ne l'alimente plus ; il ne régénère que la
+vitrine (mises en avant de saison et grille).
 
-**Les collections du moment ouvrent la galerie, dans leur propre
-section.** `#collections-du-moment` les présente, `#collections` porte
-toutes les autres. Le drapeau `saison` de `catalogue.js` décide seul du
-partage, et `outils-collections.py` retire de la liste générale celles
-qu'il a mises en tête : une collection mise en avant puis répétée douze
-blocs plus bas se lit comme deux collections.
+**Un avis associé à une réalisation n'est jamais une fausse
+attribution.** Les avis existants sont peu nombreux et rarement
+identifiables avec certitude à une commande précise : quand le lien est
+réel (même thème, même prénom), il est présenté tel quel ; sinon l'avis
+reste un témoignage général de la maison, jamais présenté comme émanant
+de la personne qui a commandé la pièce montrée. Le texte d'un avis ne se
+modifie jamais, aucun avis ni aucun prénom ne s'invente.
 
-**Toute photo de biscuit appartient à une collection.** Il n'y a plus de
-galerie séparée : une photo qui n'illustrait aucune collection en a reçu
-une. Deux endroits qui montrent les mêmes biscuits finissent toujours par
-diverger, et le visiteur ne sait plus lequel fait foi.
-
-**Une collection sans prix se commande sur devis.** Son bloc n'ouvre pas
-la modale : il renvoie au formulaire de contact, thème pré-rempli. Six
-collections sont dans ce cas. `outils-collections.py` choisit le bouton
-d'après `produits` : une liste vide veut dire devis.
-
-**Les prix ne s'affichent nulle part sur la page.** Ils apparaissent dans
-la modale, au moment de choisir ses biscuits. Une liste de tarifs sous
-chaque collection transformait la galerie en catalogue e-commerce ; c'est
-un portfolio.
-
-Les deux zones se régénèrent d'un même geste :
+Régénérer la vitrine :
 
 ```bash
 python3 outils-collections.py
 ```
 
-Le script écrit les deux listes de « Mes réalisations » — les collections
-du moment, puis toutes les autres — et l'aperçu de saison dans la
-vitrine. Il ne peut pas écrire de prix du côté vitrine : c'est le
-gabarit qui l'en empêche, pas la discipline.
+Le script écrit les mises en avant de saison et la grille de toutes les
+autres collections dans `biscuits-personnalises.html`. Il ne peut pas
+écrire de prix côté vitrine : c'est le gabarit qui l'en empêche, pas la
+discipline.
 
 ### Les six étapes de l'atelier
 
@@ -488,7 +479,8 @@ de la collection, s'il y en a — et lancer les deux outils :
 
 ```bash
 python3 outils-photos.py        # principale.jpg devient principale.webp
-python3 outils-collections.py   # le bloc apparaît sur la page
+python3 outils-collections.py   # la collection rejoint la vitrine (biscuits-personnalises.html)
+python3 outils-page-collection.py   # sa page dédiée, collections/ma-collection.html
 ```
 
 Une collection dont la grande photo se choisit parmi ses photos pleine
