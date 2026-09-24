@@ -65,6 +65,7 @@ PAGES = {
     'mentions-legales.html': 'Mentions légales',
     'confidentialite.html': 'Confidentialité',
     'mes-realisations.html': False,
+    'collections/ocean.html': False,
 }
 
 DEBUT = '<!-- socle:jsonld -->'

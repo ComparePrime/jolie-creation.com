@@ -674,6 +674,66 @@
     });
   }
 
+  /* ---------- Cartes produit d'une page collection ----------
+     La grille d'une page /collections/<slug> ajoute directement depuis
+     sa carte, sans passer par la modale : chaque carte réutilise telles
+     quelles les classes du compteur et des champs de personnalisation
+     de la modale (.choix-pas, .choix-champ…), déjà stylées, et son
+     bouton appelle ajouter() — exactement la fonction que la modale
+     utilise. Aucune seconde logique de panier. */
+  function brancherCartesProduits() {
+    document.querySelectorAll('[data-produit-carte]').forEach(function (carte) {
+      if (carte.dataset.branche) return;
+      carte.dataset.branche = '1';
+      var a = Cat.article(carte.getAttribute('data-produit-carte'));
+      if (!a) return;
+
+      var champ = carte.querySelector('.choix-pas input');
+      var moins = carte.querySelector('[data-role="moins"]');
+      var plus = carte.querySelector('[data-role="plus"]');
+      var option = carte.querySelector('.choix-option input');
+      var champsPerso = carte.querySelectorAll('[data-champ]');
+      var champsOption = carte.querySelectorAll('[data-champ-option]');
+      var zoneOption = carte.querySelector('.produit-option-champs');
+      var bouton = carte.querySelector('.produit-ajouter');
+      if (!champ || !bouton) return;
+
+      function definir(n) {
+        n = Math.min(99, Math.max(1, parseInt(n, 10) || 1));
+        champ.value = String(n);
+      }
+      if (moins) moins.addEventListener('click', function () { definir(champ.value - 1); });
+      if (plus) plus.addEventListener('click', function () { definir(Number(champ.value) + 1); });
+      champ.addEventListener('input', function () { definir(champ.value); });
+
+      if (option && zoneOption) {
+        option.addEventListener('change', function () { zoneOption.hidden = !option.checked; });
+      }
+
+      bouton.addEventListener('click', function () {
+        var qte = parseInt(champ.value, 10) || 1;
+        var details = {};
+        champsPerso.forEach(function (saisie) {
+          var v = (saisie.value || '').trim();
+          if (v) details[saisie.getAttribute('data-champ')] = v;
+        });
+        var avecOption = !!(option && option.checked);
+        if (avecOption) {
+          champsOption.forEach(function (saisie) {
+            var v = (saisie.value || '').trim();
+            if (v) details[saisie.getAttribute('data-champ-option')] = v;
+          });
+        }
+        ajouter(a.id, qte, Object.keys(details).length ? details : null, avecOption);
+        annoncer(qte + ' × ' + a.nom + ' ajouté' + (qte > 1 ? 's' : '') + ' au panier.');
+        definir(1);
+        champsPerso.forEach(function (saisie) { saisie.value = ''; });
+        champsOption.forEach(function (saisie) { saisie.value = ''; });
+        if (option) { option.checked = false; if (zoneOption) zoneOption.hidden = true; }
+      });
+    });
+  }
+
   /* ---------- Boutons « Choisir mes biscuits » ---------- */
   function brancherBoutons() {
     document.querySelectorAll('[data-collection]').forEach(function (bouton) {
@@ -776,7 +836,8 @@
     memoriserCommande: memoriserCommande,
     commandeMemorisee: commandeMemorisee,
     oublierCommande: oublierCommande,
-    resumeCommande: resumeCommande
+    resumeCommande: resumeCommande,
+    annoncer: annoncer
   };
 
   document.addEventListener('DOMContentLoaded', function () {
@@ -784,5 +845,6 @@
     surveillerPhotos();
     brancherBoutons();
     brancherPackages();
+    brancherCartesProduits();
   });
 })();
