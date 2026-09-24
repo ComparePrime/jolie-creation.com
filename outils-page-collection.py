@@ -100,6 +100,52 @@ def faits_hero(c, type_):
     return [f'{n} modèle{"s" if n > 1 else ""} au choix, à commander à l’unité']
 
 
+def lister_naturellement(items):
+    """« a » ; « a et b » ; « a, b et c » — jamais de virgule avant le
+    dernier élément."""
+    if not items:
+        return ''
+    if len(items) == 1:
+        return items[0]
+    return ', '.join(items[:-1]) + ' et ' + items[-1]
+
+
+def description_seo(c, type_):
+    """Une description de hero plus développée que la simple phrase du
+    catalogue, mais rien n'y figure qui ne vienne des données réelles de
+    CETTE collection : noms de modèles ou de packages, prix, personnali-
+    sation déjà déclarée. Le texte diffère nécessairement d'une
+    collection à l'autre, puisque ses modèles et ses prix diffèrent.
+    Une collection sur devis n'a ni modèle ni prix à citer : sa
+    description reste celle, déjà factuelle, du catalogue."""
+    base = c['description']
+    if type_ == 'A':
+        produits = c['produits']
+        noms = [p['nom'] for p in produits]
+        perso = any(p.get('champs') for p in produits)
+        if len(noms) == 1:
+            # Un seul modèle : accord au singulier, « on y retrouve »
+            # sonnerait comme une liste qui n'existe pas.
+            personnalisation = ' Il se personnalise selon vos envies.' if perso else ''
+            return (f'{base} Cette collection propose {noms[0]}, décoré à la main '
+                    f'au glaçage royal et vendu à l’unité.{personnalisation}')
+        extrait = noms[:3]
+        liste = lister_naturellement(extrait)
+        if len(noms) > len(extrait):
+            liste += f', parmi {len(noms)} modèles au total'
+        personnalisation = ' Certains modèles se personnalisent selon vos envies.' if perso else ''
+        return (f'{base} On y retrouve notamment {liste}, décorés à la main '
+                f'au glaçage royal et vendus à l’unité.{personnalisation}')
+    if type_ == 'B':
+        noms = [pk['nom'] for pk in c['packages']]
+        prix = [pk['prix'] for pk in c['packages']]
+        formule = 'formule prête' if len(noms) == 1 else f'{len(noms)} formules prêtes'
+        tarif = chf(prix[0]) if len(prix) == 1 else f'de {chf(min(prix))} à {chf(max(prix))}'
+        return (f'{base} {formule} à offrir — {lister_naturellement(noms)} — '
+                f'{tarif}, sans minimum de commande.')
+    return base
+
+
 # ------------------------------------------------------------------
 # Chrome partagé (identique aux autres pages, en chemins absolus).
 # ------------------------------------------------------------------
@@ -412,33 +458,30 @@ def section_produits(c, type_):
       <div class="section-head center section-head-mince">
         <span class="eyebrow" style="justify-content:center;">La collection</span>
         <h2 id="produits-title">Les biscuits de la collection</h2>
-        <p class="narrow">Choisissez vos modèles et vos quantités. Le minimum de 12 biscuits à l’unité porte sur l’ensemble du panier, toutes collections confondues : vous pouvez donc compléter avec d’autres collections.</p>
       </div>
 
       <div class="produit-grille">
 {cartes}
       </div>
 
-      <p class="tarifs-note">Livraison offerte dès 150 CHF en Suisse, 9 CHF en dessous. Retrait possible dans le canton de Fribourg.</p>
+      <p class="tarifs-note">Minimum de 12 biscuits à l’unité, toutes collections confondues — vous pouvez compléter avec d’autres collections. Livraison offerte dès 150 CHF en Suisse, 9 CHF en dessous. Retrait possible dans le canton de Fribourg.</p>
     </div>
   </section>'''
 
     if type_ == 'B':
         cartes = '\n\n'.join(carte_package(pk, c) for pk in c['packages'])
-        intro = e(c.get('packagesResume') or '')
         return f'''  <section id="produits" aria-labelledby="produits-title">
     <div class="wrap">
       <div class="section-head center section-head-mince">
         <span class="eyebrow" style="justify-content:center;">La collection</span>
         <h2 id="produits-title">Les packages de la collection</h2>
-        <p class="narrow">{intro} Chaque package est une offre complète, prête à offrir : sans minimum de commande, il se commande seul ou en le combinant avec d’autres collections.</p>
       </div>
 
       <div class="produit-grille">
 {cartes}
       </div>
 
-      <p class="tarifs-note">Livraison offerte dès 150 CHF en Suisse, 9 CHF en dessous. Retrait possible dans le canton de Fribourg.</p>
+      <p class="tarifs-note">Chaque package est une offre complète, prête à offrir, sans minimum de commande. Livraison offerte dès 150 CHF en Suisse, 9 CHF en dessous. Retrait possible dans le canton de Fribourg.</p>
     </div>
   </section>'''
 
@@ -491,7 +534,7 @@ def page(c):
     slug = c['slug']
     url = f'{SITE}/collections/{slug}'
     titre = f'{c["nom"]} — Biscuits personnalisés | Jolie Création'
-    description = c['description']
+    description = description_seo(c, type_)
     image_principale = f'/images/collections/{c["id"]}/principale.webp'
     prix = prix_depart(c)
 
@@ -561,7 +604,6 @@ def page(c):
           <ul class="collection-faits">
             {'' if type_ == 'C' else f'<li>{prix}</li>'}{''.join(f'<li>{e(f)}</li>' for f in faits_hero(c, type_))}
           </ul>
-          <a href="#produits" class="btn btn-primary btn-small">{ {'A': 'Voir les biscuits', 'B': 'Voir les packages', 'C': 'Demander un devis'}[type_] }</a>
         </div>
       </article>
     </div>
