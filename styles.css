@@ -2866,7 +2866,8 @@ form.devis-form{
 }
 .produit-nom{ font-size: 15px; line-height: 1.35; color: var(--ink); margin: 0; }
 .produit-prix{ display: block; font-family: var(--font-display); font-size: 16px; color: var(--gold-deep); }
-.produit-carte .choix-pas{ margin-top: auto; }
+.produit-carte .choix-pas,
+.produit-carte .package-option-composition{ margin-top: auto; }
 .produit-ajouter{ width: 100%; }
 
 /* ---------- Les modèles d'une collection, dans la galerie ----------

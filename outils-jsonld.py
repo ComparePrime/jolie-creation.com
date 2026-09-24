@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """Pose le socle de donnees structurees sur les pages indexables."""
-import json, pathlib
+import json, pathlib, subprocess
 
 SITE = 'https://jolie-creation.com'
 
@@ -65,8 +65,17 @@ PAGES = {
     'mentions-legales.html': 'Mentions légales',
     'confidentialite.html': 'Confidentialité',
     'mes-realisations.html': False,
-    'collections/ocean.html': False,
 }
+
+
+def pages_collections(racine):
+    """Une entrée par collection du catalogue — jamais une liste tenue à
+    la main, qui pourrait en oublier une ou en garder une supprimée."""
+    sortie = subprocess.run(
+        ['node', '-e', "const C=require('./catalogue.js');"
+                       "console.log(JSON.stringify(C.COLLECTIONS.map((c) => c.slug)));"],
+        cwd=racine, capture_output=True, text=True, check=True).stdout
+    return {f'collections/{slug}.html': False for slug in json.loads(sortie)}
 
 DEBUT = '<!-- socle:jsonld -->'
 FIN = '<!-- /socle:jsonld -->'
@@ -96,7 +105,9 @@ def bloc(page, titre):
 
 def main():
     racine = pathlib.Path(__file__).resolve().parent
-    for page, titre in PAGES.items():
+    toutes_pages = dict(PAGES)
+    toutes_pages.update(pages_collections(racine))
+    for page, titre in toutes_pages.items():
         f = racine / page
         t = f.read_text(encoding='utf-8')
         nouveau = bloc(page, titre)

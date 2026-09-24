@@ -30,7 +30,11 @@
      ------------------------------------------------------------
      1. Ajouter un bloc à COLLECTIONS ci-dessous : id (sans accent
         ni espace), nom, occasion, description, alt de l'image, et
-        la liste des produits.
+        la liste des produits. « slug » (facultatif) donne l'adresse
+        publique /collections/<slug> quand elle doit différer de
+        l'id technique ; sans lui, l'id sert aussi de slug. Ne jamais
+        changer le slug d'une collection déjà publiée : l'adresse
+        doit rester stable.
      2. Chaque produit porte une « ref » unique dans sa collection ;
         son identifiant complet devient « <id collection>-<ref> ».
         Ne jamais renommer une ref déjà en ligne : c'est elle qui
@@ -390,6 +394,7 @@
     },
     {
       "id": "petit-ocean",
+      "slug": "ocean",
       "nom": "Petit Océan",
       "occasion": "Anniversaire enfant",
       "description": "Une collection pleine de douceur inspirée des fonds marins, dans de jolies nuances de bleu, turquoise, corail et vert. Personnalisable avec le prénom et l’âge de l’enfant, parfaite pour un anniversaire sur le thème de la mer.",
@@ -406,7 +411,7 @@
         { "ref": "etoile-orange", "nom": "Étoile de mer orange", "prix": 400 },
         { "ref": "etoile-bleue", "nom": "Étoile de mer bleue décorée", "prix": 400 },
         { "ref": "coquillage", "nom": "Coquillage bleu", "prix": 600, "photo": "vue-6.webp" },
-        { "ref": "corail", "nom": "Corail orange en relief", "prix": 600 },
+        { "ref": "corail", "nom": "Corail orange en relief", "prix": 600, "photo": "vue-6.webp" },
         { "ref": "baleine", "nom": "Baleine détaillée", "prix": 700, "photo": "vue-3.webp" },
         { "ref": "tortue", "nom": "Tortue marine détaillée", "prix": 700, "photo": "vue-4.webp" },
         { "ref": "hippocampe", "nom": "Hippocampe détaillé", "prix": 700, "photo": "vue-5.webp" },
@@ -619,6 +624,7 @@
      ------------------------------------------------------------ */
   var ARTICLES = [];
   COLLECTIONS.forEach(function (c) {
+    c.slug = c.slug || c.id;
     c.image = 'images/collections/' + c.id + '/principale.webp';
     (c.galerie || []).forEach(function (v) {
       v.image = 'images/collections/' + c.id + '/' + v.fichier;
