@@ -2059,6 +2059,12 @@ body.modale-ouverte{ overflow: hidden; }
 .page-chapo-suite{ margin-top: 10px; font-size: 15px; }
 .breadcrumb{ font-size: 13px; color: var(--ink-soft); margin-bottom: 18px; }
 .breadcrumb a:hover{ color: var(--gold-deep); }
+.collection-retour{
+  display: inline-block; margin-bottom: 22px;
+  font-size: 14px; color: var(--gold-deep);
+  border-bottom: 1px solid var(--gold);
+  padding-bottom: 2px;
+}
 
 /* ---------- À propos ---------- */
 .about-layout{
@@ -2829,6 +2835,39 @@ form.devis-form{
   display: block;
   font-size: 15.5px; color: var(--ink-soft); margin-bottom: 18px;
 }
+
+/* ---------- Grille produits d'une page collection ----------
+   Deux colonnes dès le mobile — la carte porte peu de texte, elle
+   reste lisible — puis trois et quatre en s'élargissant. Le compteur,
+   les champs de personnalisation et l'option réutilisent tels quels
+   les styles .choix-* de la modale : une seule apparence pour choisir
+   un biscuit, que ce soit ici ou dans la modale des autres pages. */
+.produit-grille{
+  display: grid; gap: 20px;
+  grid-template-columns: repeat(2, 1fr);
+}
+@media (min-width: 640px){ .produit-grille{ grid-template-columns: repeat(3, 1fr); } }
+@media (min-width: 980px){ .produit-grille{ grid-template-columns: repeat(4, 1fr); } }
+
+.produit-carte{
+  display: flex; flex-direction: column;
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  overflow: hidden;
+}
+.produit-photo{ display: block; aspect-ratio: 1/1; overflow: hidden; }
+.produit-photo img{ width: 100%; height: 100%; object-fit: cover; display: block; transition: transform .3s ease; }
+.produit-carte:hover .produit-photo img{ transform: scale(1.04); }
+.produit-corps{
+  display: flex; flex-direction: column; gap: 10px;
+  padding: 14px 16px 18px;
+  flex: 1;
+}
+.produit-nom{ font-size: 15px; line-height: 1.35; color: var(--ink); margin: 0; }
+.produit-prix{ display: block; font-family: var(--font-display); font-size: 16px; color: var(--gold-deep); }
+.produit-carte .choix-pas{ margin-top: auto; }
+.produit-ajouter{ width: 100%; }
 
 /* ---------- Les modèles d'une collection, dans la galerie ----------
    Nom à gauche, prix à droite, séparés par un filet : une liste de

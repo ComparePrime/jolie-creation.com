@@ -37,6 +37,12 @@
         relie un panier enregistré à son article.
      3. Le prix est en centimes. « perso » liste les informations à
         demander au client, parmi les clés de CHAMPS.
+     3bis. « photo » (facultatif) nomme, dans le même dossier que la
+        galerie, le fichier qui montre CE modèle précis — le plus
+        souvent une vue déjà listée dans « galerie ». Un produit sans
+        « photo » affiche la grande photo de la collection : jamais de
+        carte sans image, jamais une photo qui ne montre pas vraiment
+        ce qui est vendu.
      4. Déposer la photo dans images/collections/<id>/principale.webp.
         Un PNG ou un JPEG déposé à la place se convertit avec
         outils-photos.py. Si le fichier manque, la carte affiche
@@ -399,13 +405,13 @@
       "produits": [
         { "ref": "etoile-orange", "nom": "Étoile de mer orange", "prix": 400 },
         { "ref": "etoile-bleue", "nom": "Étoile de mer bleue décorée", "prix": 400 },
-        { "ref": "coquillage", "nom": "Coquillage bleu", "prix": 600 },
+        { "ref": "coquillage", "nom": "Coquillage bleu", "prix": 600, "photo": "vue-6.webp" },
         { "ref": "corail", "nom": "Corail orange en relief", "prix": 600 },
-        { "ref": "baleine", "nom": "Baleine détaillée", "prix": 700 },
-        { "ref": "tortue", "nom": "Tortue marine détaillée", "prix": 700 },
-        { "ref": "hippocampe", "nom": "Hippocampe détaillé", "prix": 700 },
-        { "ref": "chiffre-corail", "nom": "Chiffre personnalisé avec corail et végétation", "prix": 650, "perso": ["age"] },
-        { "ref": "prenom-etoile", "nom": "Prénom avec étoile et végétation marine", "prix": 650, "perso": ["prenom"] }
+        { "ref": "baleine", "nom": "Baleine détaillée", "prix": 700, "photo": "vue-3.webp" },
+        { "ref": "tortue", "nom": "Tortue marine détaillée", "prix": 700, "photo": "vue-4.webp" },
+        { "ref": "hippocampe", "nom": "Hippocampe détaillé", "prix": 700, "photo": "vue-5.webp" },
+        { "ref": "chiffre-corail", "nom": "Chiffre personnalisé avec corail et végétation", "prix": 650, "perso": ["age"], "photo": "vue-2.webp" },
+        { "ref": "prenom-etoile", "nom": "Prénom avec étoile et végétation marine", "prix": 650, "perso": ["prenom"], "photo": "vue-1.webp" }
       ]
     },
     {
@@ -637,6 +643,9 @@
       p.court = p.nom;
       p.champs = (p.perso || []).map(function (k) { return CHAMPS[k]; });
       if (p.option) p.option.champs = (p.option.perso || []).map(function (k) { return CHAMPS[k]; });
+      /* Photo dédiée si le produit en a une déclarée ; sinon la photo
+         de la collection sert de repli — jamais une carte sans image. */
+      p.image = p.photo ? 'images/collections/' + c.id + '/' + p.photo : c.image;
       ARTICLES.push(p);
     });
 

@@ -23,12 +23,26 @@ function demarrer(racine, port) {
     // Un chemin ne sort pas de la racine, quoi qu'il demande.
     const fichier = path.join(racine, path.normalize(rel).replace(/^(\.\.[/\\])+/, ''));
     if (!fichier.startsWith(racine)) { res.writeHead(403).end(); return; }
+    envoyer(fichier, res);
+  });
+
+  /* Les URLs propres de Netlify : une adresse sans extension, telle
+     /collections/ocean, se sert d'abord telle quelle, puis en ajoutant
+     .html, puis via son propre index.html — c'est le comportement par
+     défaut de Netlify (déjà observé pour /creations, /formules…), pas
+     une règle inventée ici pour les besoins du test. */
+  function envoyer(fichier, res, essai) {
     fs.readFile(fichier, (err, corps) => {
-      if (err) { res.writeHead(404, { 'Content-Type': 'text/plain' }).end('404'); return; }
+      if (err) {
+        if (!essai) return envoyer(fichier + '.html', res, 1);
+        if (essai === 1) return envoyer(path.join(fichier.slice(0, -5), 'index.html'), res, 2);
+        res.writeHead(404, { 'Content-Type': 'text/plain' }).end('404');
+        return;
+      }
       res.writeHead(200, { 'Content-Type': TYPES[path.extname(fichier).toLowerCase()] || 'application/octet-stream' });
       res.end(corps);
     });
-  });
+  }
   return new Promise((resoudre, rejeter) => {
     serveur.on('error', rejeter);
     serveur.listen(port, '127.0.0.1', () => resoudre({
