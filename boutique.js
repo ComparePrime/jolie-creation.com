@@ -674,6 +674,25 @@
     });
   }
 
+  /* ---------- Cartes package d'une page collection ----------
+     Une carte package montre déjà l'offre en entier — nom, prix,
+     composition : il n'y a rien à demander de plus. Le bouton ajoute
+     donc CE package précis directement, avec la même fonction ajouter()
+     que la modale utilise, sans ouvrir cette modale ni aucune autre
+     fenêtre. La modale des packages garde son rôle ailleurs (Mes
+     réalisations), où comparer plusieurs packages avant de choisir a
+     encore un sens. */
+  function brancherPackagesDirects() {
+    document.querySelectorAll('[data-package-ajouter]').forEach(function (bouton) {
+      if (bouton.dataset.branche) return;
+      bouton.dataset.branche = '1';
+      bouton.addEventListener('click', function () {
+        var a = ajouter(bouton.getAttribute('data-package-ajouter'), 1, null, false);
+        if (a) annoncer('« ' + a.nom + ' » (' + a.biscuits + ' biscuits) ajouté au panier.');
+      });
+    });
+  }
+
   /* ---------- Cartes produit d'une page collection ----------
      La grille d'une page /collections/<slug> ajoute directement depuis
      sa carte, sans passer par la modale : chaque carte réutilise telles
@@ -845,6 +864,7 @@
     surveillerPhotos();
     brancherBoutons();
     brancherPackages();
+    brancherPackagesDirects();
     brancherCartesProduits();
   });
 })();

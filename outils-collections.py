@@ -256,7 +256,7 @@ def carte_saison(c, premier=False):
             <span class="saison-occasion">Collection du moment</span>
             <span class="boutique-vedette-nom">{e(c['nom'])}</span>
             <span class="boutique-vedette-prix">{prix_depart(c)}</span>
-            <span class="btn btn-primary btn-small">Découvrir</span>
+            <span class="btn btn-primary btn-small">{'Voir les packages' if c['packagesSeuls'] else 'Découvrir'}</span>
           </span>
         </a>'''
 

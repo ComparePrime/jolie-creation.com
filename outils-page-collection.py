@@ -377,12 +377,12 @@ def carte_produit(p):
 
 
 def carte_package(pk, c):
-    """Une offre de la collection : la modale des packages, déjà
-    construite et testée, reste seule responsable de la sélection —
-    cette carte ne fait qu'inviter à l'ouvrir, avec data-packages et
-    ouvrirPackages(), sans rien dupliquer de leur logique. Sans photo
-    propre à l'assortiment, c'est la photo de la collection qui illustre
-    la carte, comme dans la modale elle-même."""
+    """Une offre de la collection, entièrement définie par sa carte :
+    rien à demander de plus, donc un ajout direct au panier avec
+    data-package-ajouter, sans passer par la modale (qui, elle, reste
+    au service de Mes réalisations, où plusieurs packages restent à
+    comparer avant de choisir). Sans photo propre à l'assortiment,
+    c'est la photo de la collection qui illustre la carte."""
     composition = '\n'.join(
         f'              <li><span class="package-qte">{d["qte"]} ×</span> {e(d["nom"])}</li>'
         for d in pk['detail'])
@@ -396,7 +396,7 @@ def carte_package(pk, c):
             <ul class="package-option-composition">
 {composition}
             </ul>
-            <button type="button" class="btn btn-primary produit-ajouter" data-packages="{e(c['id'])}">Choisir ce package</button>
+            <button type="button" class="btn btn-primary produit-ajouter" data-package-ajouter="{e(pk['id'])}">Ajouter au panier</button>
           </div>
         </article>'''
 
