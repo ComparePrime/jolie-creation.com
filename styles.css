@@ -1042,7 +1042,7 @@ img.cadrage-bas{ object-position: center 65%; }
 .formule-card .price{
   font-family: var(--font-display);
   color: var(--gold-deep);
-  font-size: 18px;
+  font-size: 19px;
   font-weight: 600;
   margin-bottom: 16px;
 }
@@ -2800,7 +2800,8 @@ form.devis-form{
 }
 .saison-prix{
   display: block;
-  font-size: 14.5px; color: var(--ink-soft); margin-bottom: 10px;
+  font-family: var(--font-display); font-size: 16px; font-weight: 600;
+  color: var(--gold-deep); margin-bottom: 10px;
 }
 .saison-voir{
   display: inline-block;
@@ -2852,7 +2853,8 @@ form.devis-form{
 }
 .boutique-vedette-prix{
   display: block;
-  font-size: 15.5px; color: var(--ink-soft); margin-bottom: 18px;
+  font-family: var(--font-display); font-size: 18px; font-weight: 600;
+  color: var(--gold-deep); margin-bottom: 18px;
 }
 
 /* ---------- Grille produits d'une page collection ----------
@@ -2884,7 +2886,10 @@ form.devis-form{
   flex: 1;
 }
 .produit-nom{ font-size: 15px; line-height: 1.35; color: var(--ink); margin: 0; }
-.produit-prix{ display: block; font-family: var(--font-display); font-size: 16px; color: var(--gold-deep); }
+/* Le prix est ce qu'on cherche en premier sur une carte produit : taille
+   et graisse au-dessus du nom, pas un badge ni un encadré — la
+   hiérarchie typographique suffit à le faire ressortir. */
+.produit-prix{ display: block; font-family: var(--font-display); font-size: 19px; font-weight: 600; color: var(--gold-deep); }
 .produit-carte .choix-pas,
 .produit-carte .package-option-composition{ margin-top: auto; }
 .produit-ajouter{ width: 100%; }
