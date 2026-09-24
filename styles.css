@@ -1244,7 +1244,12 @@ img.cadrage-bas{ object-position: center 65%; }
     overscroll-behavior-x: contain;
   }
   .avis-liste::-webkit-scrollbar{ display: none; }
-  .avis-carte{
+  /* Portée au carrousel : hors de lui (le bloc avis d'une réalisation
+     de Mes réalisations, par exemple, posé dans une colonne flex), le
+     flex-basis d'un axe devenu vertical vaudrait pour la hauteur —
+     78 % de haut pour trois lignes de texte, un vide énorme en bas de
+     carte. */
+  .avis-liste .avis-carte{
     flex: 0 0 78%;
     scroll-snap-align: center;
     padding: 22px 20px 24px;
@@ -1462,6 +1467,20 @@ img.cadrage-bas{ object-position: center 65%; }
   transition: transform .4s ease;
 }
 @media (hover: hover){ .collection-galerie figure:hover img{ transform: scale(1.02); } }
+
+/* Le lien discret d'une réalisation de Mes réalisations, quand des vues
+   secondaires existent : posé après la galerie plutôt que dans le corps,
+   pour rester le dernier mot de la carte plutôt qu'un bouton égaré entre
+   l'avis et les petites photos. Le sélecteur d'enfant direct ne vise que
+   ce cas : à l'intérieur de .collection-corps (pas de galerie), le lien
+   garde le padding de son parent sans qu'on le redéfinisse ici. */
+.collection-bloc > .collection-lien{
+  margin: 0;
+  padding: 2px 24px 26px;
+}
+@media (min-width: 900px){
+  .collection-bloc > .collection-lien{ padding: 4px 36px 36px; }
+}
 
 /* Le pays choisi empêche la commande telle quelle : le dire ici, au-dessus
    du bouton, sans masquer le formulaire — le client doit pouvoir changer
