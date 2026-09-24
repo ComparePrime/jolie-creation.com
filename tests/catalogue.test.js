@@ -625,6 +625,38 @@ const PRIX_TEMOINS = {
     assert.deepStrictEqual(avecPackages.map((c) => c.id), ['automne', 'frissons-halloween']);
   });
 
+  /* ---------- Frais de livraison ---------- */
+  await cas('la livraison en Suisse sous 150 CHF coûte 9 CHF', () => {
+    assert.strictEqual(Catalogue.fraisLivraison(14999, 'livraison', 'Suisse'), 900);
+    assert.strictEqual(Catalogue.fraisLivraison(100, 'livraison', 'Suisse'), 900);
+  });
+
+  await cas('la livraison en Suisse est offerte dès 150 CHF', () => {
+    assert.strictEqual(Catalogue.fraisLivraison(15000, 'livraison', 'Suisse'), 0);
+    assert.strictEqual(Catalogue.fraisLivraison(20000, 'livraison', 'Suisse'), 0);
+  });
+
+  await cas('la livraison hors de Suisse reste confirmée séparément', () => {
+    assert.strictEqual(Catalogue.fraisLivraison(100, 'livraison', 'France'), 0);
+    assert.strictEqual(Catalogue.fraisLivraison(100, 'livraison', ''), 0);
+  });
+
+  await cas('le retrait n’a jamais de frais de livraison', () => {
+    assert.strictEqual(Catalogue.fraisLivraison(100, 'retrait', 'Suisse'), 0);
+  });
+
+  await cas('la fonction de paiement facture les frais de livraison suisses', async () => {
+    // Un seul biscuit à 7 CHF x 12 = 84 CHF : sous le seuil de 150 CHF,
+    // la Suisse doit donc payer 84 + 9 = 93 CHF.
+    const r = await appeler({
+      lignes: [{ id: 'petit-ocean-baleine', qte: 12 }],
+      client: { reception: 'livraison', pays: 'Suisse' }
+    }, AVEC_CLES);
+    // La clé est bidon : on échoue au contact de SumUp (502), preuve que
+    // la retarification (avec frais) a bien été acceptée avant cela.
+    assert.ok(r.code === 502, 'attendu 502 (SumUp injoignable), reçu ' + r.code + ' : ' + JSON.stringify(r.corps));
+  });
+
   console.log(`\n${vert} test(s) au vert, ${rouge} en échec.`);
   process.exit(rouge === 0 ? 0 : 1);
 })();

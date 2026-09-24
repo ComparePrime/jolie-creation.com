@@ -29,16 +29,23 @@ document.addEventListener('DOMContentLoaded', function () {
   // --- Filtres galerie ---
   var filterBtns = document.querySelectorAll('.filter-btn');
   var galleryItems = document.querySelectorAll('.gallery-item');
+  var filtreVide = document.querySelector('.filtre-vide');
   if (filterBtns.length && galleryItems.length) {
     filterBtns.forEach(function (btn) {
       btn.addEventListener('click', function () {
         filterBtns.forEach(function (b) { b.classList.remove('active'); });
         btn.classList.add('active');
         var cat = btn.getAttribute('data-filter');
+        var visibles = 0;
         galleryItems.forEach(function (item) {
           var match = cat === 'all' || item.getAttribute('data-cat') === cat;
           item.style.display = match ? '' : 'none';
+          if (match) visibles++;
         });
+        // Un bouton de filtre peut ne correspondre à aucune collection
+        // pour l'instant (« Mariage », par exemple) : le dire plutôt que
+        // de laisser une grille vide sans explication.
+        if (filtreVide) filtreVide.hidden = visibles > 0;
       });
     });
   }
@@ -415,6 +422,7 @@ document.addEventListener('DOMContentLoaded', function () {
       { selector: '.value-card', max: 5, step: 80 },
       { selector: '.formule-card', max: 4, step: 110 },
       { selector: '.saison-carte', max: 3, step: 110 },
+      { selector: '.boutique-vedette', max: 2, step: 110 },
       { selector: '.testi-card', max: 4, step: 90 },
       { selector: '.event-card', max: 5, step: 70 },
       { selector: '.why-item', max: 4, step: 90 },

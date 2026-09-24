@@ -88,8 +88,10 @@ exports.handler = async (event) => {
     return reponse(400, { erreur: 'panier_vide', message: 'Le panier est vide.' });
   }
 
+  const mode = (charge.client && charge.client.reception) || '';
+
   // Le retrait se paie sur place : il n'a rien à faire ici.
-  if (charge.client && charge.client.reception === 'retrait') {
+  if (mode === 'retrait') {
     return reponse(400, {
       erreur: 'retrait_sans_paiement',
       message: 'Une commande à retirer se règle sur place, sans paiement en ligne.'
@@ -160,6 +162,12 @@ exports.handler = async (event) => {
     return reponse(400, { erreur: 'rien_a_facturer', message: 'Aucun montant à payer pour ce panier.' });
   }
 
+  /* Livraison en Suisse : offerte dès 150 CHF de panier, 9 CHF en
+     dessous. Même fonction que le récapitulatif de paiement, pour ne
+     pas compter différemment de part et d'autre. */
+  const frais = Catalogue.fraisLivraison(centimes, mode, pays);
+  centimes += frais;
+
   const origine = process.env.URL || process.env.DEPLOY_PRIME_URL ||
     (event.headers && event.headers.origin) || 'https://jolie-creation.com';
   const ref = reference(charge.reference);
@@ -203,8 +211,9 @@ exports.handler = async (event) => {
       id: data.id,
       reference: ref,
       // Renvoyé pour que le navigateur vérifie que son total correspond
-      // bien à celui qui sera débité.
-      montant: centimes
+      // bien à celui qui sera débité. Frais de livraison inclus.
+      montant: centimes,
+      frais: frais
     });
   } catch (e) {
     console.error('SumUp checkout exception', e && e.message);

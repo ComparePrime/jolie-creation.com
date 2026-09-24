@@ -778,6 +778,23 @@
     }).map(function (l) { return article(l.id); });
   }
 
+  /* ---------- Frais de livraison ----------
+     Offerts dès 150 CHF de panier, 9 CHF en dessous — en Suisse
+     seulement. La France et le reste de l'Europe gardent des frais
+     confirmés séparément après coup, comme avant cette règle ; le
+     retrait ne livre rien, donc rien n'est facturé ici non plus.
+
+     Une seule fonction, appelée des deux côtés : le récapitulatif de
+     paiement et la fonction qui encaisse ne peuvent pas compter
+     différemment. */
+  var SEUIL_LIVRAISON_OFFERTE = 15000;
+  var FRAIS_LIVRAISON_SUISSE = 900;
+
+  function fraisLivraison(payable, mode, pays) {
+    if (mode !== 'livraison' || pays !== 'Suisse') return 0;
+    return payable >= SEUIL_LIVRAISON_OFFERTE ? 0 : FRAIS_LIVRAISON_SUISSE;
+  }
+
   /* 600 -> « 6 CHF » ; 650 -> « 6.50 CHF ». */
   function formater(centimes) {
     var francs = centimes / 100;
@@ -798,6 +815,8 @@
     RETRAIT_LIEU: RETRAIT_LIEU,
     MIN_BISCUITS: MIN_BISCUITS,
     DEVISE: DEVISE,
+    SEUIL_LIVRAISON_OFFERTE: SEUIL_LIVRAISON_OFFERTE,
+    FRAIS_LIVRAISON_SUISSE: FRAIS_LIVRAISON_SUISSE,
     article: article,
     collection: collection,
     prixUnitaire: prixUnitaire,
@@ -806,6 +825,7 @@
     biscuitsIndividuels: biscuitsIndividuels,
     lignesHorsVente: lignesHorsVente,
     packagesHorsZone: packagesHorsZone,
+    fraisLivraison: fraisLivraison,
     formater: formater,
     enFrancs: enFrancs
   };

@@ -308,6 +308,7 @@
 
   /* ---------- Récapitulatif ---------- */
   function rendreRecap() {
+    var mode = modeChoisi();
     var pays = paysChoisi();
     var t = Panier.totaux(pays);
     /* Deux blocages, et il ne faut pas les confondre.
@@ -357,9 +358,23 @@
         rangRecap(l.qte + ' × ' + a.court, Cat.formater(r.payable), 'recap-sous-ligne');
       });
     });
-    document.getElementById('pay-total').textContent = Cat.formater(t.payable);
-    document.getElementById('pay-mention').textContent =
-      t.biscuits + ' biscuits au total. Frais de livraison éventuels confirmés séparément.';
+    /* Livraison en Suisse : offerte dès 150 CHF, sinon 9 CHF — la même
+       fonction que côté serveur, pour ne jamais annoncer un total que
+       le paiement ne débitera pas. Les autres destinations gardent des
+       frais confirmés séparément, comme avant cette règle. */
+    var frais = Cat.fraisLivraison(t.payable, mode, pays);
+    if (mode === 'livraison' && pays === 'Suisse') {
+      rangRecap('Frais de livraison', frais > 0 ? Cat.formater(frais) : 'Offerte', 'recap-entete');
+    }
+    document.getElementById('pay-total').textContent = Cat.formater(t.payable + frais);
+    document.getElementById('pay-mention').textContent = t.biscuits + ' biscuits au total.' + (
+      mode !== 'livraison' ? '' :
+      pays === 'Suisse'
+        ? (frais > 0
+          ? ' Livraison à ' + Cat.formater(frais) + ', offerte dès ' + Cat.formater(Cat.SEUIL_LIVRAISON_OFFERTE) + '.'
+          : ' Livraison offerte.')
+        : ' Frais de livraison éventuels confirmés séparément.'
+    );
   }
 
   if (new URLSearchParams(location.search).get('annule')) {
@@ -401,6 +416,9 @@
       email: valeur('pay-email'),
       telephone: valeur('pay-tel'),
       total: Cat.formater(resume.total),
+      // N'apparaît que lorsqu'une livraison en Suisse est réellement
+      // facturée : gratuite ou hors Suisse, le champ reste vide.
+      fraisLivraison: resume.frais ? Cat.formater(resume.frais) : '',
       paiement: mode === 'livraison' ? 'En ligne (SumUp)' : 'Sur place, espèces ou TWINT',
       // Une ligne par biscuit, sous le nom de sa collection. Les entêtes
       // n'ont ni quantité ni montant : elles ouvrent un groupe.
@@ -461,6 +479,10 @@
     var resume = Panier.resumeCommande();
     resume.reference = reference;
     resume.reception = mode;
+    // Même règle qu'au récapitulatif : le total enregistré et envoyé par
+    // e-mail doit être celui que le paiement va réellement débiter.
+    resume.frais = Cat.fraisLivraison(resume.total, mode, paysChoisi());
+    resume.total += resume.frais;
 
     bouton.disabled = true;
     bouton.textContent = mode === 'livraison' ? 'Redirection vers le paiement…' : 'Enregistrement…';

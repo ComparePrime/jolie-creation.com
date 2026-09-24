@@ -136,11 +136,11 @@
     <div class="wrap">
       <div class="hero-copy">
         <span class="eyebrow">Biscuits décorés à la main</span>
-        <h1>Biscuits personnalisés imaginés <span class="script">pour vos événements</span></h1>
-        <p class="lead">Des biscuits sablés décorés au glaçage royal, créés selon vos envies et votre événement. Anniversaire, baptême, naissance, mariage ou événement d’entreprise : chaque création apporte une touche gourmande et personnalisée à votre occasion.</p>
+        <h1>Biscuits personnalisés</h1>
+        <p class="lead">Des créations imaginées et décorées à la main pour accompagner vos plus beaux moments.</p>
         <div class="hero-actions">
           <a href="#saison" class="btn btn-primary">Voir la saison en cours</a>
-          <a href="mes-realisations.html" class="btn btn-ghost">Mes réalisations</a>
+          <a href="#collections" class="btn btn-ghost">Découvrir les collections</a>
         </div>
         <div class="hero-trust">
           <div><strong>Fabrication artisanale</strong>Créations réalisées avec soin</div>
@@ -152,143 +152,370 @@
   </section>
 
   <!-- ==========================================================
-       LES COLLECTIONS DU MOMENT
+       COLLECTIONS DU MOMENT
        Ce qui se commande maintenant passe avant ce qui se commande
-       toute l'année. Les deux blocs sortent du même catalogue : le
-       drapeau « saison » décide seul de qui monte ici.
-       ========================================================== -->
-  <!-- ==========================================================
-       SAISON EN COURS
-       La seule section de la page où l'on présente des collections.
-       Le drapeau « saison » du catalogue décide de qui y figure ; les
-       autres collections restent achetables et se découvrent dans
-       « Mes réalisations ».
-       ========================================================== -->
-  <!-- ==========================================================
-       SAISON EN COURS
-       Un aperçu, pas un catalogue : photo, nom, et un lien vers la
-       galerie. Les modèles et les prix vivent dans Mes réalisations.
+       toute l'année. Mises en avant, jamais en choix de biscuit à
+       l'unité : la sélection se fait dans la modale des packages,
+       comme partout ailleurs. Le drapeau « saison » du catalogue
+       décide seul de qui monte ici.
        ========================================================== -->
   <section id="saison" class="section-deep" aria-labelledby="saison-title">
     <div class="wrap">
       <div class="section-head center">
         <div class="ornament"><i></i></div>
         <span class="eyebrow" style="justify-content:center;">Disponible maintenant</span>
-        <h2 id="saison-title">Saison en cours</h2>
-        <p class="narrow">Les biscuits décorés que je prépare en ce moment. Leurs modèles et leurs tarifs se découvrent dans la galerie, avec toutes mes autres collections.</p>
+        <h2 id="saison-title">Collections du moment</h2>
+        <p class="narrow">Deux collections en assortiments prêts à offrir, pour un temps limité.</p>
       </div>
 
-      <div class="saison-apercu">
+      <div class="boutique-vedettes">
 <!-- saison:apercu -->
-        <a class="saison-carte" href="mes-realisations.html#automne">
-          <span class="saison-photo">
-            <img src="images/collections/automne/principale.webp" alt="Assortiment de biscuits d’automne décorés à la main : feuilles d’érable, citrouilles et tasses sur un set en fibre naturelle" loading="lazy" decoding="async" width="800" height="800">
+        <a class="boutique-vedette" href="mes-realisations.html#automne">
+          <span class="boutique-vedette-photo">
+            <img src="images/collections/automne/principale.webp" alt="Assortiment de biscuits d’automne décorés à la main : feuilles d’érable, citrouilles et tasses sur un set en fibre naturelle" loading="eager" fetchpriority="high" decoding="async" width="1000" height="1000">
           </span>
-          <span class="saison-corps">
-            <span class="saison-occasion">Automne</span>
-            <span class="saison-nom">Automne</span>
-            <span class="saison-voir">Voir la collection</span>
+          <span class="boutique-vedette-corps">
+            <span class="saison-occasion">Collection du moment</span>
+            <span class="boutique-vedette-nom">Automne</span>
+            <span class="boutique-vedette-prix">Dès 32.90 CHF</span>
+            <span class="btn btn-primary btn-small">Découvrir</span>
           </span>
         </a>
-        <a class="saison-carte" href="mes-realisations.html#frissons-halloween">
-          <span class="saison-photo">
-            <img src="images/collections/frissons-halloween/principale.webp" alt="Biscuits d’Halloween personnalisés : citrouilles, fantôme et toile d’araignée" loading="lazy" decoding="async" width="800" height="800">
+
+        <a class="boutique-vedette" href="mes-realisations.html#frissons-halloween">
+          <span class="boutique-vedette-photo">
+            <img src="images/collections/frissons-halloween/principale.webp" alt="Biscuits d’Halloween personnalisés : citrouilles, fantôme et toile d’araignée" loading="lazy" fetchpriority="auto" decoding="async" width="1000" height="1000">
           </span>
-          <span class="saison-corps">
-            <span class="saison-occasion">Halloween</span>
-            <span class="saison-nom">Frissons d’Halloween</span>
-            <span class="saison-voir">Voir la collection</span>
+          <span class="boutique-vedette-corps">
+            <span class="saison-occasion">Collection du moment</span>
+            <span class="boutique-vedette-nom">Frissons d’Halloween</span>
+            <span class="boutique-vedette-prix">Dès 32.90 CHF</span>
+            <span class="btn btn-primary btn-small">Découvrir</span>
           </span>
         </a>
 <!-- /saison:apercu -->
       </div>
-
-      <p class="collections-fin"><a href="mes-realisations.html#collections">Découvrir mes réalisations</a> pour voir les vingt et une collections, leurs modèles et leurs prix.</p>
     </div>
   </section>
 
   <!-- ==========================================================
        COMMENT SONT CRÉÉS MES BISCUITS
-       Les photos viennent de l'atelier, pas d'une banque d'images.
-       Une étape sans photo garde son cadre, au nom de l'étape : il
-       suffira d'y glisser un <img> le jour où la photo existera.
+       Retiré de cette page vitrine-boutique : ce contenu rejoindra
+       a-propos.html. Le texte complet reste dans l'historique Git et
+       dans le rapport de la refonte, pour un déplacement propre.
        ========================================================== -->
-  <section id="atelier" aria-labelledby="atelier-title">
+
+  <!-- ==========================================================
+       TOUTES LES COLLECTIONS
+       La grille e-commerce : image, nom, prix de départ, lien. Le
+       détail — modèles, compositions, prix exact — vit sur la page
+       de chaque collection, pas ici.
+       ========================================================== -->
+  <section id="collections" aria-labelledby="collections-title">
+    <div class="wrap">
+      <div class="section-head center section-head-mince">
+        <span class="eyebrow" style="justify-content:center;">La boutique</span>
+        <h2 id="collections-title">Toutes les collections</h2>
+        <p class="narrow">Explorez les différents univers imaginés par Jolie Création.</p>
+      </div>
+
+      <div class="filters" role="group" aria-label="Filtrer les collections par occasion">
+        <button type="button" class="filter-btn active" data-filter="all">Toutes</button>
+        <button type="button" class="filter-btn" data-filter="Anniversaire">Anniversaire</button>
+        <button type="button" class="filter-btn" data-filter="Naissance">Naissance</button>
+        <button type="button" class="filter-btn" data-filter="Baptême">Baptême</button>
+        <button type="button" class="filter-btn" data-filter="Mariage">Mariage</button>
+        <button type="button" class="filter-btn" data-filter="Fêtes">Fêtes</button>
+        <button type="button" class="filter-btn" data-filter="Entreprise">Entreprise</button>
+      </div>
+
+      <div class="boutique-grille">
+<!-- boutique:grille -->
+        <a class="gallery-item saison-carte" href="mes-realisations.html#magie-noel" data-cat="Fêtes">
+          <span class="saison-photo">
+            <img src="images/collections/magie-noel/principale.webp" alt="Biscuits de Noël personnalisés décorés à la main : sapins, flocons et boules dorées" loading="lazy" decoding="async" width="600" height="600">
+          </span>
+          <span class="saison-corps">
+            <span class="saison-occasion">Noël</span>
+            <span class="saison-nom">Magie de Noël</span>
+            <span class="saison-prix">Dès 5 CHF</span>
+            <span class="saison-voir">Voir la collection</span>
+          </span>
+        </a>
+        <a class="gallery-item saison-carte" href="mes-realisations.html#douceurs-paques" data-cat="Fêtes">
+          <span class="saison-photo">
+            <img src="images/collections/douceurs-paques/principale.webp" alt="Biscuits de Pâques décorés à la main : lapin, œufs fleuris et marguerites pastel" loading="lazy" decoding="async" width="600" height="600">
+          </span>
+          <span class="saison-corps">
+            <span class="saison-occasion">Pâques</span>
+            <span class="saison-nom">Douceurs de Pâques</span>
+            <span class="saison-prix">Dès 5 CHF</span>
+            <span class="saison-voir">Voir la collection</span>
+          </span>
+        </a>
+        <a class="gallery-item saison-carte" href="mes-realisations.html#merci-maitresse" data-cat="Fêtes">
+          <span class="saison-photo">
+            <img src="images/collections/merci-maitresse/principale.webp" alt="Biscuits personnalisés pour remercier la maîtresse en fin d’année scolaire" loading="lazy" decoding="async" width="600" height="600">
+          </span>
+          <span class="saison-corps">
+            <span class="saison-occasion">Fin d’année scolaire</span>
+            <span class="saison-nom">Merci Maîtresse – Bonnes Vacances</span>
+            <span class="saison-prix">Dès 6 CHF</span>
+            <span class="saison-voir">Voir la collection</span>
+          </span>
+        </a>
+        <a class="gallery-item saison-carte" href="mes-realisations.html#bonne-fete-maman" data-cat="Fêtes">
+          <span class="saison-photo">
+            <img src="images/collections/bonne-fete-maman/principale.webp" alt="Biscuits personnalisés pour la fête des mères : marguerites et cœurs en relief" loading="lazy" decoding="async" width="600" height="600">
+          </span>
+          <span class="saison-corps">
+            <span class="saison-occasion">Fête des mères</span>
+            <span class="saison-nom">Bonne fête Maman</span>
+            <span class="saison-prix">Dès 6 CHF</span>
+            <span class="saison-voir">Voir la collection</span>
+          </span>
+        </a>
+        <a class="gallery-item saison-carte" href="mes-realisations.html#bapteme-douceur" data-cat="Baptême">
+          <span class="saison-photo">
+            <img src="images/collections/bapteme-douceur/principale.webp" alt="Biscuits de baptême personnalisés au prénom, feuillages en relief et cœur doré" loading="lazy" decoding="async" width="600" height="600">
+          </span>
+          <span class="saison-corps">
+            <span class="saison-occasion">Baptême</span>
+            <span class="saison-nom">Baptême Douceur</span>
+            <span class="saison-prix">Dès 7 CHF</span>
+            <span class="saison-voir">Voir la collection</span>
+          </span>
+        </a>
+        <a class="gallery-item saison-carte" href="mes-realisations.html#annonce-grossesse" data-cat="Naissance">
+          <span class="saison-photo">
+            <img src="images/collections/annonce-grossesse/principale.webp" alt="Biscuits d’annonce de grossesse personnalisés dans des tons ivoire et doré" loading="lazy" decoding="async" width="600" height="600">
+          </span>
+          <span class="saison-corps">
+            <span class="saison-occasion">Annonce de grossesse</span>
+            <span class="saison-nom">Annonce de grossesse</span>
+            <span class="saison-prix">Dès 4 CHF</span>
+            <span class="saison-voir">Voir la collection</span>
+          </span>
+        </a>
+        <a class="gallery-item saison-carte" href="mes-realisations.html#douceur-personnalisee" data-cat="Anniversaire">
+          <span class="saison-photo">
+            <img src="images/collections/douceur-personnalisee/principale.webp" alt="Biscuits d’anniversaire personnalisés au prénom, rose poudré et doré" loading="lazy" decoding="async" width="600" height="600">
+          </span>
+          <span class="saison-corps">
+            <span class="saison-occasion">Anniversaire</span>
+            <span class="saison-nom">Douceur personnalisée</span>
+            <span class="saison-prix">Dès 6 CHF</span>
+            <span class="saison-voir">Voir la collection</span>
+          </span>
+        </a>
+        <a class="gallery-item saison-carte" href="mes-realisations.html#girls-club" data-cat="Fêtes">
+          <span class="saison-photo">
+            <img src="images/collections/girls-club/principale.webp" alt="Biscuits personnalisés pour un EVJF, inscription en relief et contour travaillé" loading="lazy" decoding="async" width="600" height="600">
+          </span>
+          <span class="saison-corps">
+            <span class="saison-occasion">EVJF</span>
+            <span class="saison-nom">Girls Club – EVJF</span>
+            <span class="saison-prix">Dès 6 CHF</span>
+            <span class="saison-voir">Voir la collection</span>
+          </span>
+        </a>
+        <a class="gallery-item saison-carte" href="mes-realisations.html#american-road-trip" data-cat="Anniversaire">
+          <span class="saison-photo">
+            <img src="images/collections/american-road-trip/principale.webp" alt="Biscuits personnalisés sur le thème des États-Unis et de la Route 66" loading="lazy" decoding="async" width="600" height="600">
+          </span>
+          <span class="saison-corps">
+            <span class="saison-occasion">Anniversaire</span>
+            <span class="saison-nom">American Road Trip</span>
+            <span class="saison-prix">Dès 6 CHF</span>
+            <span class="saison-voir">Voir la collection</span>
+          </span>
+        </a>
+        <a class="gallery-item saison-carte" href="mes-realisations.html#petit-chantier" data-cat="Anniversaire">
+          <span class="saison-photo">
+            <img src="images/collections/petit-chantier/principale.webp" alt="Biscuits d’anniversaire sur le thème du chantier : pelleteuse, grue et casque" loading="lazy" decoding="async" width="600" height="600">
+          </span>
+          <span class="saison-corps">
+            <span class="saison-occasion">Anniversaire enfant</span>
+            <span class="saison-nom">Petit Chantier</span>
+            <span class="saison-prix">Dès 5 CHF</span>
+            <span class="saison-voir">Voir la collection</span>
+          </span>
+        </a>
+        <a class="gallery-item saison-carte" href="mes-realisations.html#passion-cheval" data-cat="Anniversaire">
+          <span class="saison-photo">
+            <img src="images/collections/passion-cheval/principale.webp" alt="Biscuits décorés sur le thème du cheval : fer à cheval, bottes et tête de cheval" loading="lazy" decoding="async" width="600" height="600">
+          </span>
+          <span class="saison-corps">
+            <span class="saison-occasion">Anniversaire enfant</span>
+            <span class="saison-nom">Passion Cheval</span>
+            <span class="saison-prix">Dès 4 CHF</span>
+            <span class="saison-voir">Voir la collection</span>
+          </span>
+        </a>
+        <a class="gallery-item saison-carte" href="mes-realisations.html#petit-ocean" data-cat="Anniversaire">
+          <span class="saison-photo">
+            <img src="images/collections/petit-ocean/principale.webp" alt="Biscuits personnalisés thème océan : baleine, tortue marine et étoiles de mer" loading="lazy" decoding="async" width="600" height="600">
+          </span>
+          <span class="saison-corps">
+            <span class="saison-occasion">Anniversaire enfant</span>
+            <span class="saison-nom">Petit Océan</span>
+            <span class="saison-prix">Dès 4 CHF</span>
+            <span class="saison-voir">Voir la collection</span>
+          </span>
+        </a>
+        <a class="gallery-item saison-carte" href="mes-realisations.html#reve-licorne" data-cat="Anniversaire">
+          <span class="saison-photo">
+            <img src="images/collections/reve-licorne/principale.webp" alt="Biscuits décorés thème licorne, rose poudré, lilas et touches dorées" loading="lazy" decoding="async" width="600" height="600">
+          </span>
+          <span class="saison-corps">
+            <span class="saison-occasion">Anniversaire enfant</span>
+            <span class="saison-nom">Rêve de Licorne</span>
+            <span class="saison-prix">Dès 5 CHF</span>
+            <span class="saison-voir">Voir la collection</span>
+          </span>
+        </a>
+        <a class="gallery-item saison-carte" href="mes-realisations.html#petite-oie" data-cat="Anniversaire">
+          <span class="saison-photo">
+            <img src="images/collections/petite-oie/principale.webp" alt="Biscuits personnalisés thème petite oie sur fond vichy, tons naturels" loading="lazy" decoding="async" width="600" height="600">
+          </span>
+          <span class="saison-corps">
+            <span class="saison-occasion">Premier anniversaire</span>
+            <span class="saison-nom">Petite Oie</span>
+            <span class="saison-prix">Dès 4 CHF</span>
+            <span class="saison-voir">Voir la collection</span>
+          </span>
+        </a>
+        <a class="gallery-item saison-carte" href="mes-realisations.html#petit-lapin-jardin" data-cat="Anniversaire">
+          <span class="saison-photo">
+            <img src="images/collections/petit-lapin-jardin/principale.webp" alt="Biscuits personnalisés thème petit lapin au jardin, tons bleu et vert tendre" loading="lazy" decoding="async" width="600" height="600">
+          </span>
+          <span class="saison-corps">
+            <span class="saison-occasion">Anniversaire enfant</span>
+            <span class="saison-nom">Petit Lapin au Jardin</span>
+            <span class="saison-prix">Dès 4 CHF</span>
+            <span class="saison-voir">Voir la collection</span>
+          </span>
+        </a>
+        <a class="gallery-item saison-carte" href="mes-realisations.html#gender-reveal" data-cat="Naissance">
+          <span class="saison-photo">
+            <img src="images/collections/gender-reveal/principale.webp" alt="Biscuits personnalisés pour une gender reveal, tons rose poudré et bleu ciel" loading="lazy" decoding="async" width="600" height="600">
+          </span>
+          <span class="saison-corps">
+            <span class="saison-occasion">Gender reveal</span>
+            <span class="saison-nom">Gender Reveal</span>
+            <span class="saison-prix">Dès 5 CHF</span>
+            <span class="saison-voir">Voir la collection</span>
+          </span>
+        </a>
+        <a class="gallery-item saison-carte" href="mes-realisations.html#saint-valentin" data-cat="Fêtes">
+          <span class="saison-photo">
+            <img src="images/collections/saint-valentin/principale.webp" alt="Biscuits de Saint-Valentin décorés à la main : cœurs, enveloppe et « Love »" loading="lazy" decoding="async" width="600" height="600">
+          </span>
+          <span class="saison-corps">
+            <span class="saison-occasion">Saint-Valentin</span>
+            <span class="saison-nom">Saint-Valentin</span>
+            <span class="saison-prix">Dès 4 CHF</span>
+            <span class="saison-voir">Voir la collection</span>
+          </span>
+        </a>
+        <a class="gallery-item saison-carte" href="mes-realisations.html#dolce-vita" data-cat="Anniversaire">
+          <span class="saison-photo">
+            <img src="images/collections/dolce-vita/principale.webp" alt="Biscuits artisanaux thème Dolce Vita et Italie : citrons et faïences bleues" loading="lazy" decoding="async" width="600" height="600">
+          </span>
+          <span class="saison-corps">
+            <span class="saison-occasion">Anniversaire</span>
+            <span class="saison-nom">Dolce Vita</span>
+            <span class="saison-prix">Dès 4 CHF</span>
+            <span class="saison-voir">Voir la collection</span>
+          </span>
+        </a>
+        <a class="gallery-item saison-carte" href="mes-realisations.html#moto" data-cat="Anniversaire">
+          <span class="saison-photo">
+            <img src="images/collections/moto/principale.webp" alt="Biscuits d’anniversaire thème moto : casque, drapeau à damier et circuit" loading="lazy" decoding="async" width="600" height="600">
+          </span>
+          <span class="saison-corps">
+            <span class="saison-occasion">Anniversaire</span>
+            <span class="saison-nom">Moto</span>
+            <span class="saison-prix">Dès 5 CHF</span>
+            <span class="saison-voir">Voir la collection</span>
+          </span>
+        </a>
+        <a class="gallery-item saison-carte" href="mes-realisations.html#douceur-abeille" data-cat="Anniversaire">
+          <span class="saison-photo">
+            <img src="images/collections/douceur-abeille/principale.webp" alt="Biscuits personnalisés thème abeille : alvéoles dorées, marguerites et prénom calligraphié" loading="lazy" decoding="async" width="600" height="600">
+          </span>
+          <span class="saison-corps">
+            <span class="saison-occasion">Premier anniversaire</span>
+            <span class="saison-nom">Douceur d’Abeille</span>
+            <span class="saison-prix">Sur devis</span>
+            <span class="saison-voir">Voir la collection</span>
+          </span>
+        </a>
+        <a class="gallery-item saison-carte" href="mes-realisations.html#velo-route" data-cat="Anniversaire">
+          <span class="saison-photo">
+            <img src="images/collections/velo-route/principale.webp" alt="Biscuits d’anniversaire thème vélo de route : vélo dessiné à la main, âge et prénom" loading="lazy" decoding="async" width="600" height="600">
+          </span>
+          <span class="saison-corps">
+            <span class="saison-occasion">Anniversaire adulte</span>
+            <span class="saison-nom">Passion Vélo</span>
+            <span class="saison-prix">Sur devis</span>
+            <span class="saison-voir">Voir la collection</span>
+          </span>
+        </a>
+        <a class="gallery-item saison-carte" href="mes-realisations.html#elegance-florale" data-cat="Anniversaire">
+          <span class="saison-photo">
+            <img src="images/collections/elegance-florale/principale.webp" alt="Biscuits d’anniversaire floraux : fleurs en relief, initiale et âge dans des tons rose et bordeaux" loading="lazy" decoding="async" width="600" height="600">
+          </span>
+          <span class="saison-corps">
+            <span class="saison-occasion">Anniversaire adulte</span>
+            <span class="saison-nom">Élégance Florale</span>
+            <span class="saison-prix">Sur devis</span>
+            <span class="saison-voir">Voir la collection</span>
+          </span>
+        </a>
+        <a class="gallery-item saison-carte" href="mes-realisations.html#bapteme-nature" data-cat="Baptême">
+          <span class="saison-photo">
+            <img src="images/collections/bapteme-nature/principale.webp" alt="Biscuits de baptême vert sauge : colombe, feuillages d’olivier et médaillon à l’initiale" loading="lazy" decoding="async" width="600" height="600">
+          </span>
+          <span class="saison-corps">
+            <span class="saison-occasion">Baptême</span>
+            <span class="saison-nom">Baptême Nature</span>
+            <span class="saison-prix">Sur devis</span>
+            <span class="saison-voir">Voir la collection</span>
+          </span>
+        </a>
+        <a class="gallery-item saison-carte" href="mes-realisations.html#logo-entreprise" data-cat="Entreprise">
+          <span class="saison-photo">
+            <img src="images/collections/logo-entreprise/principale.webp" alt="Biscuits personnalisés au logo d’entreprise, reproduits à la main au glaçage royal" loading="lazy" decoding="async" width="600" height="600">
+          </span>
+          <span class="saison-corps">
+            <span class="saison-occasion">Entreprise</span>
+            <span class="saison-nom">Logo d’entreprise</span>
+            <span class="saison-prix">Sur devis</span>
+            <span class="saison-voir">Voir la collection</span>
+          </span>
+        </a>
+<!-- /boutique:grille -->
+      </div>
+      <p class="filtre-vide narrow" hidden>Aucune collection dans cette catégorie pour le moment. <a href="contact.html?formule=biscuits">Écrivez-moi</a> ce que vous cherchez : je vous réponds directement.</p>
+    </div>
+  </section>
+
+  <!-- ==========================================================
+       LIVRAISON & RETRAIT
+       ========================================================== -->
+  <section id="livraison" aria-labelledby="livraison-title">
     <div class="wrap">
       <div class="section-head center">
         <div class="ornament"><i></i></div>
-        <span class="eyebrow" style="justify-content:center;">Dans mon atelier</span>
-        <h2 id="atelier-title">Comment sont créés mes biscuits&nbsp;?</h2>
-        <p class="narrow">Tout commence par la préparation de la pâte, puis chaque biscuit passe entre mes mains pour être découpé, cuit, décoré et soigneusement emballé. Une fabrication en six étapes, réalisée sans production en série, jusqu’au sachet final.</p>
+        <span class="eyebrow" style="justify-content:center;">Informations utiles</span>
+        <h2 id="livraison-title">Livraison &amp; retrait</h2>
       </div>
-
-      <ol class="atelier-etapes">
-        <li class="atelier-etape">
-          <div class="atelier-photo">
-            <img src="images/site/atelier-pate.webp" alt="Pâte à biscuits sablés préparée à la main dans la cuve du batteur, avant le repos au frais et la découpe" width="1200" height="1600" loading="lazy" decoding="async" class="cadrage-milieu">
-          </div>
-          <div class="atelier-texte">
-            <span class="atelier-num">01</span>
-            <h3>Préparation de la pâte</h3>
-            <p>Beurre, farine, sucre glace, œuf, sel de Guérande et vanille. La pâte repose au frais avant d’être abaissée : c’est ce repos qui donne au biscuit sablé sa tenue et des bords nets.</p>
-          </div>
-        </li>
-
-        <li class="atelier-etape">
-          <div class="atelier-photo">
-            <img src="images/site/atelier-decoupe.webp" alt="Découpe à l’emporte-pièce dans la pâte étalée, et les formes déjà découpées alignées sur la plaque de cuisson" width="1179" height="1369" loading="lazy" decoding="async" class="cadrage-bas">
-          </div>
-          <div class="atelier-texte">
-            <span class="atelier-num">02</span>
-            <h3>Découpe des biscuits</h3>
-            <p>Chaque forme est découpée une par une, à l’emporte-pièce ou au gabarit dessiné pour l’occasion. C’est là que naissent les silhouettes sur mesure : un chiffre, un prénom, un animal, un logo.</p>
-          </div>
-        </li>
-
-        <li class="atelier-etape">
-          <div class="atelier-photo">
-            <img src="images/site/atelier-cuisson.webp" alt="Biscuits sablés nature empilés sur une grille de refroidissement à la sortie du four, avant décoration" width="1311" height="1600" loading="lazy" decoding="async" class="cadrage-bas">
-          </div>
-          <div class="atelier-texte">
-            <span class="atelier-num">03</span>
-            <h3>Cuisson</h3>
-            <p>Les biscuits cuisent juste ce qu’il faut pour rester tendres au centre, puis refroidissent complètement sur grille. Un biscuit encore tiède ferait fondre le glaçage.</p>
-          </div>
-        </li>
-
-        <li class="atelier-etape">
-          <div class="atelier-photo">
-            <img src="images/site/atelier-decoration.webp" alt="Poches à douille de glaçage royal prêtes à l’emploi, du blanc au terracotta, alignées sur le plan de travail de l’atelier" width="1389" height="1600" loading="lazy" decoding="async" class="cadrage-tiers">
-          </div>
-          <div class="atelier-texte">
-            <span class="atelier-num">04</span>
-            <h3>Décoration à la main</h3>
-            <p>Le glaçage royal est monté, coloré et mis en poche teinte par teinte. Les contours d’abord, le remplissage ensuite, puis un séchage de plusieurs heures avant les détails et les reliefs. Un biscuit décoré demande souvent deux jours.</p>
-          </div>
-        </li>
-
-        <li class="atelier-etape">
-          <div class="atelier-photo">
-            <img src="images/collections/douceur-personnalisee/prenom-giulia.webp" alt="Prénom calligraphié à la main au glaçage doré sur un biscuit personnalisé en forme de nuage" width="1800" height="1196" loading="lazy" decoding="async">
-          </div>
-          <div class="atelier-texte">
-            <span class="atelier-num">05</span>
-            <h3>Personnalisation</h3>
-            <p>Prénom, âge, date, initiale ou petit message : l’écriture se fait à main levée, au dernier moment, pour que chaque biscuit porte exactement les mots que vous avez choisis.</p>
-          </div>
-        </li>
-
-        <li class="atelier-etape">
-          <div class="atelier-photo">
-            <img src="images/site/atelier-emballage.webp" alt="Commande prête au départ : biscuits décorés ensachés un par un dans leur boîte Jolie Création, carte « Merci » et sac kraft" width="1482" height="1600" loading="lazy" decoding="async" class="cadrage-milieu">
-          </div>
-          <div class="atelier-texte">
-            <span class="atelier-num">06</span>
-            <h3>Emballage et préparation de la commande</h3>
-            <p>Chaque biscuit est glissé dans son sachet individuel, puis la commande est rangée pour le retrait dans le canton de Fribourg ou pour l’expédition en Suisse, en France et en Europe.</p>
-          </div>
-        </li>
-      </ol>
+      <div class="values-grid grid-3">
+        <div class="value-card"><h3>Livraison en Suisse</h3><p>Offerte dès 150 CHF de commande, 9 CHF en dessous.</p></div>
+        <div class="value-card"><h3>Livraison France &amp; Europe</h3><p>Frais confirmés séparément selon la destination.</p></div>
+        <div class="value-card"><h3>Retrait</h3><p>Dans le canton de Fribourg, réglé sur place en espèces ou par TWINT.</p></div>
+      </div>
     </div>
   </section>
 
@@ -327,70 +554,12 @@
   </section>
 
   <!-- ==========================================================
-       ORDRES DE GRANDEUR
-       Purement informatif. Le tarif exact d'un modèle vit dans
-       catalogue.js et s'affiche dans la modale de « Mes réalisations »,
-       au moment de composer la commande. Rien ne se commande ici.
+       COMBIEN COÛTE UN BISCUIT / DES BISCUITS POUR CHAQUE OCCASION
+       Retirés de cette page : la grille « Toutes les collections »
+       ci-dessus fait maintenant ce que ces deux blocs invitaient à
+       aller chercher ailleurs. Texte complet dans l'historique Git et
+       le rapport de la refonte.
        ========================================================== -->
-  <section id="tarifs" aria-labelledby="tarifs-title">
-    <div class="wrap">
-      <div class="section-head center section-head-mince">
-        <span class="eyebrow" style="justify-content:center;">Ordres de grandeur</span>
-        <h2 id="tarifs-title">Combien coûte un biscuit&nbsp;?</h2>
-        <p class="narrow">Le prix dépend de la taille du biscuit et de son modèle&nbsp;: tous n’ont pas le même tarif. Voici les ordres de grandeur les plus courants.</p>
-      </div>
-
-      <ul class="tarifs-reperes">
-        <li>
-          <span class="tarif-nom">Petit biscuit</span>
-          <span class="tarif-taille">3–4 cm</span>
-          <span class="tarif-prix">4 CHF</span>
-        </li>
-        <li>
-          <span class="tarif-nom">Biscuit standard</span>
-          <span class="tarif-taille">5 à 8 cm</span>
-          <span class="tarif-prix">5 à 6.50 CHF</span>
-        </li>
-        <li>
-          <span class="tarif-nom">Grand biscuit</span>
-          <span class="tarif-taille">+ de 9 cm</span>
-          <span class="tarif-prix">À partir de 7 CHF</span>
-        </li>
-      </ul>
-
-      <p class="tarifs-note">Le tarif exact de chaque modèle s’affiche au moment de composer votre commande, dans <a href="mes-realisations.html#collections">les collections</a>.</p>
-    </div>
-  </section>
-
-  <!-- ==========================================================
-       PASSERELLE VERS LA GALERIE
-       Les autres collections ne sont plus sur cette page : c'est ici
-       qu'on les envoie chercher.
-       ========================================================== -->
-  <section id="realisations" aria-labelledby="realisations-title">
-    <div class="wrap">
-      <div class="galerie-invite">
-        <div class="galerie-invite-texte">
-          <span class="eyebrow">Mes réalisations</span>
-          <h2 id="realisations-title">Des biscuits personnalisés pour chaque occasion</h2>
-          <p>Au-delà des collections de saison, la galerie rassemble mes créations déjà réalisées, classées par occasion et par thème — océan, licorne, cheval, chantier, Italie, moto et bien d’autres.</p>
-          <p>De quoi trouver l’idée de votre prochaine commande, ou <a href="contact.html">m’en confier une toute nouvelle</a>.</p>
-          <a href="mes-realisations.html" class="btn btn-primary">Découvrir mes réalisations</a>
-        </div>
-        <div class="galerie-invite-photos">
-          <div class="scallop-frame">
-            <img src="images/collections/passion-cheval/cheval-2.webp" alt="Biscuits décorés thème cheval, cœur au prénom calligraphié et fer à cheval doré" width="1063" height="1600" loading="lazy" decoding="async">
-          </div>
-          <div class="scallop-frame">
-            <img src="images/collections/annonce-grossesse/naissance-calendrier.webp" alt="Biscuit calendrier doré pour une annonce de naissance personnalisée" width="1196" height="1800" loading="lazy" decoding="async">
-          </div>
-          <div class="scallop-frame">
-            <img src="images/collections/petit-ocean/anniversaire-ocean-etagere.webp" alt="Biscuits personnalisés thème océan : baleine, tortue et étoiles de mer sur un présentoir" width="1665" height="1800" loading="lazy" decoding="async">
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
 
   <!-- ==========================================================
        AVIS CLIENTS

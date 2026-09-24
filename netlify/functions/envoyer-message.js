@@ -60,6 +60,7 @@ const CHAMPS = {
     ['reception', 'Réception'],
     ['paiement', 'Paiement'],
     ['total', 'Total'],
+    ['fraisLivraison', 'Frais de livraison'],
     ['articles', 'Articles'],
     ['prenom', 'Prénom'],
     ['nom', 'Nom'],
