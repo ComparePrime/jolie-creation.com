@@ -551,137 +551,12 @@
     d.querySelector('.choix-fermer').focus();
   }
 
-  /* ---------- La modale des packages ----------
-     Même coquille que le choix à l'unité : même ouverture, même fermeture,
-     même verrou de défilement, mêmes emplacements à remplir. Seul le
-     contenu change. Deux modales qui se ressemblent doivent partager leur
-     mécanique, sinon l'une des deux finit par diverger. */
-  function ouvrirPackages(c) {
-    var d = construireDialogue();
-    dernierDeclencheur = document.activeElement;
-
-    d.querySelector('[data-choix-sur-titre]').textContent = 'Packages';
-    d.querySelector('[data-choix-titre]').textContent = 'Collection ' + c.nom;
-    d.querySelector('[data-choix-intro]').textContent =
-      'Choisissez le package qui correspond à vos envies.';
-
-    var liste = d.querySelector('[data-choix-liste]');
-    liste.innerHTML = '';
-    var resume = d.querySelector('[data-choix-resume]');
-    var valider = d.querySelector('[data-choix-valider]');
-    valider.textContent = 'Ajouter au panier';
-
-    var grille = document.createElement('div');
-    grille.className = 'package-choix';
-    grille.setAttribute('role', 'group');
-    grille.setAttribute('aria-label', 'Packages de la collection ' + c.nom);
-    var boutons = [];
-    var retenu = null;
-
-    (c.packages || []).forEach(function (pk) {
-      var a = Cat.article(pk.id) || pk;
-      var carte = document.createElement('button');
-      carte.type = 'button';
-      carte.className = 'package-option';
-      carte.setAttribute('aria-pressed', 'false');
-
-      var coche = document.createElement('span');
-      coche.className = 'package-option-coche';
-      coche.setAttribute('aria-hidden', 'true');
-      carte.appendChild(coche);
-
-      var nom = document.createElement('span');
-      nom.className = 'package-option-nom';
-      nom.textContent = a.nom;
-      carte.appendChild(nom);
-
-      var prix = document.createElement('span');
-      prix.className = 'package-option-prix';
-      prix.textContent = Cat.formater(a.prix);
-      carte.appendChild(prix);
-
-      var nombre = document.createElement('span');
-      nombre.className = 'package-option-nombre';
-      nombre.textContent = a.biscuits + ' biscuits';
-      carte.appendChild(nombre);
-
-      var comp = document.createElement('ul');
-      comp.className = 'package-option-composition';
-      a.detail.forEach(function (x) {
-        var li = document.createElement('li');
-        var q = document.createElement('span');
-        q.className = 'package-qte';
-        q.textContent = x.qte + ' ×';
-        li.appendChild(q);
-        li.appendChild(document.createTextNode(' ' + x.nom));
-        comp.appendChild(li);
-      });
-      carte.appendChild(comp);
-
-      carte.onclick = function () {
-        retenu = a;
-        boutons.forEach(function (b) {
-          b.setAttribute('aria-pressed', String(b === carte));
-        });
-        majResume();
-      };
-      boutons.push(carte);
-      grille.appendChild(carte);
-    });
-    liste.appendChild(grille);
-
-    // Un package est une offre fermée : sa composition ne se modifie pas
-    // et rien ne s'y ajoute. Le dire ici évite que le client cherche un
-    // bouton qui n'existe pas.
-    var note = document.createElement('p');
-    note.className = 'package-modale-note';
-    note.textContent = 'Chaque package est une offre complète, prête à offrir : '
-      + 'sa composition est fixée et se commande telle quelle.';
-    liste.appendChild(note);
-
-    function majResume() {
-      valider.disabled = !retenu;
-      resume.textContent = retenu
-        ? retenu.nom + ' · ' + retenu.biscuits + ' biscuits · ' + Cat.formater(retenu.prix)
-        : 'Sélectionnez un package pour continuer.';
-    }
-
-    valider.onclick = function () {
-      if (!retenu) return;
-      ajouter(retenu.id, 1, null, false);
-      fermerDialogue();
-      annoncer('Package « ' + retenu.nom + ' » (' + retenu.biscuits +
-        ' biscuits) ajouté au panier.');
-    };
-
-    majResume();
-    d.hidden = false;
-    document.body.classList.add('modale-ouverte');
-    d.querySelector('.choix-boite').scrollTop = 0;
-    d.querySelector('.choix-fermer').focus();
-  }
-
-  /* ---------- Bouton « Découvrir les packages » ---------- */
-  function brancherPackages() {
-    document.querySelectorAll('[data-packages]').forEach(function (bouton) {
-      if (bouton.dataset.branche) return;
-      bouton.dataset.branche = '1';
-      bouton.addEventListener('click', function (e) {
-        e.preventDefault();
-        var c = Cat.collection(bouton.getAttribute('data-packages'));
-        if (c && (c.packages || []).length) ouvrirPackages(c);
-      });
-    });
-  }
-
   /* ---------- Cartes package d'une page collection ----------
      Une carte package montre déjà l'offre en entier — nom, prix,
      composition : il n'y a rien à demander de plus. Le bouton ajoute
      donc CE package précis directement, avec la même fonction ajouter()
-     que la modale utilise, sans ouvrir cette modale ni aucune autre
-     fenêtre. La modale des packages garde son rôle ailleurs (Mes
-     réalisations), où comparer plusieurs packages avant de choisir a
-     encore un sens. */
+     que la modale du choix à l'unité utilise, sans ouvrir aucune
+     fenêtre. */
   function brancherPackagesDirects() {
     document.querySelectorAll('[data-package-ajouter]').forEach(function (bouton) {
       if (bouton.dataset.branche) return;
@@ -851,7 +726,6 @@
     resumeDetails: resumeDetails,
     majCompteurs: majCompteurs,
     ouvrirCollection: ouvrirCollection,
-    ouvrirPackages: ouvrirPackages,
     memoriserCommande: memoriserCommande,
     commandeMemorisee: commandeMemorisee,
     oublierCommande: oublierCommande,
@@ -863,7 +737,6 @@
     majCompteurs();
     surveillerPhotos();
     brancherBoutons();
-    brancherPackages();
     brancherPackagesDirects();
     brancherCartesProduits();
   });

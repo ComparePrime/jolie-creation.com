@@ -428,6 +428,7 @@ document.addEventListener('DOMContentLoaded', function () {
       { selector: '.why-item', max: 4, step: 90 },
       { selector: '.gallery-item', max: 7, step: 55 },
       { selector: '.folio-item', max: 6, step: 45 },
+      { selector: '.avis-carte', max: 4, step: 90 },
       { selector: '.home-gallery-strip .scallop-frame', max: 5, step: 70 },
       { selector: '.timeline li', max: 5, step: 90 },
       { selector: '.atelier-etape', max: 5, step: 90 },
