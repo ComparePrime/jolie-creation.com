@@ -590,7 +590,7 @@
       "id": "bapteme-nature",
       "nom": "Baptême Nature",
       "occasion": "Baptême",
-      "description": "Vert sauge, blanc et touches dorées : colombe, feuillages d’olivier et médaillon à l’initiale de l’enfant. Une collection de baptême plus végétale que « Baptême Douceur », à composer selon le prénom, la date et les couleurs de la cérémonie. Sur devis.",
+      "description": "Vert sauge, blanc et touches dorées : colombe, feuillages d’olivier et médaillon à l’initiale de l’enfant. Une collection de baptême plus végétale que « Baptême Douceur », à composer selon le prénom, la date et les couleurs de la cérémonie.",
       "alt": "Biscuits de baptême vert sauge : colombe, feuillages d’olivier et médaillon à l’initiale",
       "galerie": [
         { "fichier": "vue-1.webp", "alt": "Biscuits de baptême vert sauge : colombe, feuillage et médaillon à l’initiale E" },
@@ -598,7 +598,12 @@
         { "fichier": "vue-3.webp", "alt": "Feuillages d’olivier en biscuit et colombe blanche, posés sur un set tressé" },
         { "fichier": "vue-4.webp", "alt": "Biscuit colombe blanche en relief sur médaillon vert sauge" }
       ],
-      "produits": []
+      "produits": [
+        { "ref": "branches", "nom": "Les branches", "prix": 500 },
+        { "ref": "colombe", "nom": "La colombe", "prix": 600 },
+        { "ref": "lettre", "nom": "La lettre", "prix": 700 },
+        { "ref": "croix", "nom": "La croix", "prix": 600 }
+      ]
     },
     {
       "id": "logo-entreprise",
