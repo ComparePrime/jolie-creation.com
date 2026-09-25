@@ -253,7 +253,12 @@
     var p = document.createElement('span');
     p.textContent = texte;
     var lien = document.createElement('a');
-    lien.href = 'panier.html';
+    // Chemin absolu : cette notification s'affiche aussi bien depuis
+    // /collections/<slug> (une URL propre sans .html) que depuis les pages
+    // racine. Un chemin relatif s'y résolvait contre /collections/, d'où
+    // la 404 sur « Voir mon panier » quand l'ajout se faisait depuis une
+    // page collection.
+    lien.href = '/panier.html';
     lien.textContent = 'Voir mon panier';
     zone.appendChild(p);
     zone.appendChild(lien);
