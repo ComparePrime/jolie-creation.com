@@ -52,9 +52,9 @@ const COLLECTIONS_ATTENDUES = [
   'American Road Trip', 'Petit Chantier', 'Passion Cheval', 'Petit Océan',
   'Rêve de Licorne', 'Petite Oie', 'Petit Lapin au Jardin', 'Gender Reveal',
   'Saint-Valentin', 'Dolce Vita', 'Moto',
-  // Quatre collections sur devis : leurs modèles se composent avec la
-  // cliente, aucun prix n'a été arrêté. Baptême Nature, entre les deux,
-  // a désormais ses propres prix.
+  // Trois collections restent sur devis : leurs modèles se composent avec
+  // la cliente, aucun prix n'a été arrêté. Baptême Nature et Logo
+  // d'entreprise, entre les deux, ont désormais leurs propres prix.
   'Douceur d’Abeille', 'Passion Vélo', 'Élégance Florale', 'Baptême Nature',
   'Logo d’entreprise'
 ];
@@ -70,7 +70,7 @@ const MODELES_ATTENDUS = {
   'petit-lapin-jardin': 5, 'gender-reveal': 8, 'saint-valentin': 4,
   'dolce-vita': 11, 'moto': 9,
   'douceur-abeille': 0, 'velo-route': 0, 'elegance-florale': 0,
-  'bapteme-nature': 4, 'logo-entreprise': 0
+  'bapteme-nature': 4, 'logo-entreprise': 1
 };
 
 /* Quelques prix relus un par un, aux deux extrémités de chaque collection.
@@ -96,7 +96,8 @@ const PRIX_TEMOINS = {
   'saint-valentin-petit-coeur': 400, 'saint-valentin-love': 600,
   'dolce-vita-citron': 400, 'dolce-vita-age-citrons': 700,
   'moto-vroom': 500, 'moto-speed-limit': 600,
-  'bapteme-nature-branches': 500, 'bapteme-nature-lettre': 700
+  'bapteme-nature-branches': 500, 'bapteme-nature-lettre': 700,
+  'logo-entreprise-logo': 500
 };
 
 (async () => {
@@ -111,8 +112,8 @@ const PRIX_TEMOINS = {
         c.id + ' : ' + c.produits.length + ' modèles');
     });
     const biscuits = Catalogue.ARTICLES.filter((a) => a.categorie === 'biscuit');
-    assert.strictEqual(biscuits.length, 149);
-    assert.strictEqual(Catalogue.ARTICLES.length, 155);   // 149 biscuits + 6 packages
+    assert.strictEqual(biscuits.length, 150);
+    assert.strictEqual(Catalogue.ARTICLES.length, 156);   // 150 biscuits + 6 packages
   });
 
   await cas('les prix témoins sont exacts', () => {
@@ -239,7 +240,7 @@ const PRIX_TEMOINS = {
 
   await cas('une collection sans modèle n’ajoute aucun article achetable', () => {
     const surDevis = Catalogue.COLLECTIONS.filter((c) => !c.produits.length);
-    assert.strictEqual(surDevis.length, 4, surDevis.map((c) => c.id).join(' '));
+    assert.strictEqual(surDevis.length, 3, surDevis.map((c) => c.id).join(' '));
     surDevis.forEach((c) => {
       assert.strictEqual(Catalogue.ARTICLES.filter((a) => a.collectionId === c.id).length, 0, c.id);
     });
