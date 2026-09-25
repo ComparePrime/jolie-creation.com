@@ -80,6 +80,168 @@
 
   var COLLECTIONS = [
     {
+      "id": "petit-ocean",
+      "slug": "ocean",
+      "nom": "Petit Océan",
+      "occasion": "Anniversaire enfant",
+      "description": "Une collection pleine de douceur inspirée des fonds marins, dans de jolies nuances de bleu, turquoise, corail et vert. Personnalisable avec le prénom et l’âge de l’enfant, parfaite pour un anniversaire sur le thème de la mer.",
+      "alt": "Biscuits personnalisés thème océan : baleine, tortue marine et étoiles de mer",
+      "galerie": [
+        { "fichier": "vue-1.webp", "alt": "Biscuit nuage bleu au prénom Léo, entouré d’algues et d’étoiles de mer" },
+        { "fichier": "vue-2.webp", "alt": "Biscuit chiffre 4 bleu décoré de bulles, d’algues vertes et d’une étoile de mer corail" },
+        { "fichier": "vue-3.webp", "alt": "Biscuit baleine bleue posée sur une vague, décoré au glaçage royal" },
+        { "fichier": "vue-4.webp", "alt": "Biscuits tortues de mer bleue et verte, décorés à la main" },
+        { "fichier": "vue-5.webp", "alt": "Biscuit hippocampe bleu finement pointillé au glaçage" },
+        { "fichier": "vue-6.webp", "alt": "Biscuit coquillage bleu pâle et biscuit corail orange sur le thème de la mer" }
+      ],
+      "produits": [
+        { "ref": "etoile-orange", "nom": "Étoile de mer orange", "prix": 400 },
+        { "ref": "etoile-bleue", "nom": "Étoile de mer bleue décorée", "prix": 400 },
+        { "ref": "coquillage", "nom": "Coquillage bleu", "prix": 600, "photo": "vue-6.webp" },
+        { "ref": "corail", "nom": "Corail orange en relief", "prix": 600, "photo": "vue-6.webp" },
+        { "ref": "baleine", "nom": "Baleine détaillée", "prix": 700, "photo": "vue-3.webp" },
+        { "ref": "tortue", "nom": "Tortue marine détaillée", "prix": 700, "photo": "vue-4.webp" },
+        { "ref": "hippocampe", "nom": "Hippocampe détaillé", "prix": 700, "photo": "vue-5.webp" },
+        { "ref": "chiffre-corail", "nom": "Chiffre personnalisé avec corail et végétation", "prix": 650, "perso": ["age"], "photo": "vue-2.webp" },
+        { "ref": "prenom-etoile", "nom": "Prénom avec étoile et végétation marine", "prix": 650, "perso": ["prenom"], "photo": "vue-1.webp" }
+      ]
+    },
+    {
+      "id": "passion-cheval",
+      "nom": "Passion Cheval",
+      "occasion": "Anniversaire enfant",
+      "description": "Une collection tendre et élégante inspirée de l’univers équestre, dans des nuances de rose poudré, blanc, beige et brun. Personnalisable avec le prénom et l’âge de l’enfant, idéale pour les petits passionnés de chevaux.",
+      "alt": "Biscuits décorés sur le thème du cheval : fer à cheval, bottes et tête de cheval",
+      "galerie": [
+        { "fichier": "vue-1.webp", "alt": "Biscuits tête de cheval, cœur au prénom Emily et marguerite en glaçage royal" },
+        { "fichier": "vue-2.webp", "alt": "Biscuit cœur au prénom Emily et biscuit fer à cheval tacheté" },
+        { "fichier": "vue-3.webp", "alt": "Biscuit selle d’équitation et marguerite blanche, finitions dorées" },
+        { "fichier": "vue-4.webp", "alt": "Biscuit cœur vichy rose au prénom Emily, marguerite et tête de cheval" }
+      ],
+      "produits": [
+        { "ref": "petite-fleur", "nom": "Petite fleur blanche et rose", "prix": 400 },
+        { "ref": "coeur-vichy", "nom": "Cœur vichy rose avec prénom", "prix": 550, "perso": ["prenom"] },
+        { "ref": "etoile-fer", "nom": "Étoile avec fer à cheval", "prix": 600 },
+        { "ref": "etoile-chapeau", "nom": "Étoile avec chapeau de cowboy et nœud", "prix": 600 },
+        { "ref": "bottes", "nom": "Biscuit rose avec bottes d’équitation", "prix": 600 },
+        { "ref": "chiffre-taches", "nom": "Chiffre personnalisé effet taches de cheval", "prix": 600, "perso": ["age"] },
+        { "ref": "chiffre-etoiles", "nom": "Chiffre personnalisé rose avec étoiles", "prix": 600, "perso": ["age"] },
+        { "ref": "tete-cheval", "nom": "Tête de cheval sur biscuit festonné", "prix": 700 },
+        { "ref": "coeur-cheval", "nom": "Grand biscuit cœur cheval avec prénom et âge", "prix": 800, "perso": ["prenom", "age"] },
+        { "ref": "noeud-rose", "nom": "Nœud rose", "prix": 500 }
+      ]
+    },
+    {
+      "id": "dolce-vita",
+      "nom": "Dolce Vita",
+      "occasion": "Anniversaire",
+      "description": "Une collection lumineuse et raffinée inspirée de l’Italie et de la douceur de vivre méditerranéenne. Citrons, feuillages, faïences aux motifs bleus et petites touches personnalisées composent un univers frais et élégant, idéal pour un anniversaire adulte, une fête estivale ou une célébration sur le thème de l’Italie.",
+      "alt": "Biscuits artisanaux thème Dolce Vita et Italie : citrons et faïences bleues",
+      "produits": [
+        { "ref": "citron", "nom": "Petit citron simple texturé", "prix": 400 },
+        { "ref": "rond-citron", "nom": "Rond citron façon tranche", "prix": 500 },
+        { "ref": "branche", "nom": "Petite branche et feuillage vert et blanc", "prix": 500 },
+        { "ref": "carreau", "nom": "Petit carreau de faïence bleu et jaune", "prix": 500 },
+        { "ref": "carreau-citron", "nom": "Carreau de faïence avec citron en relief", "prix": 550 },
+        { "ref": "branche-citrons", "nom": "Branche avec citrons et feuillages en relief", "prix": 600 },
+        { "ref": "aperol", "nom": "Biscuit « Aperol Spritz »", "prix": 650 },
+        { "ref": "prenom", "nom": "Biscuit personnalisé avec prénom", "prix": 650, "perso": ["prenom"] },
+        { "ref": "limoncello", "nom": "Biscuit « Limoncello » avec citrons en relief", "prix": 700 },
+        { "ref": "buon-compleanno", "nom": "Grand biscuit « Buon compleanno » avec citrons et feuillages", "prix": 700 },
+        { "ref": "age-citrons", "nom": "Grand biscuit âge avec citrons et fleurs", "prix": 700, "perso": ["age"] }
+      ]
+    },
+    {
+      "id": "bapteme-nature",
+      "nom": "Baptême Nature",
+      "occasion": "Baptême",
+      "description": "Vert sauge, blanc et touches dorées : colombe, feuillages d’olivier et médaillon à l’initiale de l’enfant. Une collection de baptême plus végétale que « Baptême Douceur », à composer selon le prénom, la date et les couleurs de la cérémonie.",
+      "alt": "Biscuits de baptême vert sauge : colombe, feuillages d’olivier et médaillon à l’initiale",
+      "galerie": [
+        { "fichier": "vue-1.webp", "alt": "Biscuits de baptême vert sauge : colombe, feuillage et médaillon à l’initiale E" },
+        { "fichier": "vue-2.webp", "alt": "Médaillon de baptême à l’initiale E en relief, sur glaçage vert sauge" },
+        { "fichier": "vue-3.webp", "alt": "Feuillages d’olivier en biscuit et colombe blanche, posés sur un set tressé" },
+        { "fichier": "vue-4.webp", "alt": "Biscuit colombe blanche en relief sur médaillon vert sauge" }
+      ],
+      "produits": [
+        { "ref": "branches", "nom": "Branche Douceur", "prix": 500 },
+        { "ref": "colombe", "nom": "Colombe Céleste", "prix": 600 },
+        { "ref": "lettre", "nom": "Initiale Précieuse", "prix": 700, "perso": ["initiale"] },
+        { "ref": "croix", "nom": "Croix Éternelle", "prix": 600 }
+      ]
+    },
+    {
+      "id": "reve-licorne",
+      "nom": "Rêve de Licorne",
+      "occasion": "Anniversaire enfant",
+      "description": "Une collection féerique et délicate aux nuances de rose poudré, blanc et lilas, sublimée par de fines touches dorées. Personnalisable avec le prénom et l’âge de l’enfant pour un anniversaire tout en douceur.",
+      "alt": "Biscuits décorés thème licorne, rose poudré, lilas et touches dorées",
+      "galerie": [
+        { "fichier": "vue-1.webp", "alt": "Biscuit licorne à la crinière lilas et à la corne dorée, sur assiette rose poudré" },
+        { "fichier": "vue-2.webp", "alt": "Tête de licorne en glaçage blanc près d’un biscuit rose poudré à pois dorés" },
+        { "fichier": "vue-3.webp", "alt": "Biscuits nuages au prénom Eileen calligraphié à l’or, posés près d’un biscuit nœud" },
+        { "fichier": "vue-4.webp", "alt": "Biscuit licorne et biscuit nœud ruban doré sur fond rose poudré" },
+        { "fichier": "vue-5.webp", "alt": "Biscuit nœud doré et licorne blanche à la crinière lilas" },
+        { "fichier": "vue-6.webp", "alt": "Biscuit nuage au prénom Eileen, nœud rubané doré et licorne en arrière-plan" },
+        { "fichier": "vue-7.webp", "alt": "Deux biscuits nuages au prénom Eileen, calligraphie dorée sur glaçage blanc" }
+      ],
+      "produits": [
+        { "ref": "chiffre-pois", "nom": "Chiffre personnalisé rose à pois", "prix": 500, "perso": ["age"] },
+        { "ref": "noeud-dore", "nom": "Grand nœud rose et doré", "prix": 600 },
+        { "ref": "licorne", "nom": "Licorne avec crinière rose, violette et dorée", "prix": 800 },
+        { "ref": "nuage-prenom", "nom": "Nuage avec prénom et petit nœud", "prix": 600, "perso": ["prenom"] }
+      ]
+    },
+    {
+      "id": "moto",
+      "nom": "Moto",
+      "occasion": "Anniversaire",
+      "description": "Une collection dynamique pour les passionnés de moto, de vitesse et d’aventure. Entre circuits, drapeaux à damier, casques et panneaux de voyage, chaque biscuit peut être personnalisé avec le prénom, l’âge et un petit message pour un anniversaire sur mesure.",
+      "alt": "Biscuits d’anniversaire thème moto : casque, drapeau à damier et circuit",
+      "galerie": [
+        { "fichier": "vue-1.webp", "alt": "Biscuits moto, chiffre 60 et drapeau à damier sur glaçage blanc" },
+        { "fichier": "vue-2.webp", "alt": "Biscuits au prénom Yannick, « Joyeux anniversaire » et « Vroom » orange" },
+        { "fichier": "vue-3.webp", "alt": "Biscuits panneau « Speed limit 60 », moto et pancarte « Travel adventure »" },
+        { "fichier": "vue-4.webp", "alt": "Biscuit chiffre 60 noir et biscuit route sinueuse verte" }
+      ],
+      "produits": [
+        { "ref": "vroom", "nom": "Petit rond « Vroom ! »", "prix": 500 },
+        { "ref": "rond-casque", "nom": "Petit rond avec casque de moto", "prix": 500 },
+        { "ref": "damier", "nom": "Drapeaux à damier", "prix": 500 },
+        { "ref": "silhouette", "nom": "Biscuit avec silhouette de moto", "prix": 550 },
+        { "ref": "circuit", "nom": "Circuit vert « Vroom Vroom »", "prix": 600 },
+        { "ref": "prenom-pneus", "nom": "Biscuit prénom avec traces de pneus", "prix": 600, "perso": ["prenom"] },
+        { "ref": "rond-age", "nom": "Grand rond âge effet route", "prix": 600, "perso": ["age"] },
+        { "ref": "travel", "nom": "Panneau « Travel / Adventure » avec détails en relief", "prix": 600 },
+        { "ref": "speed-limit", "nom": "Panneau « Speed Limit »", "prix": 600 }
+      ]
+    },
+    {
+      "id": "magie-noel",
+      "nom": "Magie de Noël",
+      "occasion": "Noël",
+      "description": "Une collection de biscuits aux couleurs chaleureuses et intemporelles de Noël : rouge profond, vert sapin, blanc et petites touches dorées. Entre chaussettes de Noël, sapins, boules scintillantes, flocons et Père Noël, chaque modèle est décoré à la main pour apporter une touche gourmande aux fêtes. Idéale pour offrir, décorer une table de Noël ou composer un joli coffret gourmand.",
+      "alt": "Biscuits de Noël personnalisés décorés à la main : sapins, flocons et boules dorées",
+      "produits": [
+        { "ref": "sucre-orge", "nom": "Sucre d’orge rouge", "prix": 500 },
+        { "ref": "flocon-blanc", "nom": "Flocon blanc simple", "prix": 500 },
+        { "ref": "cadeau-feuillage", "nom": "Cadeau de Noël avec feuillage", "prix": 500 },
+        { "ref": "chaussette", "nom": "Petite chaussette de Noël", "prix": 550 },
+        { "ref": "moufle", "nom": "Moufle effet tricot", "prix": 550 },
+        { "ref": "rond-rouge-flocon", "nom": "Biscuit rond rouge – flocon blanc", "prix": 550 },
+        { "ref": "sapin", "nom": "Sapin de Noël décoré", "prix": 550 },
+        { "ref": "couronne", "nom": "Couronne de Noël ronde", "prix": 600 },
+        { "ref": "boule-rouge", "nom": "Boule de Noël rouge pailletée", "prix": 600 },
+        { "ref": "rond-vert-flocon", "nom": "Biscuit rond vert – grand flocon", "prix": 600 },
+        { "ref": "plaque-verte", "nom": "Plaque verte avec boules de Noël en relief", "prix": 600 },
+        { "ref": "pain-epices", "nom": "Bonhomme pain d’épices", "prix": 650 },
+        { "ref": "ho-ho-ho", "nom": "« Ho Ho Ho » en relief", "prix": 650 },
+        { "ref": "boule-neige", "nom": "Boule à neige avec sapins", "prix": 650 },
+        { "ref": "pere-noel", "nom": "Père Noël détaillé", "prix": 700 },
+        { "ref": "joyeux-noel", "nom": "Grand biscuit « Joyeux Noël »", "prix": 700 }
+      ]
+    },
+    {
       "id": "automne",
       "nom": "Automne",
       "occasion": "Automne",
@@ -136,31 +298,6 @@
         { "ref": "citrouille", "nom": "Citrouille", "prix": 400 },
         { "ref": "citrouilles-empilees", "nom": "Citrouilles empilées", "prix": 650 },
         { "ref": "grand-pull", "nom": "Grand pull", "prix": 800 }
-      ]
-    },
-    {
-      "id": "magie-noel",
-      "nom": "Magie de Noël",
-      "occasion": "Noël",
-      "description": "Une collection de biscuits aux couleurs chaleureuses et intemporelles de Noël : rouge profond, vert sapin, blanc et petites touches dorées. Entre chaussettes de Noël, sapins, boules scintillantes, flocons et Père Noël, chaque modèle est décoré à la main pour apporter une touche gourmande aux fêtes. Idéale pour offrir, décorer une table de Noël ou composer un joli coffret gourmand.",
-      "alt": "Biscuits de Noël personnalisés décorés à la main : sapins, flocons et boules dorées",
-      "produits": [
-        { "ref": "sucre-orge", "nom": "Sucre d’orge rouge", "prix": 500 },
-        { "ref": "flocon-blanc", "nom": "Flocon blanc simple", "prix": 500 },
-        { "ref": "cadeau-feuillage", "nom": "Cadeau de Noël avec feuillage", "prix": 500 },
-        { "ref": "chaussette", "nom": "Petite chaussette de Noël", "prix": 550 },
-        { "ref": "moufle", "nom": "Moufle effet tricot", "prix": 550 },
-        { "ref": "rond-rouge-flocon", "nom": "Biscuit rond rouge – flocon blanc", "prix": 550 },
-        { "ref": "sapin", "nom": "Sapin de Noël décoré", "prix": 550 },
-        { "ref": "couronne", "nom": "Couronne de Noël ronde", "prix": 600 },
-        { "ref": "boule-rouge", "nom": "Boule de Noël rouge pailletée", "prix": 600 },
-        { "ref": "rond-vert-flocon", "nom": "Biscuit rond vert – grand flocon", "prix": 600 },
-        { "ref": "plaque-verte", "nom": "Plaque verte avec boules de Noël en relief", "prix": 600 },
-        { "ref": "pain-epices", "nom": "Bonhomme pain d’épices", "prix": 650 },
-        { "ref": "ho-ho-ho", "nom": "« Ho Ho Ho » en relief", "prix": 650 },
-        { "ref": "boule-neige", "nom": "Boule à neige avec sapins", "prix": 650 },
-        { "ref": "pere-noel", "nom": "Père Noël détaillé", "prix": 700 },
-        { "ref": "joyeux-noel", "nom": "Grand biscuit « Joyeux Noël »", "prix": 700 }
       ]
     },
     {
@@ -368,80 +505,6 @@
       ]
     },
     {
-      "id": "passion-cheval",
-      "nom": "Passion Cheval",
-      "occasion": "Anniversaire enfant",
-      "description": "Une collection tendre et élégante inspirée de l’univers équestre, dans des nuances de rose poudré, blanc, beige et brun. Personnalisable avec le prénom et l’âge de l’enfant, idéale pour les petits passionnés de chevaux.",
-      "alt": "Biscuits décorés sur le thème du cheval : fer à cheval, bottes et tête de cheval",
-      "galerie": [
-        { "fichier": "vue-1.webp", "alt": "Biscuits tête de cheval, cœur au prénom Emily et marguerite en glaçage royal" },
-        { "fichier": "vue-2.webp", "alt": "Biscuit cœur au prénom Emily et biscuit fer à cheval tacheté" },
-        { "fichier": "vue-3.webp", "alt": "Biscuit selle d’équitation et marguerite blanche, finitions dorées" },
-        { "fichier": "vue-4.webp", "alt": "Biscuit cœur vichy rose au prénom Emily, marguerite et tête de cheval" }
-      ],
-      "produits": [
-        { "ref": "petite-fleur", "nom": "Petite fleur blanche et rose", "prix": 400 },
-        { "ref": "coeur-vichy", "nom": "Cœur vichy rose avec prénom", "prix": 550, "perso": ["prenom"] },
-        { "ref": "etoile-fer", "nom": "Étoile avec fer à cheval", "prix": 600 },
-        { "ref": "etoile-chapeau", "nom": "Étoile avec chapeau de cowboy et nœud", "prix": 600 },
-        { "ref": "bottes", "nom": "Biscuit rose avec bottes d’équitation", "prix": 600 },
-        { "ref": "chiffre-taches", "nom": "Chiffre personnalisé effet taches de cheval", "prix": 600, "perso": ["age"] },
-        { "ref": "chiffre-etoiles", "nom": "Chiffre personnalisé rose avec étoiles", "prix": 600, "perso": ["age"] },
-        { "ref": "tete-cheval", "nom": "Tête de cheval sur biscuit festonné", "prix": 700 },
-        { "ref": "coeur-cheval", "nom": "Grand biscuit cœur cheval avec prénom et âge", "prix": 800, "perso": ["prenom", "age"] },
-        { "ref": "noeud-rose", "nom": "Nœud rose", "prix": 500 }
-      ]
-    },
-    {
-      "id": "petit-ocean",
-      "slug": "ocean",
-      "nom": "Petit Océan",
-      "occasion": "Anniversaire enfant",
-      "description": "Une collection pleine de douceur inspirée des fonds marins, dans de jolies nuances de bleu, turquoise, corail et vert. Personnalisable avec le prénom et l’âge de l’enfant, parfaite pour un anniversaire sur le thème de la mer.",
-      "alt": "Biscuits personnalisés thème océan : baleine, tortue marine et étoiles de mer",
-      "galerie": [
-        { "fichier": "vue-1.webp", "alt": "Biscuit nuage bleu au prénom Léo, entouré d’algues et d’étoiles de mer" },
-        { "fichier": "vue-2.webp", "alt": "Biscuit chiffre 4 bleu décoré de bulles, d’algues vertes et d’une étoile de mer corail" },
-        { "fichier": "vue-3.webp", "alt": "Biscuit baleine bleue posée sur une vague, décoré au glaçage royal" },
-        { "fichier": "vue-4.webp", "alt": "Biscuits tortues de mer bleue et verte, décorés à la main" },
-        { "fichier": "vue-5.webp", "alt": "Biscuit hippocampe bleu finement pointillé au glaçage" },
-        { "fichier": "vue-6.webp", "alt": "Biscuit coquillage bleu pâle et biscuit corail orange sur le thème de la mer" }
-      ],
-      "produits": [
-        { "ref": "etoile-orange", "nom": "Étoile de mer orange", "prix": 400 },
-        { "ref": "etoile-bleue", "nom": "Étoile de mer bleue décorée", "prix": 400 },
-        { "ref": "coquillage", "nom": "Coquillage bleu", "prix": 600, "photo": "vue-6.webp" },
-        { "ref": "corail", "nom": "Corail orange en relief", "prix": 600, "photo": "vue-6.webp" },
-        { "ref": "baleine", "nom": "Baleine détaillée", "prix": 700, "photo": "vue-3.webp" },
-        { "ref": "tortue", "nom": "Tortue marine détaillée", "prix": 700, "photo": "vue-4.webp" },
-        { "ref": "hippocampe", "nom": "Hippocampe détaillé", "prix": 700, "photo": "vue-5.webp" },
-        { "ref": "chiffre-corail", "nom": "Chiffre personnalisé avec corail et végétation", "prix": 650, "perso": ["age"], "photo": "vue-2.webp" },
-        { "ref": "prenom-etoile", "nom": "Prénom avec étoile et végétation marine", "prix": 650, "perso": ["prenom"], "photo": "vue-1.webp" }
-      ]
-    },
-    {
-      "id": "reve-licorne",
-      "nom": "Rêve de Licorne",
-      "occasion": "Anniversaire enfant",
-      "description": "Une collection féerique et délicate aux nuances de rose poudré, blanc et lilas, sublimée par de fines touches dorées. Personnalisable avec le prénom et l’âge de l’enfant pour un anniversaire tout en douceur.",
-      "alt": "Biscuits décorés thème licorne, rose poudré, lilas et touches dorées",
-      "galerie": [
-        { "fichier": "vue-1.webp", "alt": "Biscuit licorne à la crinière lilas et à la corne dorée, sur assiette rose poudré" },
-        { "fichier": "vue-2.webp", "alt": "Tête de licorne en glaçage blanc près d’un biscuit rose poudré à pois dorés" },
-        { "fichier": "vue-3.webp", "alt": "Biscuits nuages au prénom Eileen calligraphié à l’or, posés près d’un biscuit nœud" },
-        { "fichier": "vue-4.webp", "alt": "Biscuit licorne et biscuit nœud ruban doré sur fond rose poudré" },
-        { "fichier": "vue-5.webp", "alt": "Biscuit nœud doré et licorne blanche à la crinière lilas" },
-        { "fichier": "vue-6.webp", "alt": "Biscuit nuage au prénom Eileen, nœud rubané doré et licorne en arrière-plan" },
-        { "fichier": "vue-7.webp", "alt": "Deux biscuits nuages au prénom Eileen, calligraphie dorée sur glaçage blanc" }
-      ],
-      "produits": [
-        { "ref": "chiffre-pois", "nom": "Chiffre personnalisé rose à pois", "prix": 500, "perso": ["age"] },
-        { "ref": "noeud-dore", "nom": "Grand nœud rose et doré", "prix": 600 },
-        { "ref": "licorne", "nom": "Licorne avec crinière rose, violette et dorée", "prix": 800 },
-        { "ref": "nuage-prenom", "nom": "Nuage avec prénom et petit nœud", "prix": 600, "perso": ["prenom"] }
-      ]
-    },
-    {
       "id": "petite-oie",
       "nom": "Petite Oie",
       "occasion": "Premier anniversaire",
@@ -507,50 +570,6 @@
       ]
     },
     {
-      "id": "dolce-vita",
-      "nom": "Dolce Vita",
-      "occasion": "Anniversaire",
-      "description": "Une collection lumineuse et raffinée inspirée de l’Italie et de la douceur de vivre méditerranéenne. Citrons, feuillages, faïences aux motifs bleus et petites touches personnalisées composent un univers frais et élégant, idéal pour un anniversaire adulte, une fête estivale ou une célébration sur le thème de l’Italie.",
-      "alt": "Biscuits artisanaux thème Dolce Vita et Italie : citrons et faïences bleues",
-      "produits": [
-        { "ref": "citron", "nom": "Petit citron simple texturé", "prix": 400 },
-        { "ref": "rond-citron", "nom": "Rond citron façon tranche", "prix": 500 },
-        { "ref": "branche", "nom": "Petite branche et feuillage vert et blanc", "prix": 500 },
-        { "ref": "carreau", "nom": "Petit carreau de faïence bleu et jaune", "prix": 500 },
-        { "ref": "carreau-citron", "nom": "Carreau de faïence avec citron en relief", "prix": 550 },
-        { "ref": "branche-citrons", "nom": "Branche avec citrons et feuillages en relief", "prix": 600 },
-        { "ref": "aperol", "nom": "Biscuit « Aperol Spritz »", "prix": 650 },
-        { "ref": "prenom", "nom": "Biscuit personnalisé avec prénom", "prix": 650, "perso": ["prenom"] },
-        { "ref": "limoncello", "nom": "Biscuit « Limoncello » avec citrons en relief", "prix": 700 },
-        { "ref": "buon-compleanno", "nom": "Grand biscuit « Buon compleanno » avec citrons et feuillages", "prix": 700 },
-        { "ref": "age-citrons", "nom": "Grand biscuit âge avec citrons et fleurs", "prix": 700, "perso": ["age"] }
-      ]
-    },
-    {
-      "id": "moto",
-      "nom": "Moto",
-      "occasion": "Anniversaire",
-      "description": "Une collection dynamique pour les passionnés de moto, de vitesse et d’aventure. Entre circuits, drapeaux à damier, casques et panneaux de voyage, chaque biscuit peut être personnalisé avec le prénom, l’âge et un petit message pour un anniversaire sur mesure.",
-      "alt": "Biscuits d’anniversaire thème moto : casque, drapeau à damier et circuit",
-      "galerie": [
-        { "fichier": "vue-1.webp", "alt": "Biscuits moto, chiffre 60 et drapeau à damier sur glaçage blanc" },
-        { "fichier": "vue-2.webp", "alt": "Biscuits au prénom Yannick, « Joyeux anniversaire » et « Vroom » orange" },
-        { "fichier": "vue-3.webp", "alt": "Biscuits panneau « Speed limit 60 », moto et pancarte « Travel adventure »" },
-        { "fichier": "vue-4.webp", "alt": "Biscuit chiffre 60 noir et biscuit route sinueuse verte" }
-      ],
-      "produits": [
-        { "ref": "vroom", "nom": "Petit rond « Vroom ! »", "prix": 500 },
-        { "ref": "rond-casque", "nom": "Petit rond avec casque de moto", "prix": 500 },
-        { "ref": "damier", "nom": "Drapeaux à damier", "prix": 500 },
-        { "ref": "silhouette", "nom": "Biscuit avec silhouette de moto", "prix": 550 },
-        { "ref": "circuit", "nom": "Circuit vert « Vroom Vroom »", "prix": 600 },
-        { "ref": "prenom-pneus", "nom": "Biscuit prénom avec traces de pneus", "prix": 600, "perso": ["prenom"] },
-        { "ref": "rond-age", "nom": "Grand rond âge effet route", "prix": 600, "perso": ["age"] },
-        { "ref": "travel", "nom": "Panneau « Travel / Adventure » avec détails en relief", "prix": 600 },
-        { "ref": "speed-limit", "nom": "Panneau « Speed Limit »", "prix": 600 }
-      ]
-    },
-    {
       "id": "douceur-abeille",
       "nom": "Douceur d’Abeille",
       "occasion": "Premier anniversaire",
@@ -585,25 +604,6 @@
         { "fichier": "vue-2.webp", "alt": "Grande fleur bordeaux en relief près du biscuit rond à l’âge calligraphié" }
       ],
       "produits": []
-    },
-    {
-      "id": "bapteme-nature",
-      "nom": "Baptême Nature",
-      "occasion": "Baptême",
-      "description": "Vert sauge, blanc et touches dorées : colombe, feuillages d’olivier et médaillon à l’initiale de l’enfant. Une collection de baptême plus végétale que « Baptême Douceur », à composer selon le prénom, la date et les couleurs de la cérémonie.",
-      "alt": "Biscuits de baptême vert sauge : colombe, feuillages d’olivier et médaillon à l’initiale",
-      "galerie": [
-        { "fichier": "vue-1.webp", "alt": "Biscuits de baptême vert sauge : colombe, feuillage et médaillon à l’initiale E" },
-        { "fichier": "vue-2.webp", "alt": "Médaillon de baptême à l’initiale E en relief, sur glaçage vert sauge" },
-        { "fichier": "vue-3.webp", "alt": "Feuillages d’olivier en biscuit et colombe blanche, posés sur un set tressé" },
-        { "fichier": "vue-4.webp", "alt": "Biscuit colombe blanche en relief sur médaillon vert sauge" }
-      ],
-      "produits": [
-        { "ref": "branches", "nom": "Branche Douceur", "prix": 500 },
-        { "ref": "colombe", "nom": "Colombe Céleste", "prix": 600 },
-        { "ref": "lettre", "nom": "Initiale Précieuse", "prix": 700, "perso": ["initiale"] },
-        { "ref": "croix", "nom": "Croix Éternelle", "prix": 600 }
-      ]
     },
     {
       "id": "logo-entreprise",
