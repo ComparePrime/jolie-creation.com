@@ -44,18 +44,20 @@ const PANIER_MIXTE = [
   { id: 'reve-licorne-noeud-dore', qte: 7 }
 ];
 
-/* Les collections attendues, dans l'ordre annoncé. */
+/* Les collections attendues, dans l'ordre annoncé. Les sept premières sont
+   volontairement en tête : des thèmes qui commandent régulièrement, remontés
+   devant le reste sans changer l'ordre relatif du reste entre elles. */
 const COLLECTIONS_ATTENDUES = [
-  'Automne', 'Magie de Noël', 'Frissons d’Halloween', 'Douceurs de Pâques',
+  'Petit Océan', 'Passion Cheval', 'Dolce Vita', 'Baptême Nature',
+  'Rêve de Licorne', 'Moto', 'Magie de Noël',
+  'Automne', 'Frissons d’Halloween', 'Douceurs de Pâques',
   'Merci Maîtresse – Bonnes Vacances', 'Bonne fête Maman', 'Baptême Douceur',
   'Annonce de grossesse', 'Douceur personnalisée', 'Girls Club – EVJF',
-  'American Road Trip', 'Petit Chantier', 'Passion Cheval', 'Petit Océan',
-  'Rêve de Licorne', 'Petite Oie', 'Petit Lapin au Jardin', 'Gender Reveal',
-  'Saint-Valentin', 'Dolce Vita', 'Moto',
+  'American Road Trip', 'Petit Chantier', 'Petite Oie',
+  'Petit Lapin au Jardin', 'Gender Reveal', 'Saint-Valentin',
   // Trois collections restent sur devis : leurs modèles se composent avec
-  // la cliente, aucun prix n'a été arrêté. Baptême Nature et Logo
-  // d'entreprise, entre les deux, ont désormais leurs propres prix.
-  'Douceur d’Abeille', 'Passion Vélo', 'Élégance Florale', 'Baptême Nature',
+  // la cliente, aucun prix n'a été arrêté.
+  'Douceur d’Abeille', 'Passion Vélo', 'Élégance Florale',
   'Logo d’entreprise'
 ];
 
