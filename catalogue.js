@@ -609,7 +609,7 @@
       "id": "logo-entreprise",
       "nom": "Logo d’entreprise",
       "occasion": "Entreprise",
-      "description": "Votre logo reproduit à la main au glaçage royal, dans vos couleurs exactes. Pour un événement d’entreprise, un salon, un remerciement client ou une fin d’année. Quantité, forme et finition se décident ensemble : sur devis.",
+      "description": "Votre logo reproduit à la main au glaçage royal, dans vos couleurs exactes. Pour un événement d’entreprise, un salon, un remerciement client ou une fin d’année. Quantité, forme et finition se décident ensemble.",
       "alt": "Biscuits personnalisés au logo d’entreprise, reproduits à la main au glaçage royal",
       "galerie": [
         { "fichier": "vue-1.webp", "alt": "Biscuits ronds au logo Getaz Payerne, décorés d’un renne de fin d’année" },
@@ -618,7 +618,9 @@
         { "fichier": "vue-4.webp", "alt": "Commande d’entreprise alignée avant emballage, logos identiques un par un" },
         { "fichier": "vue-5.webp", "alt": "Plateau de biscuits au logo d’entreprise, prêts pour la remise au client" }
       ],
-      "produits": []
+      "produits": [
+        { "ref": "logo", "nom": "Biscuit logo personnalisé", "prix": 500 }
+      ]
     }
   ];
 

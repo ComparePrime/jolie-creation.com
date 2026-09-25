@@ -159,8 +159,12 @@ def main():
     # La grille « Toutes les collections » de la boutique ne reprend pas
     # les collections du moment : elles sont déjà mises en avant juste
     # au-dessus, et les dupliquer sur la même page n'apprendrait rien
-    # de plus au visiteur.
-    autres = [c for c in cols if not c['saison']]
+    # de plus au visiteur. Elle ne reprend pas non plus les collections
+    # encore sur devis (aucun produit tarifé) : la boutique ne présente
+    # que ce qui se commande réellement. Le critère est le même que
+    # celui de prix_depart() plus haut, pour qu'une collection encore
+    # sur devis n'apparaisse jamais dans la grille avec un faux prix.
+    autres = [c for c in cols if not c['saison'] and c['produits']]
 
     v = VITRINE.read_text(encoding='utf-8')
     v = remplacer(VITRINE, v, 'saison:apercu',
