@@ -2811,12 +2811,24 @@ form.devis-form{
 }
 
 /* ---------- Grille « Toutes les collections » ----------
-   Une colonne sur mobile étroit — la carte reste lisible plutôt que
-   minuscule — puis deux dès que la largeur le permet, jusqu'à quatre
-   sur grand écran. */
+   Deux colonnes dès le mobile le plus étroit — vingt-quatre collections
+   en une seule colonne s'étirent sur un défilement interminable, deux
+   par deux la page se parcourt comme une vraie boutique — puis trois et
+   quatre en s'élargissant. */
 .boutique-grille{
   display: grid; gap: 20px;
-  grid-template-columns: 1fr;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+@media (max-width: 559px){
+  /* Une colonne deux fois plus étroite qu'avant respire moins : le nom
+     et le prix se resserrent pour que la carte reste compacte sans
+     perdre l'un ou l'autre. */
+  .boutique-grille{ gap: 12px; }
+  .boutique-grille .saison-corps{ padding: 14px 14px 16px; }
+  .boutique-grille .saison-occasion{ font-size: 10px; margin-bottom: 4px; }
+  .boutique-grille .saison-nom{ font-size: 16.5px; line-height: 1.25; margin-bottom: 6px; }
+  .boutique-grille .saison-prix{ font-size: 14px; margin-bottom: 6px; }
+  .boutique-grille .saison-voir{ font-size: 12.5px; }
 }
 @media (min-width: 560px){ .boutique-grille{ grid-template-columns: repeat(2, 1fr); } }
 @media (min-width: 900px){ .boutique-grille{ grid-template-columns: repeat(3, 1fr); } }
