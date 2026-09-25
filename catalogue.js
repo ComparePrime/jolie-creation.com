@@ -599,10 +599,10 @@
         { "fichier": "vue-4.webp", "alt": "Biscuit colombe blanche en relief sur médaillon vert sauge" }
       ],
       "produits": [
-        { "ref": "branches", "nom": "Les branches", "prix": 500 },
-        { "ref": "colombe", "nom": "La colombe", "prix": 600 },
-        { "ref": "lettre", "nom": "La lettre", "prix": 700 },
-        { "ref": "croix", "nom": "La croix", "prix": 600 }
+        { "ref": "branches", "nom": "Branche Douceur", "prix": 500 },
+        { "ref": "colombe", "nom": "Colombe Céleste", "prix": 600 },
+        { "ref": "lettre", "nom": "Initiale Précieuse", "prix": 700, "perso": ["initiale"] },
+        { "ref": "croix", "nom": "Croix Éternelle", "prix": 600 }
       ]
     },
     {
