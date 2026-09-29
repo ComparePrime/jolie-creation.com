@@ -2803,6 +2803,14 @@ form.devis-form{
   font-family: var(--font-display); font-size: 16px; font-weight: 600;
   color: var(--gold-deep); margin-bottom: 10px;
 }
+/* La note vient respirer sous le prix plutôt qu'à sa place : le prix
+   garde son poids, la note reste une information secondaire, discrète. */
+.saison-prix:has(+ .saison-avis){ margin-bottom: 4px; }
+.saison-avis{
+  display: block;
+  font-size: 13px; color: var(--ink-soft);
+  margin-bottom: 10px;
+}
 .saison-voir{
   display: inline-block;
   font-size: 14px; color: var(--gold-deep);
@@ -2828,6 +2836,8 @@ form.devis-form{
   .boutique-grille .saison-occasion{ font-size: 10px; margin-bottom: 4px; }
   .boutique-grille .saison-nom{ font-size: 16.5px; line-height: 1.25; margin-bottom: 6px; }
   .boutique-grille .saison-prix{ font-size: 14px; margin-bottom: 6px; }
+  .boutique-grille .saison-prix:has(+ .saison-avis){ margin-bottom: 2px; }
+  .boutique-grille .saison-avis{ font-size: 11.5px; margin-bottom: 6px; }
   .boutique-grille .saison-voir{ font-size: 12.5px; }
 }
 @media (min-width: 560px){ .boutique-grille{ grid-template-columns: repeat(2, 1fr); } }
@@ -2867,6 +2877,12 @@ form.devis-form{
   display: block;
   font-family: var(--font-display); font-size: 18px; font-weight: 600;
   color: var(--gold-deep); margin-bottom: 18px;
+}
+.boutique-vedette-prix:has(+ .boutique-vedette-avis){ margin-bottom: 4px; }
+.boutique-vedette-avis{
+  display: block;
+  font-size: 14px; color: var(--ink-soft);
+  margin-bottom: 18px;
 }
 
 /* ---------- Grille produits d'une page collection ----------
