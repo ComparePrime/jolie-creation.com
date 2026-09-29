@@ -262,7 +262,7 @@ bloc de collection, ni prix de modèle. Huit sections :
    de composer la commande. C'est la seule exception à « aucun prix sur
    cette page », et elle ne cite aucun modèle.
 6. **Mes réalisations** — la passerelle vers le portfolio.
-7. **Elles en parlent** — les avis clients. Ils vivent ici, sur chaque
+7. **On en parle** — les avis clients. Ils vivent ici, sur chaque
    page collection (`outils-page-collection.py`), et sur une sélection
    de réalisations de `mes-realisations.html` — nulle part ailleurs.
 8. **Appel final** — devis et WhatsApp.
