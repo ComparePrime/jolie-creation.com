@@ -317,8 +317,12 @@ def bloc_chaque_occasion():
   </section>'''
 
 
-def bloc_avis():
-    temoignages = [
+def bloc_avis(c):
+    """Les avis de CETTE collection, recueillis auprès de vraies clientes
+    (catalogue.js, champ « avis »). Une collection encore sur devis n'en
+    a pas : plutôt que d'afficher un avis qui ne parle pas d'elle, elle
+    reprend la sélection générique ci-dessous, commune aux trois."""
+    temoignages_generiques = [
         ('Vanessa V.', 'Des biscuits magnifiques et délicieux, qui ont eu beaucoup de succès. Merci encore pour cette belle commande.'),
         ('Charlotte', "Une commande dans les teintes pastel, exactement comme je l'imaginais. Le résultat était parfait et mes invités ont adoré."),
         ('Peaux de Génie', 'Des biscuits qui reflètent parfaitement notre logo et nos origines. Chaque création était un joli souvenir, et une belle gourmandise.'),
@@ -328,6 +332,8 @@ def bloc_avis():
         ('Tatiana M.', "Les biscuits de l'anniversaire d'Elio ont eu beaucoup de succès. Aussi beaux que bons, et parfaitement dans le thème souhaité."),
         ('Lily W.', "Des biscuits très réussis, aussi bons que beaux. L'emballage était particulièrement soigné.")
     ]
+    temoignages = ([(a['nom'], a['texte']) for a in c['avis']] if c.get('avis')
+                    else temoignages_generiques)
     cartes = '\n\n'.join(f'''        <figure class="avis-carte">
           <figcaption>
             <span class="avis-mention">Avis client</span>
@@ -615,7 +621,7 @@ def page(c):
 
 {bloc_chaque_occasion()}
 
-{bloc_avis()}
+{bloc_avis(c)}
 
   <section>
     <div class="wrap">
