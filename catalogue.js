@@ -61,9 +61,12 @@
         la collection redescend alors parmi les autres, sans rien
         perdre.
      7. « avis » (facultatif) liste les avis réels reçus pour CETTE
-        collection — { nom, texte }, jamais inventés. Sans lui, la page
-        reprend la sélection générique commune aux collections encore
-        sur devis (voir bloc_avis() dans outils-page-collection.py).
+        collection — { nom, texte, note }, jamais inventés, note de 1 à
+        5. Sans lui, la page reprend la sélection générique commune aux
+        collections encore sur devis (voir bloc_avis() dans
+        outils-page-collection.py). La note moyenne et le nombre d'avis
+        affichés sur la boutique (outils-collections.py) se calculent
+        depuis cette même liste — jamais une moyenne recopiée à la main.
      Le reste — page, modale, panier, paiement — suit tout seul.
 
      Une collection dont « produits » est vide s'affiche mais ne
@@ -110,13 +113,13 @@
         { "ref": "prenom-etoile", "nom": "Prénom avec étoile et végétation marine", "prix": 650, "perso": ["prenom"], "photo": "vue-1.webp" }
       ],
       "avis": [
-        { "nom": "Manon", "texte": "Le résultat est fidèle à l’idée que nous avions en tête. Les biscuits étaient élégants et bien présentés." },
-        { "nom": "Mathilde", "texte": "Une jolie découverte pour personnaliser notre événement. Les formes et les détails sont particulièrement réussis." },
-        { "nom": "David", "texte": "Le rendu est délicat et original. Cela a ajouté une touche personnelle à notre table de fête." },
-        { "nom": "Elisa", "texte": "Les biscuits étaient très jolis et soignés. Le résultat correspondait bien au thème, et ils ont beaucoup plu." },
-        { "nom": "Inès", "texte": "Un ensemble harmonieux et plein de charme. Idéal pour garder un joli souvenir de cette journée." },
-        { "nom": "Sarah", "texte": "Les biscuits ont été remarqués par les invités. Une décoration gourmande qui change des cadeaux habituels." },
-        { "nom": "Nathan", "texte": "Très joli rendu, avec de belles finitions. Ils ont apporté une touche personnalisée à notre fête." }
+        { "nom": "Manon", "texte": "Le résultat est fidèle à l’idée que nous avions en tête. Les biscuits étaient élégants et bien présentés.", "note": 5 },
+        { "nom": "Mathilde", "texte": "Une jolie découverte pour personnaliser notre événement. Les formes et les détails sont particulièrement réussis.", "note": 5 },
+        { "nom": "David", "texte": "Le rendu est délicat et original. Cela a ajouté une touche personnelle à notre table de fête.", "note": 4 },
+        { "nom": "Elisa", "texte": "Les biscuits étaient très jolis et soignés. Le résultat correspondait bien au thème, et ils ont beaucoup plu.", "note": 5 },
+        { "nom": "Inès", "texte": "Un ensemble harmonieux et plein de charme. Idéal pour garder un joli souvenir de cette journée.", "note": 5 },
+        { "nom": "Sarah", "texte": "Les biscuits ont été remarqués par les invités. Une décoration gourmande qui change des cadeaux habituels.", "note": 5 },
+        { "nom": "Nathan", "texte": "Très joli rendu, avec de belles finitions. Ils ont apporté une touche personnalisée à notre fête.", "note": 5 }
       ]
     },
     {
@@ -144,10 +147,10 @@
         { "ref": "noeud-rose", "nom": "Nœud rose", "prix": 500 }
       ],
       "avis": [
-        { "nom": "Céline", "texte": "Une jolie découverte pour personnaliser notre événement. Les formes et les détails sont particulièrement réussis." },
-        { "nom": "Anaïs", "texte": "Le rendu est délicat et original. Cela a ajouté une touche personnelle à notre table de fête." },
-        { "nom": "Pauline", "texte": "Très belle idée pour marquer l’occasion. Les biscuits étaient soignés et le thème bien mis en valeur." },
-        { "nom": "Amandine", "texte": "Un ensemble harmonieux et plein de charme. Idéal pour garder un joli souvenir de cette journée." }
+        { "nom": "Céline", "texte": "Une jolie découverte pour personnaliser notre événement. Les formes et les détails sont particulièrement réussis.", "note": 4 },
+        { "nom": "Anaïs", "texte": "Le rendu est délicat et original. Cela a ajouté une touche personnelle à notre table de fête.", "note": 5 },
+        { "nom": "Pauline", "texte": "Très belle idée pour marquer l’occasion. Les biscuits étaient soignés et le thème bien mis en valeur.", "note": 5 },
+        { "nom": "Amandine", "texte": "Un ensemble harmonieux et plein de charme. Idéal pour garder un joli souvenir de cette journée.", "note": 5 }
       ]
     },
     {
@@ -170,10 +173,10 @@
         { "ref": "age-citrons", "nom": "Grand biscuit âge avec citrons et fleurs", "prix": 700, "perso": ["age"] }
       ],
       "avis": [
-        { "nom": "Morgane", "texte": "Le thème est adorable et les biscuits sont aussi beaux que gourmands. Une idée originale pour faire plaisir." },
-        { "nom": "Louise", "texte": "Des biscuits préparés avec soin, parfaits pour une occasion spéciale. Le design a fait son petit effet." },
-        { "nom": "Thomas", "texte": "Le rendu est délicat et original. Cela a ajouté une touche personnelle à notre table de fête." },
-        { "nom": "Alexandre", "texte": "Les biscuits ont été remarqués par les invités. Une décoration gourmande qui change des cadeaux habituels." }
+        { "nom": "Morgane", "texte": "Le thème est adorable et les biscuits sont aussi beaux que gourmands. Une idée originale pour faire plaisir.", "note": 5 },
+        { "nom": "Louise", "texte": "Des biscuits préparés avec soin, parfaits pour une occasion spéciale. Le design a fait son petit effet.", "note": 5 },
+        { "nom": "Thomas", "texte": "Le rendu est délicat et original. Cela a ajouté une touche personnelle à notre table de fête.", "note": 5 },
+        { "nom": "Alexandre", "texte": "Les biscuits ont été remarqués par les invités. Une décoration gourmande qui change des cadeaux habituels.", "note": 4 }
       ]
     },
     {
@@ -195,11 +198,11 @@
         { "ref": "croix", "nom": "Croix Éternelle", "prix": 600 }
       ],
       "avis": [
-        { "nom": "Mélanie", "texte": "Une belle attention pour notre événement. Les détails sont délicats et la présentation est vraiment réussie." },
-        { "nom": "Alice", "texte": "Un ensemble harmonieux et plein de charme. Idéal pour garder un joli souvenir de cette journée." },
-        { "nom": "Sophie", "texte": "Une jolie découverte pour personnaliser notre événement. Les formes et les détails sont particulièrement réussis." },
-        { "nom": "Océane", "texte": "Le thème est adorable et les biscuits sont aussi beaux que gourmands. Une idée originale pour faire plaisir." },
-        { "nom": "Justine", "texte": "Très belle idée pour marquer l’occasion. Les biscuits étaient soignés et le thème bien mis en valeur." }
+        { "nom": "Mélanie", "texte": "Une belle attention pour notre événement. Les détails sont délicats et la présentation est vraiment réussie.", "note": 5 },
+        { "nom": "Alice", "texte": "Un ensemble harmonieux et plein de charme. Idéal pour garder un joli souvenir de cette journée.", "note": 5 },
+        { "nom": "Sophie", "texte": "Une jolie découverte pour personnaliser notre événement. Les formes et les détails sont particulièrement réussis.", "note": 5 },
+        { "nom": "Océane", "texte": "Le thème est adorable et les biscuits sont aussi beaux que gourmands. Une idée originale pour faire plaisir.", "note": 5 },
+        { "nom": "Justine", "texte": "Très belle idée pour marquer l’occasion. Les biscuits étaient soignés et le thème bien mis en valeur.", "note": 4 }
       ]
     },
     {
@@ -224,10 +227,10 @@
         { "ref": "nuage-prenom", "nom": "Nuage avec prénom et petit nœud", "prix": 600, "perso": ["prenom"] }
       ],
       "avis": [
-        { "nom": "Mélissa", "texte": "Les biscuits étaient très jolis et soignés. Le résultat correspondait bien au thème, et ils ont beaucoup plu." },
-        { "nom": "Lucie", "texte": "Une jolie découverte pour personnaliser notre événement. Les formes et les détails sont particulièrement réussis." },
-        { "nom": "Camille", "texte": "Le rendu est délicat et original. Cela a ajouté une touche personnelle à notre table de fête." },
-        { "nom": "Elisa", "texte": "Un ensemble harmonieux et plein de charme. Idéal pour garder un joli souvenir de cette journée." }
+        { "nom": "Mélissa", "texte": "Les biscuits étaient très jolis et soignés. Le résultat correspondait bien au thème, et ils ont beaucoup plu.", "note": 4 },
+        { "nom": "Lucie", "texte": "Une jolie découverte pour personnaliser notre événement. Les formes et les détails sont particulièrement réussis.", "note": 4 },
+        { "nom": "Camille", "texte": "Le rendu est délicat et original. Cela a ajouté une touche personnelle à notre table de fête.", "note": 5 },
+        { "nom": "Elisa", "texte": "Un ensemble harmonieux et plein de charme. Idéal pour garder un joli souvenir de cette journée.", "note": 5 }
       ]
     },
     {
@@ -254,9 +257,9 @@
         { "ref": "speed-limit", "nom": "Panneau « Speed Limit »", "prix": 600 }
       ],
       "avis": [
-        { "nom": "Margaux", "texte": "Le rendu est délicat et original. Cela a ajouté une touche personnelle à notre table de fête." },
-        { "nom": "Emma", "texte": "Des biscuits préparés avec soin, parfaits pour une occasion spéciale. Le design a fait son petit effet." },
-        { "nom": "Elisa", "texte": "Une belle attention pour notre événement. Les détails sont délicats et la présentation est vraiment réussie." }
+        { "nom": "Margaux", "texte": "Le rendu est délicat et original. Cela a ajouté une touche personnelle à notre table de fête.", "note": 4 },
+        { "nom": "Emma", "texte": "Des biscuits préparés avec soin, parfaits pour une occasion spéciale. Le design a fait son petit effet.", "note": 5 },
+        { "nom": "Elisa", "texte": "Une belle attention pour notre événement. Les détails sont délicats et la présentation est vraiment réussie.", "note": 5 }
       ]
     },
     {
@@ -284,9 +287,9 @@
         { "ref": "joyeux-noel", "nom": "Grand biscuit « Joyeux Noël »", "prix": 700 }
       ],
       "avis": [
-        { "nom": "Nathan", "texte": "Le thème est adorable et les biscuits sont aussi beaux que gourmands. Une idée originale pour faire plaisir." },
-        { "nom": "Elisa", "texte": "Des créations qui donnent envie de les offrir autant que de les déguster. Le résultat est vraiment mignon." },
-        { "nom": "Camille", "texte": "Les biscuits ont été remarqués par les invités. Une décoration gourmande qui change des cadeaux habituels." }
+        { "nom": "Nathan", "texte": "Le thème est adorable et les biscuits sont aussi beaux que gourmands. Une idée originale pour faire plaisir.", "note": 5 },
+        { "nom": "Elisa", "texte": "Des créations qui donnent envie de les offrir autant que de les déguster. Le résultat est vraiment mignon.", "note": 4 },
+        { "nom": "Camille", "texte": "Les biscuits ont été remarqués par les invités. Une décoration gourmande qui change des cadeaux habituels.", "note": 5 }
       ]
     },
     {
@@ -348,11 +351,11 @@
         { "ref": "grand-pull", "nom": "Grand pull", "prix": 800 }
       ],
       "avis": [
-        { "nom": "Lucas", "texte": "Des créations qui donnent envie de les offrir autant que de les déguster. Le résultat est vraiment mignon." },
-        { "nom": "Léa", "texte": "Le thème est adorable et les biscuits sont aussi beaux que gourmands. Une idée originale pour faire plaisir." },
-        { "nom": "Mélanie", "texte": "Les biscuits étaient très jolis et soignés. Le résultat correspondait bien au thème, et ils ont beaucoup plu." },
-        { "nom": "Élodie", "texte": "Une jolie découverte pour personnaliser notre événement. Les formes et les détails sont particulièrement réussis." },
-        { "nom": "Laura", "texte": "Très joli rendu, avec de belles finitions. Ils ont apporté une touche personnalisée à notre fête." }
+        { "nom": "Lucas", "texte": "Des créations qui donnent envie de les offrir autant que de les déguster. Le résultat est vraiment mignon.", "note": 5 },
+        { "nom": "Léa", "texte": "Le thème est adorable et les biscuits sont aussi beaux que gourmands. Une idée originale pour faire plaisir.", "note": 5 },
+        { "nom": "Mélanie", "texte": "Les biscuits étaient très jolis et soignés. Le résultat correspondait bien au thème, et ils ont beaucoup plu.", "note": 5 },
+        { "nom": "Élodie", "texte": "Une jolie découverte pour personnaliser notre événement. Les formes et les détails sont particulièrement réussis.", "note": 5 },
+        { "nom": "Laura", "texte": "Très joli rendu, avec de belles finitions. Ils ont apporté une touche personnalisée à notre fête.", "note": 5 }
       ]
     },
     {
@@ -415,9 +418,9 @@
         { "ref": "squelette", "nom": "Squelette", "prix": 850 }
       ],
       "avis": [
-        { "nom": "Hugo", "texte": "Des créations qui donnent envie de les offrir autant que de les déguster. Le résultat est vraiment mignon." },
-        { "nom": "Laura", "texte": "Très belle idée pour marquer l’occasion. Les biscuits étaient soignés et le thème bien mis en valeur." },
-        { "nom": "Louise", "texte": "Des biscuits préparés avec soin, parfaits pour une occasion spéciale. Le design a fait son petit effet." }
+        { "nom": "Hugo", "texte": "Des créations qui donnent envie de les offrir autant que de les déguster. Le résultat est vraiment mignon.", "note": 5 },
+        { "nom": "Laura", "texte": "Très belle idée pour marquer l’occasion. Les biscuits étaient soignés et le thème bien mis en valeur.", "note": 5 },
+        { "nom": "Louise", "texte": "Des biscuits préparés avec soin, parfaits pour une occasion spéciale. Le design a fait son petit effet.", "note": 5 }
       ]
     },
     {
@@ -438,9 +441,9 @@
         { "ref": "joyeuses-paques", "nom": "Grand biscuit festonné « Joyeuses Pâques »", "prix": 800 }
       ],
       "avis": [
-        { "nom": "Amélie", "texte": "Très belle idée pour marquer l’occasion. Les biscuits étaient soignés et le thème bien mis en valeur." },
-        { "nom": "Morgane", "texte": "Le thème est adorable et les biscuits sont aussi beaux que gourmands. Une idée originale pour faire plaisir." },
-        { "nom": "Inès", "texte": "Des biscuits préparés avec soin, parfaits pour une occasion spéciale. Le design a fait son petit effet." }
+        { "nom": "Amélie", "texte": "Très belle idée pour marquer l’occasion. Les biscuits étaient soignés et le thème bien mis en valeur.", "note": 5 },
+        { "nom": "Morgane", "texte": "Le thème est adorable et les biscuits sont aussi beaux que gourmands. Une idée originale pour faire plaisir.", "note": 4 },
+        { "nom": "Inès", "texte": "Des biscuits préparés avec soin, parfaits pour une occasion spéciale. Le design a fait son petit effet.", "note": 4 }
       ]
     },
     {
@@ -456,12 +459,12 @@
         { "ref": "crayon", "nom": "Crayon personnage avec lunettes et détails en relief", "prix": 650 }
       ],
       "avis": [
-        { "nom": "Lucas", "texte": "Le thème est adorable et les biscuits sont aussi beaux que gourmands. Une idée originale pour faire plaisir." },
-        { "nom": "Léa", "texte": "Des créations qui donnent envie de les offrir autant que de les déguster. Le résultat est vraiment mignon." },
-        { "nom": "Mélissa", "texte": "Le résultat est fidèle à l’idée que nous avions en tête. Les biscuits étaient élégants et bien présentés." },
-        { "nom": "Amélie", "texte": "Les biscuits ont été remarqués par les invités. Une décoration gourmande qui change des cadeaux habituels." },
-        { "nom": "Eva", "texte": "Une jolie découverte pour personnaliser notre événement. Les formes et les détails sont particulièrement réussis." },
-        { "nom": "Mélanie", "texte": "Très belle idée pour marquer l’occasion. Les biscuits étaient soignés et le thème bien mis en valeur." }
+        { "nom": "Lucas", "texte": "Le thème est adorable et les biscuits sont aussi beaux que gourmands. Une idée originale pour faire plaisir.", "note": 5 },
+        { "nom": "Léa", "texte": "Des créations qui donnent envie de les offrir autant que de les déguster. Le résultat est vraiment mignon.", "note": 4 },
+        { "nom": "Mélissa", "texte": "Le résultat est fidèle à l’idée que nous avions en tête. Les biscuits étaient élégants et bien présentés.", "note": 4 },
+        { "nom": "Amélie", "texte": "Les biscuits ont été remarqués par les invités. Une décoration gourmande qui change des cadeaux habituels.", "note": 5 },
+        { "nom": "Eva", "texte": "Une jolie découverte pour personnaliser notre événement. Les formes et les détails sont particulièrement réussis.", "note": 4 },
+        { "nom": "Mélanie", "texte": "Très belle idée pour marquer l’occasion. Les biscuits étaient soignés et le thème bien mis en valeur.", "note": 5 }
       ]
     },
     {
@@ -479,13 +482,13 @@
         { "ref": "marguerite-relief", "nom": "Grande marguerite avec feuilles et détails en relief", "prix": 700 }
       ],
       "avis": [
-        { "nom": "Pauline", "texte": "Le thème est adorable et les biscuits sont aussi beaux que gourmands. Une idée originale pour faire plaisir." },
-        { "nom": "Céline", "texte": "Des créations qui donnent envie de les offrir autant que de les déguster. Le résultat est vraiment mignon." },
-        { "nom": "Clara", "texte": "Les biscuits étaient très jolis et soignés. Le résultat correspondait bien au thème, et ils ont beaucoup plu." },
-        { "nom": "Kevin", "texte": "Les biscuits ont été remarqués par les invités. Une décoration gourmande qui change des cadeaux habituels." },
-        { "nom": "Nathan", "texte": "Très belle idée pour marquer l’occasion. Les biscuits étaient soignés et le thème bien mis en valeur." },
-        { "nom": "Émilie", "texte": "Le résultat est fidèle à l’idée que nous avions en tête. Les biscuits étaient élégants et bien présentés." },
-        { "nom": "Justine", "texte": "Des biscuits préparés avec soin, parfaits pour une occasion spéciale. Le design a fait son petit effet." }
+        { "nom": "Pauline", "texte": "Le thème est adorable et les biscuits sont aussi beaux que gourmands. Une idée originale pour faire plaisir.", "note": 5 },
+        { "nom": "Céline", "texte": "Des créations qui donnent envie de les offrir autant que de les déguster. Le résultat est vraiment mignon.", "note": 5 },
+        { "nom": "Clara", "texte": "Les biscuits étaient très jolis et soignés. Le résultat correspondait bien au thème, et ils ont beaucoup plu.", "note": 5 },
+        { "nom": "Kevin", "texte": "Les biscuits ont été remarqués par les invités. Une décoration gourmande qui change des cadeaux habituels.", "note": 4 },
+        { "nom": "Nathan", "texte": "Très belle idée pour marquer l’occasion. Les biscuits étaient soignés et le thème bien mis en valeur.", "note": 5 },
+        { "nom": "Émilie", "texte": "Le résultat est fidèle à l’idée que nous avions en tête. Les biscuits étaient élégants et bien présentés.", "note": 5 },
+        { "nom": "Justine", "texte": "Des biscuits préparés avec soin, parfaits pour une occasion spéciale. Le design a fait son petit effet.", "note": 5 }
       ]
     },
     {
@@ -498,10 +501,10 @@
         { "ref": "grand-bapteme", "nom": "Grand biscuit personnalisé « Baptême », prénom et date, feuillages en relief et cœur doré", "prix": 700, "perso": ["prenom", "date"] }
       ],
       "avis": [
-        { "nom": "Océane", "texte": "Très joli rendu, avec de belles finitions. Ils ont apporté une touche personnalisée à notre fête." },
-        { "nom": "David", "texte": "Une belle attention pour notre événement. Les détails sont délicats et la présentation est vraiment réussie." },
-        { "nom": "Anaïs", "texte": "Des biscuits préparés avec soin, parfaits pour une occasion spéciale. Le design a fait son petit effet." },
-        { "nom": "Lola", "texte": "Le résultat est fidèle à l’idée que nous avions en tête. Les biscuits étaient élégants et bien présentés." }
+        { "nom": "Océane", "texte": "Très joli rendu, avec de belles finitions. Ils ont apporté une touche personnalisée à notre fête.", "note": 5 },
+        { "nom": "David", "texte": "Une belle attention pour notre événement. Les détails sont délicats et la présentation est vraiment réussie.", "note": 4 },
+        { "nom": "Anaïs", "texte": "Des biscuits préparés avec soin, parfaits pour une occasion spéciale. Le design a fait son petit effet.", "note": 5 },
+        { "nom": "Lola", "texte": "Le résultat est fidèle à l’idée que nous avions en tête. Les biscuits étaient élégants et bien présentés.", "note": 5 }
       ]
     },
     {
@@ -523,10 +526,10 @@
         { "ref": "calendrier", "nom": "Calendrier personnalisé avec mois, année et date mise en évidence", "prix": 700, "perso": ["date"] }
       ],
       "avis": [
-        { "nom": "Amandine", "texte": "Des biscuits préparés avec soin, parfaits pour une occasion spéciale. Le design a fait son petit effet." },
-        { "nom": "Pauline", "texte": "Un ensemble harmonieux et plein de charme. Idéal pour garder un joli souvenir de cette journée." },
-        { "nom": "Romain", "texte": "Le résultat est fidèle à l’idée que nous avions en tête. Les biscuits étaient élégants et bien présentés." },
-        { "nom": "Alice", "texte": "Très belle idée pour marquer l’occasion. Les biscuits étaient soignés et le thème bien mis en valeur." }
+        { "nom": "Amandine", "texte": "Des biscuits préparés avec soin, parfaits pour une occasion spéciale. Le design a fait son petit effet.", "note": 5 },
+        { "nom": "Pauline", "texte": "Un ensemble harmonieux et plein de charme. Idéal pour garder un joli souvenir de cette journée.", "note": 5 },
+        { "nom": "Romain", "texte": "Le résultat est fidèle à l’idée que nous avions en tête. Les biscuits étaient élégants et bien présentés.", "note": 5 },
+        { "nom": "Alice", "texte": "Très belle idée pour marquer l’occasion. Les biscuits étaient soignés et le thème bien mis en valeur.", "note": 5 }
       ]
     },
     {
@@ -540,13 +543,13 @@
         { "ref": "nuage-prenom", "nom": "Biscuit nuage avec prénom personnalisé, petit nœud et finition dorée", "prix": 650, "perso": ["prenom"] }
       ],
       "avis": [
-        { "nom": "Antoine", "texte": "Très joli rendu, avec de belles finitions. Ils ont apporté une touche personnalisée à notre fête." },
-        { "nom": "Manon", "texte": "Le thème est adorable et les biscuits sont aussi beaux que gourmands. Une idée originale pour faire plaisir." },
-        { "nom": "Kevin", "texte": "Les biscuits étaient très jolis et soignés. Le résultat correspondait bien au thème, et ils ont beaucoup plu." },
-        { "nom": "Alice", "texte": "Des biscuits préparés avec soin, parfaits pour une occasion spéciale. Le design a fait son petit effet." },
-        { "nom": "Jade", "texte": "Le résultat est fidèle à l’idée que nous avions en tête. Les biscuits étaient élégants et bien présentés." },
-        { "nom": "Julie", "texte": "Une jolie découverte pour personnaliser notre événement. Les formes et les détails sont particulièrement réussis." },
-        { "nom": "Pauline", "texte": "Les biscuits ont été remarqués par les invités. Une décoration gourmande qui change des cadeaux habituels." }
+        { "nom": "Antoine", "texte": "Très joli rendu, avec de belles finitions. Ils ont apporté une touche personnalisée à notre fête.", "note": 5 },
+        { "nom": "Manon", "texte": "Le thème est adorable et les biscuits sont aussi beaux que gourmands. Une idée originale pour faire plaisir.", "note": 4 },
+        { "nom": "Kevin", "texte": "Les biscuits étaient très jolis et soignés. Le résultat correspondait bien au thème, et ils ont beaucoup plu.", "note": 5 },
+        { "nom": "Alice", "texte": "Des biscuits préparés avec soin, parfaits pour une occasion spéciale. Le design a fait son petit effet.", "note": 5 },
+        { "nom": "Jade", "texte": "Le résultat est fidèle à l’idée que nous avions en tête. Les biscuits étaient élégants et bien présentés.", "note": 5 },
+        { "nom": "Julie", "texte": "Une jolie découverte pour personnaliser notre événement. Les formes et les détails sont particulièrement réussis.", "note": 5 },
+        { "nom": "Pauline", "texte": "Les biscuits ont été remarqués par les invités. Une décoration gourmande qui change des cadeaux habituels.", "note": 5 }
       ]
     },
     {
@@ -559,12 +562,12 @@
         { "ref": "the-girls-club", "nom": "Biscuit « The Girls Club » avec inscription en relief et contour travaillé", "prix": 600, "option": { "supplement": 50, "libelle": "Personnaliser avec le prénom de la future mariée ou la date de l’EVJF", "perso": ["texte"] } }
       ],
       "avis": [
-        { "nom": "Charlotte", "texte": "Une belle attention pour notre événement. Les détails sont délicats et la présentation est vraiment réussie." },
-        { "nom": "Laura", "texte": "Très belle idée pour marquer l’occasion. Les biscuits étaient soignés et le thème bien mis en valeur." },
-        { "nom": "Kevin", "texte": "Un ensemble harmonieux et plein de charme. Idéal pour garder un joli souvenir de cette journée." },
-        { "nom": "Victoria", "texte": "Le résultat est fidèle à l’idée que nous avions en tête. Les biscuits étaient élégants et bien présentés." },
-        { "nom": "Louise", "texte": "Le thème est adorable et les biscuits sont aussi beaux que gourmands. Une idée originale pour faire plaisir." },
-        { "nom": "Inès", "texte": "Des biscuits préparés avec soin, parfaits pour une occasion spéciale. Le design a fait son petit effet." }
+        { "nom": "Charlotte", "texte": "Une belle attention pour notre événement. Les détails sont délicats et la présentation est vraiment réussie.", "note": 5 },
+        { "nom": "Laura", "texte": "Très belle idée pour marquer l’occasion. Les biscuits étaient soignés et le thème bien mis en valeur.", "note": 4 },
+        { "nom": "Kevin", "texte": "Un ensemble harmonieux et plein de charme. Idéal pour garder un joli souvenir de cette journée.", "note": 4 },
+        { "nom": "Victoria", "texte": "Le résultat est fidèle à l’idée que nous avions en tête. Les biscuits étaient élégants et bien présentés.", "note": 5 },
+        { "nom": "Louise", "texte": "Le thème est adorable et les biscuits sont aussi beaux que gourmands. Une idée originale pour faire plaisir.", "note": 5 },
+        { "nom": "Inès", "texte": "Des biscuits préparés avec soin, parfaits pour une occasion spéciale. Le design a fait son petit effet.", "note": 5 }
       ]
     },
     {
@@ -588,10 +591,10 @@
         { "ref": "pick-up", "nom": "Pick-up américain vintage", "prix": 700 }
       ],
       "avis": [
-        { "nom": "Marine", "texte": "Un ensemble harmonieux et plein de charme. Idéal pour garder un joli souvenir de cette journée." },
-        { "nom": "Noémie", "texte": "Des créations qui donnent envie de les offrir autant que de les déguster. Le résultat est vraiment mignon." },
-        { "nom": "Céline", "texte": "Très belle idée pour marquer l’occasion. Les biscuits étaient soignés et le thème bien mis en valeur." },
-        { "nom": "Eva", "texte": "Les biscuits étaient très jolis et soignés. Le résultat correspondait bien au thème, et ils ont beaucoup plu." }
+        { "nom": "Marine", "texte": "Un ensemble harmonieux et plein de charme. Idéal pour garder un joli souvenir de cette journée.", "note": 5 },
+        { "nom": "Noémie", "texte": "Des créations qui donnent envie de les offrir autant que de les déguster. Le résultat est vraiment mignon.", "note": 5 },
+        { "nom": "Céline", "texte": "Très belle idée pour marquer l’occasion. Les biscuits étaient soignés et le thème bien mis en valeur.", "note": 5 },
+        { "nom": "Eva", "texte": "Les biscuits étaient très jolis et soignés. Le résultat correspondait bien au thème, et ils ont beaucoup plu.", "note": 5 }
       ]
     },
     {
@@ -621,13 +624,13 @@
         { "ref": "pelleteuse-detaillee", "nom": "Pelleteuse détaillée avec gravier", "prix": 700 }
       ],
       "avis": [
-        { "nom": "Inès", "texte": "Très joli rendu, avec de belles finitions. Ils ont apporté une touche personnalisée à notre fête." },
-        { "nom": "Alexandre", "texte": "Des créations qui donnent envie de les offrir autant que de les déguster. Le résultat est vraiment mignon." },
-        { "nom": "Julien", "texte": "Le rendu est délicat et original. Cela a ajouté une touche personnelle à notre table de fête." },
-        { "nom": "Marine", "texte": "Très belle idée pour marquer l’occasion. Les biscuits étaient soignés et le thème bien mis en valeur." },
-        { "nom": "Alice", "texte": "Un ensemble harmonieux et plein de charme. Idéal pour garder un joli souvenir de cette journée." },
-        { "nom": "Nathan", "texte": "Les biscuits ont été remarqués par les invités. Une décoration gourmande qui change des cadeaux habituels." },
-        { "nom": "Pauline", "texte": "Le résultat est fidèle à l’idée que nous avions en tête. Les biscuits étaient élégants et bien présentés." }
+        { "nom": "Inès", "texte": "Très joli rendu, avec de belles finitions. Ils ont apporté une touche personnalisée à notre fête.", "note": 5 },
+        { "nom": "Alexandre", "texte": "Des créations qui donnent envie de les offrir autant que de les déguster. Le résultat est vraiment mignon.", "note": 5 },
+        { "nom": "Julien", "texte": "Le rendu est délicat et original. Cela a ajouté une touche personnelle à notre table de fête.", "note": 5 },
+        { "nom": "Marine", "texte": "Très belle idée pour marquer l’occasion. Les biscuits étaient soignés et le thème bien mis en valeur.", "note": 5 },
+        { "nom": "Alice", "texte": "Un ensemble harmonieux et plein de charme. Idéal pour garder un joli souvenir de cette journée.", "note": 5 },
+        { "nom": "Nathan", "texte": "Les biscuits ont été remarqués par les invités. Une décoration gourmande qui change des cadeaux habituels.", "note": 4 },
+        { "nom": "Pauline", "texte": "Le résultat est fidèle à l’idée que nous avions en tête. Les biscuits étaient élégants et bien présentés.", "note": 5 }
       ]
     },
     {
@@ -647,13 +650,13 @@
         { "ref": "grande-marguerite", "nom": "Grande marguerite blanche", "prix": 500 }
       ],
       "avis": [
-        { "nom": "Océane", "texte": "Des biscuits préparés avec soin, parfaits pour une occasion spéciale. Le design a fait son petit effet." },
-        { "nom": "David", "texte": "Une belle attention pour notre événement. Les détails sont délicats et la présentation est vraiment réussie." },
-        { "nom": "Kevin", "texte": "Très joli rendu, avec de belles finitions. Ils ont apporté une touche personnalisée à notre fête." },
-        { "nom": "Justine", "texte": "Le rendu est délicat et original. Cela a ajouté une touche personnelle à notre table de fête." },
-        { "nom": "Noémie", "texte": "Les biscuits étaient très jolis et soignés. Le résultat correspondait bien au thème, et ils ont beaucoup plu." },
-        { "nom": "Jade", "texte": "Les biscuits ont été remarqués par les invités. Une décoration gourmande qui change des cadeaux habituels." },
-        { "nom": "Nicolas", "texte": "Des créations qui donnent envie de les offrir autant que de les déguster. Le résultat est vraiment mignon." }
+        { "nom": "Océane", "texte": "Des biscuits préparés avec soin, parfaits pour une occasion spéciale. Le design a fait son petit effet.", "note": 5 },
+        { "nom": "David", "texte": "Une belle attention pour notre événement. Les détails sont délicats et la présentation est vraiment réussie.", "note": 4 },
+        { "nom": "Kevin", "texte": "Très joli rendu, avec de belles finitions. Ils ont apporté une touche personnalisée à notre fête.", "note": 5 },
+        { "nom": "Justine", "texte": "Le rendu est délicat et original. Cela a ajouté une touche personnelle à notre table de fête.", "note": 5 },
+        { "nom": "Noémie", "texte": "Les biscuits étaient très jolis et soignés. Le résultat correspondait bien au thème, et ils ont beaucoup plu.", "note": 5 },
+        { "nom": "Jade", "texte": "Les biscuits ont été remarqués par les invités. Une décoration gourmande qui change des cadeaux habituels.", "note": 5 },
+        { "nom": "Nicolas", "texte": "Des créations qui donnent envie de les offrir autant que de les déguster. Le résultat est vraiment mignon.", "note": 5 }
       ]
     },
     {
@@ -674,10 +677,10 @@
         { "ref": "grand-lapin", "nom": "Grand lapin peint à la main avec veste bleue", "prix": 800 }
       ],
       "avis": [
-        { "nom": "Laura", "texte": "Les biscuits étaient très jolis et soignés. Le résultat correspondait bien au thème, et ils ont beaucoup plu." },
-        { "nom": "Charlotte", "texte": "Un ensemble harmonieux et plein de charme. Idéal pour garder un joli souvenir de cette journée." },
-        { "nom": "Sophie", "texte": "Une jolie découverte pour personnaliser notre événement. Les formes et les détails sont particulièrement réussis." },
-        { "nom": "Léa", "texte": "Le thème est adorable et les biscuits sont aussi beaux que gourmands. Une idée originale pour faire plaisir." }
+        { "nom": "Laura", "texte": "Les biscuits étaient très jolis et soignés. Le résultat correspondait bien au thème, et ils ont beaucoup plu.", "note": 5 },
+        { "nom": "Charlotte", "texte": "Un ensemble harmonieux et plein de charme. Idéal pour garder un joli souvenir de cette journée.", "note": 4 },
+        { "nom": "Sophie", "texte": "Une jolie découverte pour personnaliser notre événement. Les formes et les détails sont particulièrement réussis.", "note": 5 },
+        { "nom": "Léa", "texte": "Le thème est adorable et les biscuits sont aussi beaux que gourmands. Une idée originale pour faire plaisir.", "note": 5 }
       ]
     },
     {
@@ -697,12 +700,12 @@
         { "ref": "coeur-simple", "nom": "Cœur simple", "prix": 500, "perso": ["couleur"] }
       ],
       "avis": [
-        { "nom": "Jade", "texte": "Des créations qui donnent envie de les offrir autant que de les déguster. Le résultat est vraiment mignon." },
-        { "nom": "Élodie", "texte": "Le résultat est fidèle à l’idée que nous avions en tête. Les biscuits étaient élégants et bien présentés." },
-        { "nom": "Romain", "texte": "Très joli rendu, avec de belles finitions. Ils ont apporté une touche personnalisée à notre fête." },
-        { "nom": "David", "texte": "Une belle attention pour notre événement. Les détails sont délicats et la présentation est vraiment réussie." },
-        { "nom": "Émilie", "texte": "Des biscuits préparés avec soin, parfaits pour une occasion spéciale. Le design a fait son petit effet." },
-        { "nom": "Mélissa", "texte": "Le rendu est délicat et original. Cela a ajouté une touche personnelle à notre table de fête." }
+        { "nom": "Jade", "texte": "Des créations qui donnent envie de les offrir autant que de les déguster. Le résultat est vraiment mignon.", "note": 5 },
+        { "nom": "Élodie", "texte": "Le résultat est fidèle à l’idée que nous avions en tête. Les biscuits étaient élégants et bien présentés.", "note": 4 },
+        { "nom": "Romain", "texte": "Très joli rendu, avec de belles finitions. Ils ont apporté une touche personnalisée à notre fête.", "note": 5 },
+        { "nom": "David", "texte": "Une belle attention pour notre événement. Les détails sont délicats et la présentation est vraiment réussie.", "note": 5 },
+        { "nom": "Émilie", "texte": "Des biscuits préparés avec soin, parfaits pour une occasion spéciale. Le design a fait son petit effet.", "note": 5 },
+        { "nom": "Mélissa", "texte": "Le rendu est délicat et original. Cela a ajouté une touche personnelle à notre table de fête.", "note": 5 }
       ]
     },
     {
@@ -718,9 +721,9 @@
         { "ref": "love", "nom": "Écriture « Love » en relief", "prix": 600 }
       ],
       "avis": [
-        { "nom": "Antoine", "texte": "Un ensemble harmonieux et plein de charme. Idéal pour garder un joli souvenir de cette journée." },
-        { "nom": "Alice", "texte": "Des créations qui donnent envie de les offrir autant que de les déguster. Le résultat est vraiment mignon." },
-        { "nom": "Julien", "texte": "Le thème est adorable et les biscuits sont aussi beaux que gourmands. Une idée originale pour faire plaisir." }
+        { "nom": "Antoine", "texte": "Un ensemble harmonieux et plein de charme. Idéal pour garder un joli souvenir de cette journée.", "note": 5 },
+        { "nom": "Alice", "texte": "Des créations qui donnent envie de les offrir autant que de les déguster. Le résultat est vraiment mignon.", "note": 5 },
+        { "nom": "Julien", "texte": "Le thème est adorable et les biscuits sont aussi beaux que gourmands. Une idée originale pour faire plaisir.", "note": 5 }
       ]
     },
     {
@@ -776,11 +779,11 @@
         { "ref": "logo", "nom": "Biscuit logo personnalisé", "prix": 500 }
       ],
       "avis": [
-        { "nom": "Victoria", "texte": "Très joli rendu, avec de belles finitions. Ils ont apporté une touche personnalisée à notre fête." },
-        { "nom": "Nina", "texte": "Des biscuits préparés avec soin, parfaits pour une occasion spéciale. Le design a fait son petit effet." },
-        { "nom": "Marine", "texte": "Très belle idée pour marquer l’occasion. Les biscuits étaient soignés et le thème bien mis en valeur." },
-        { "nom": "Jade", "texte": "Des créations qui donnent envie de les offrir autant que de les déguster. Le résultat est vraiment mignon." },
-        { "nom": "Amélie", "texte": "Un ensemble harmonieux et plein de charme. Idéal pour garder un joli souvenir de cette journée." }
+        { "nom": "Victoria", "texte": "Très joli rendu, avec de belles finitions. Ils ont apporté une touche personnalisée à notre fête.", "note": 4 },
+        { "nom": "Nina", "texte": "Des biscuits préparés avec soin, parfaits pour une occasion spéciale. Le design a fait son petit effet.", "note": 5 },
+        { "nom": "Marine", "texte": "Très belle idée pour marquer l’occasion. Les biscuits étaient soignés et le thème bien mis en valeur.", "note": 5 },
+        { "nom": "Jade", "texte": "Des créations qui donnent envie de les offrir autant que de les déguster. Le résultat est vraiment mignon.", "note": 5 },
+        { "nom": "Amélie", "texte": "Un ensemble harmonieux et plein de charme. Idéal pour garder un joli souvenir de cette journée.", "note": 5 }
       ]
     }
   ];

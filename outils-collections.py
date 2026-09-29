@@ -45,7 +45,8 @@ console.log(JSON.stringify(C.COLLECTIONS.map((c) => ({
     biscuits: pk.biscuits, resume: pk.resume || '', complet: !!pk.complet,
     horsSuisse: !!pk.horsSuisse,
     detail: pk.detail.map((d) => ({ qte: d.qte, nom: d.nom }))
-  }))
+  })),
+  avis: (c.avis || []).map((a) => ({ note: a.note }))
 }))));
 """
 
@@ -63,6 +64,15 @@ def e(s):
 def chf(centimes):
     francs = centimes / 100
     return (str(int(francs)) if centimes % 100 == 0 else f'{francs:.2f}') + ' CHF'
+
+
+def avis_resume(c):
+    """« 7 avis », le nombre réel d'avis de la collection — pas de note
+    chiffrée, qui rendait la ligne étrange sur une seule collection.
+    None quand la collection n'a pas encore d'avis (sur devis) : rien à
+    afficher, plutôt qu'un chiffre inventé."""
+    n = len(c['avis'])
+    return f'{n} avis' if n else None
 
 
 def prix_depart(c):
@@ -112,6 +122,8 @@ def carte_saison(c, premier=False):
     partout ailleurs sur le site."""
     charge = ('loading="eager" fetchpriority="high"' if premier
               else 'loading="lazy" fetchpriority="auto"')
+    avis = avis_resume(c)
+    ligne_avis = f'\n            <span class="boutique-vedette-avis">{e(avis)}</span>' if avis else ''
     return f'''        <a class="boutique-vedette" href="collections/{c['slug']}">
           <span class="boutique-vedette-photo">
             <img src="{c['image']}" alt="{e(c['alt'])}" {charge} decoding="async" width="1000" height="1000">
@@ -119,7 +131,7 @@ def carte_saison(c, premier=False):
           <span class="boutique-vedette-corps">
             <span class="saison-occasion">Collection du moment</span>
             <span class="boutique-vedette-nom">{e(c['nom'])}</span>
-            <span class="boutique-vedette-prix">{prix_depart(c)}</span>
+            <span class="boutique-vedette-prix">{prix_depart(c)}</span>{ligne_avis}
             <span class="btn btn-primary btn-small">{'Voir les packages' if c['packagesSeuls'] else 'Découvrir'}</span>
           </span>
         </a>'''
@@ -131,6 +143,8 @@ def carte_boutique(c):
     de la collection."""
     cat = categorie_filtre(c)
     attribut_cat = f' data-cat="{e(cat)}"' if cat else ''
+    avis = avis_resume(c)
+    ligne_avis = f'\n            <span class="saison-avis">{e(avis)}</span>' if avis else ''
     return f'''        <a class="gallery-item saison-carte" href="collections/{c['slug']}"{attribut_cat}>
           <span class="saison-photo">
             <img src="{c['image']}" alt="{e(c['alt'])}" loading="lazy" decoding="async" width="600" height="600">
@@ -138,7 +152,7 @@ def carte_boutique(c):
           <span class="saison-corps">
             <span class="saison-occasion">{e(c['occasion'])}</span>
             <span class="saison-nom">{e(c['nom'])}</span>
-            <span class="saison-prix">{prix_depart(c)}</span>
+            <span class="saison-prix">{prix_depart(c)}</span>{ligne_avis}
             <span class="saison-voir">Voir la collection</span>
           </span>
         </a>'''
