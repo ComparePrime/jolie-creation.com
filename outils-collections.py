@@ -67,15 +67,12 @@ def chf(centimes):
 
 
 def avis_resume(c):
-    """« 4.9/5 · 7 avis », calculé depuis les notes réelles de la
-    collection — jamais une moyenne recopiée à la main. None quand la
-    collection n'a pas encore d'avis (sur devis) : rien à afficher,
-    plutôt qu'une note inventée."""
-    notes = [a['note'] for a in c['avis']]
-    if not notes:
-        return None
-    moyenne = sum(notes) / len(notes)
-    return f'{moyenne:.1f}/5 · {len(notes)} avis'
+    """« 7 avis », le nombre réel d'avis de la collection — pas de note
+    chiffrée, qui rendait la ligne étrange sur une seule collection.
+    None quand la collection n'a pas encore d'avis (sur devis) : rien à
+    afficher, plutôt qu'un chiffre inventé."""
+    n = len(c['avis'])
+    return f'{n} avis' if n else None
 
 
 def prix_depart(c):
