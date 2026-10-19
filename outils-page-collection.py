@@ -411,7 +411,7 @@ def carte_produit(p):
             </label>{zone_option}
           </div>'''
 
-    return f'''        <article class="produit-carte" data-produit-carte="{e(p['id'])}">
+    return f'''        <article class="produit-carte" id="{e(p['id'])}" data-produit-carte="{e(p['id'])}">
           <div class="produit-photo">
             <img src="/{e(p['image'])}" alt="{e(p['nom'])}" loading="lazy" decoding="async" width="600" height="600">
           </div>
@@ -438,7 +438,7 @@ def carte_package(pk, c):
     composition = '\n'.join(
         f'              <li><span class="package-qte">{d["qte"]} ×</span> {e(d["nom"])}</li>'
         for d in pk['detail'])
-    return f'''        <article class="produit-carte">
+    return f'''        <article class="produit-carte" id="{e(pk['id'])}">
           <div class="produit-photo">
             <img src="/{e(c['image'])}" alt="{e(c['alt'])}" loading="lazy" decoding="async" width="600" height="600">
           </div>
@@ -567,6 +567,15 @@ def page(c):
     return f'''<!DOCTYPE html>
 <html lang="fr-CH">
 <head>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=AW-11045179820"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){{dataLayer.push(arguments);}}
+  gtag('js', new Date());
+
+  gtag('config', 'AW-11045179820');
+</script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>{e(titre)}</title>

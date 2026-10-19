@@ -2904,7 +2904,10 @@ form.devis-form{
   border: 1px solid var(--line);
   border-radius: 20px;
   overflow: hidden;
+  scroll-margin-top: 105px;
 }
+@media (min-width: 700px){ .produit-carte{ scroll-margin-top: 113px; } }
+@media (min-width: 1024px){ .produit-carte{ scroll-margin-top: 121px; } }
 .produit-photo{ display: block; aspect-ratio: 1/1; overflow: hidden; }
 .produit-photo img{ width: 100%; height: 100%; object-fit: cover; display: block; transition: transform .3s ease; }
 .produit-carte:hover .produit-photo img{ transform: scale(1.04); }
