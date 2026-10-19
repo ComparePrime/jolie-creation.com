@@ -575,6 +575,7 @@ def page(c):
   gtag('js', new Date());
 
   gtag('config', 'AW-11045179820');
+  gtag('config', 'G-99MJWZGMHT');
 </script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
