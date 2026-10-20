@@ -224,7 +224,7 @@
         { "ref": "chiffre-pois", "nom": "Chiffre personnalisé rose à pois", "prix": 500, "perso": ["age"] },
         { "ref": "noeud-dore", "nom": "Grand nœud rose et doré", "prix": 600 },
         { "ref": "licorne", "nom": "Licorne avec crinière rose, violette et dorée", "prix": 800 },
-        { "ref": "nuage-prenom", "nom": "Nuage avec prénom et petit nœud", "prix": 600, "perso": ["prenom"] }
+        { "ref": "nuage-prenom", "nom": "Nuage avec prénom et petit nœud", "prix": 600, "perso": ["prenom"], "photo": "vue-7.webp" }
       ],
       "avis": [
         { "nom": "Mélissa", "texte": "Les biscuits étaient très jolis et soignés. Le résultat correspondait bien au thème, et ils ont beaucoup plu.", "note": 4 },
