@@ -501,7 +501,38 @@
     bouton.textContent = mode === 'livraison' ? 'Redirection vers le paiement…' : 'Enregistrement…';
     message('');
 
-    enregistrerCommande(reference, mode, resume).then(function (r) {
+    /* Articles à date limite, à stock limité ou à personnalisation
+       indispensable : le serveur les contrôle AVANT que la commande ne
+       soit enregistrée, pour ne pas envoyer une commande qu'il refusera. */
+    function controleServeur(action) {
+      var lignes = Panier.lire();
+      var concerne = lignes.some(function (l) {
+        var a = Cat.article(l.id);
+        return a && (Cat.stockDeclare(a.id) !== null || a.finOffreMs || a.persoRequis);
+      });
+      if (!concerne) return Promise.resolve(null);
+      return fetch('/.netlify/functions/stock', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: action, reference: reference, lignes: lignes.map(function (l) {
+          return { id: l.id, qte: l.qte, option: l.option, details: l.details };
+        }) })
+      }).then(function (r) {
+        return r.text().then(function (t) {
+          var d = {}; try { d = JSON.parse(t); } catch (e) { /* illisible */ }
+          if (r.ok) return null;
+          // Fonction absente (hébergement sans fonctions) : on ne bloque pas
+          // ce qui n'est pas limité, le serveur de paiement revérifie de toute façon.
+          if (r.status === 404) return null;
+          return d.message || 'Cette commande n’a pas pu être vérifiée. Merci de réessayer.';
+        });
+      }).catch(function () { return 'Le stock n’a pas pu être vérifié. Vérifiez votre connexion et réessayez.'; });
+    }
+
+    controleServeur('verifier').then(function (refus) {
+      if (refus) { var e = new Error('refus'); e.refus = refus; throw e; }
+      return enregistrerCommande(reference, mode, resume);
+    }).then(function (r) {
       // Une commande qui n'arrive pas jusqu'à Julie n'est pas une commande :
       // on refuse d'aller plus loin plutôt que d'encaisser dans le vide.
       if (r.ok) return;
@@ -513,8 +544,13 @@
       /* Retrait : rien à débiter. La commande est enregistrée, on va
          directement à la confirmation. */
       if (mode === 'retrait') {
-        window.location.href = 'commande-confirmee.html?retrait=1&ref=' + encodeURIComponent(reference);
-        return null;
+        // Réglée sur place : la commande enregistrée compte tout de suite
+        // dans le stock des articles limités.
+        return controleServeur('vendre').then(function (refus) {
+          if (refus) { var e = new Error('refus'); e.refus = refus; throw e; }
+          window.location.href = 'commande-confirmee.html?retrait=1&ref=' + encodeURIComponent(reference);
+          return null;
+        });
       }
 
       return fetch('/.netlify/functions/create-checkout', {
@@ -523,7 +559,7 @@
         body: JSON.stringify({
           reference: reference,
           lignes: Panier.lire().map(function (l) {
-            return { id: l.id, qte: l.qte, option: l.option };
+            return { id: l.id, qte: l.qte, option: l.option, details: l.details };
           }),
           client: { reception: mode, pays: paysChoisi() }
         })
@@ -557,7 +593,9 @@
         reactiverBouton();
       });
     }).catch(function (err) {
-      if (err && err.message === 'envoi_non_configure') {
+      if (err && err.refus) {
+        message(err.refus);
+      } else if (err && err.message === 'envoi_non_configure') {
         message('La prise de commande en ligne n’est pas encore activée sur ce site. ' +
           'Envoyez-moi votre commande directement : ' +
           '<a href="https://api.whatsapp.com/send/?phone=41783127545&amp;text&amp;type=phone_number&amp;app_absent=0" target="_blank" rel="noopener">par WhatsApp</a> ' +

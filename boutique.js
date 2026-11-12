@@ -67,6 +67,8 @@
   function ajouter(id, qte, details, option) {
     var a = Cat.article(id);
     if (!a || a.seulEnPackage) return null;
+    // Personnalisation indispensable : pas d'ajout sans elle.
+    if (Cat.personnalisationManquante([{ id: id, details: details }]).length) return null;
     qte = Math.max(1, parseInt(qte, 10) || 1);
     option = !!(option && a.option);
     var lignes = lire();
@@ -87,6 +89,7 @@
     choix.forEach(function (c) {
       var a = Cat.article(c.id);
       if (!a || a.seulEnPackage || c.qte <= 0) return;
+      if (Cat.personnalisationManquante([{ id: c.id, details: c.details }]).length) return;
       var option = !!(c.option && a.option);
       var cle = cleLigne(c.id, c.details, option);
       var existante = null;
@@ -616,6 +619,14 @@
           var v = (saisie.value || '').trim();
           if (v) details[saisie.getAttribute('data-champ')] = v;
         });
+        // Personnalisation indispensable : on le dit, on ne l'ajoute pas.
+        if (Cat.personnalisationManquante([{ id: a.id, details: details }]).length) {
+          var vide = null;
+          champsPerso.forEach(function (saisie) { if (!vide && !(saisie.value || '').trim()) vide = saisie; });
+          annoncer('Précisez la personnalisation (' + a.champs.map(function (c) { return c.libelle.toLowerCase(); }).join(', ') + ') avant d’ajouter ce biscuit.');
+          if (vide) { vide.setAttribute('aria-invalid', 'true'); vide.focus(); }
+          return;
+        }
         var avecOption = !!(option && option.checked);
         if (avecOption) {
           champsOption.forEach(function (saisie) {
