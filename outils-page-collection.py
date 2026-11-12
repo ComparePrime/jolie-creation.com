@@ -553,7 +553,7 @@ def section_noel(c):
     <div class="wrap">
       <div class="section-head center section-head-mince">
         <span class="eyebrow" style="justify-content:center;">Le coffret</span>
-        <h2 id="package-title">Cinq biscuits, un seul coffret</h2>
+        <h2 id="package-title" class="noel-titre-cache">Cinq biscuits, un seul coffret</h2>
       </div>
 {bloc_pk}
     </div>
@@ -563,7 +563,7 @@ def section_noel(c):
     <div class="wrap">
       <div class="section-head center section-head-mince">
         <span class="eyebrow" style="justify-content:center;">À l’unité</span>
-        <h2 id="produits-title">Les biscuits de Noël</h2>
+        <h2 id="produits-title" class="noel-titre-cache">Les biscuits de Noël</h2>
       </div>
       <div class="produit-grille">
 {cartes_p}
@@ -575,7 +575,7 @@ def section_noel(c):
     <div class="wrap">
       <div class="section-head center section-head-mince">
         <span class="eyebrow" style="justify-content:center;">Bon à savoir</span>
-        <h2 id="infos-title">Informations pratiques</h2>
+        <h2 id="infos-title" class="noel-titre-cache">Informations pratiques</h2>
       </div>
       <ul class="infos-pratiques">
         <li><strong>Disponibilité limitée.</strong> Le coffret est limité à 20 exemplaires ; les biscuits sont préparés en nombre restreint.</li>
