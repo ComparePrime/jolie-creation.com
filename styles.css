@@ -2885,23 +2885,8 @@ form.devis-form{
   margin-bottom: 18px;
 }
 
-/* Collection phare (Magie de Noël) : pleine largeur sur ordinateur,
-   photo à gauche, texte à droite ; une carte simple sur mobile. */
-.boutique-vedette-phare{
-  border-color: var(--gold-light);
-  box-shadow: 0 14px 34px rgba(58,44,30,.09);
-}
-@media (min-width: 700px){
-  .boutique-vedette-phare{
-    grid-column: 1 / -1;
-    display: grid; grid-template-columns: 1.1fr 1fr; align-items: stretch;
-  }
-  .boutique-vedette-phare .boutique-vedette-photo{ aspect-ratio: auto; min-height: 360px; }
-  .boutique-vedette-phare .boutique-vedette-corps{ align-self: center; padding: 36px 40px; }
-  .boutique-vedette-phare .boutique-vedette-nom{ font-size: clamp(32px, 3.6vw, 40px); }
-  /* La carte qui suit la phare, seule sur sa rangée : centrée. */
-  .boutique-vedette-phare + .boutique-vedette:last-child{ grid-column: 1 / -1; justify-self: center; width: calc(50% - 13px); }
-}
+/* Mention discrète de disponibilité limitée : seule différence de contenu
+   entre les deux cartes du moment, qui gardent la même taille. */
 .boutique-vedette-limite{
   display: block; margin-bottom: 12px;
   font-size: 13px; letter-spacing: .06em; text-transform: uppercase;
