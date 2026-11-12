@@ -570,7 +570,27 @@
       if (bouton.dataset.branche) return;
       bouton.dataset.branche = '1';
       bouton.addEventListener('click', function () {
-        var a = ajouter(bouton.getAttribute('data-package-ajouter'), 1, null, false);
+        /* Un package peut porter une personnalisation (le bonnet du coffret
+           de Noël) : saisie dans sa carte, obligatoire si le catalogue
+           l'exige. */
+        var id = bouton.getAttribute('data-package-ajouter');
+        var carte = bouton.closest('article');
+        var saisies = carte ? carte.querySelectorAll('[data-champ]') : [];
+        var details = {};
+        var vide = null;
+        saisies.forEach(function (saisie) {
+          var v = (saisie.value || '').trim();
+          if (v) details[saisie.getAttribute('data-champ')] = v;
+          else if (!vide) vide = saisie;
+        });
+        details = Object.keys(details).length ? details : null;
+        if (Cat.personnalisationManquante([{ id: id, details: details }]).length) {
+          annoncer('Précisez le prénom ou le texte du bonnet avant d’ajouter le coffret.');
+          if (vide) { vide.setAttribute('aria-invalid', 'true'); vide.focus(); }
+          return;
+        }
+        var a = ajouter(id, 1, details, false);
+        if (a && saisies.length) saisies.forEach(function (saisie) { saisie.value = ''; saisie.removeAttribute('aria-invalid'); });
         if (a) annoncer('« ' + a.nom + ' » (' + a.biscuits + ' biscuits) ajouté au panier.');
       });
     });
@@ -716,7 +736,9 @@
           nom: a.nom + (l.option ? ' (personnalisé)' : ''),
           // Un package part en cuisine par sa composition : sans elle,
           // la commande ne dit pas quoi décorer.
-          details: a.categorie === 'package' ? composition(a) : resumeDetails(l),
+          details: a.categorie === 'package'
+            ? composition(a) + (resumeDetails(l) ? ' — ' + resumeDetails(l) : '')
+            : resumeDetails(l),
           qte: l.qte,
           unitaire: prixLigne(l),
           montant: prixLigne(l) * l.qte,

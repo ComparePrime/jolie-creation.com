@@ -79,6 +79,7 @@
   var CHAMPS = {
     prenom:   { cle: 'prenom',   libelle: 'Prénom',            type: 'texte', exemple: 'Ex. Léa', max: 30 },
     age:      { cle: 'age',      libelle: 'Âge ou chiffre',    type: 'texte', exemple: 'Ex. 4',   max: 10 },
+    bonnet:   { cle: 'bonnet',   libelle: 'Prénom ou texte du bonnet', type: 'texte', exemple: 'Ex. Léa', max: 30 },
     prenomOuTexte: { cle: 'prenomOuTexte', libelle: 'Prénom ou texte à inscrire', type: 'texte', exemple: 'Ex. Léa', max: 30 },
     texte:    { cle: 'texte',    libelle: 'Texte à inscrire',  type: 'texte', exemple: 'Ex. Merci Maîtresse', max: 40 },
     date:     { cle: 'date',     libelle: 'Date',              type: 'texte', exemple: 'Ex. 14 juin 2026', max: 30 },
@@ -279,6 +280,7 @@
         { "ref": "coffret", "nom": "Le coffret Magie de Noël", "prix": 2990,
           "photo": "coffret-biscuits-noel-5-pieces.webp",
           "stock": 20,
+          "perso": ["bonnet"], "persoRequis": true,
           "finOffre": "2026-12-06T23:59:59+01:00",
           "resume": "Les cinq biscuits de la collection, réunis dans un coffret prêt à offrir.",
           "composition": [
@@ -878,8 +880,11 @@
       }
       pk.image = pk.photo ? 'images/collections/' + c.id + '/' + pk.photo : c.image;
       pk.finOffreMs = pk.finOffre ? Date.parse(pk.finOffre) : null;
-      pk.perso = [];
-      pk.champs = [];
+      /* Le coffret contient le bonnet personnalisé : sa personnalisation
+         se saisit sur la carte du coffret, comme pour un biscuit. */
+      pk.perso = pk.perso || [];
+      pk.champs = pk.perso.map(function (k) { return CHAMPS[k]; });
+      pk.persoRequis = !!pk.persoRequis;
       ARTICLES.push(pk);
     });
   });
