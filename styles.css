@@ -3153,3 +3153,15 @@ form.devis-form{
 .noel-stock.est-epuise{ color: var(--noel-bordeaux); }
 .noel-coffret .btn{ width: 100%; }
 @media (min-width: 520px){ .noel-coffret .btn{ width: auto; } }
+
+/* Page Noël : les grands titres de section sont retirés de l'affichage
+   (la petite étiquette dorée suffit) mais restent lus par les lecteurs
+   d'écran, et la page garde sa structure. Espacements resserrés. */
+.theme-noel .noel-titre-cache{
+  position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0;
+  overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+}
+.theme-noel .noel-titre-cache::after{ content: none; }
+.theme-noel section{ padding: 36px 0; }
+.theme-noel main > section:first-of-type + section, .theme-noel > section:first-of-type + section{ padding-top: 36px; }
+.theme-noel .section-head-mince{ margin-bottom: 20px; }
