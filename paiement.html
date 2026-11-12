@@ -372,7 +372,8 @@
        fonction que côté serveur, pour ne jamais annoncer un total que
        le paiement ne débitera pas. Les autres destinations gardent des
        frais confirmés séparément, comme avant cette règle. */
-    var frais = Cat.fraisLivraison(t.payable, mode, pays);
+    var frais = Cat.fraisLivraison(t.payable, mode, pays, Panier.lire());
+    var forfait = Cat.forfaitLivraison(Panier.lire()) > 0;
     if (mode === 'livraison' && pays === 'Suisse') {
       rangRecap('Frais de livraison', frais > 0 ? Cat.formater(frais) : 'Offerte', 'recap-entete');
     }
@@ -380,7 +381,9 @@
     document.getElementById('pay-mention').textContent = t.biscuits + ' biscuits au total.' + (
       mode !== 'livraison' ? '' :
       pays === 'Suisse'
-        ? (frais > 0
+        ? (forfait
+          ? ' Livraison forfaitaire de ' + Cat.formater(frais) + ' (collection Magie de Noël).'
+          : frais > 0
           ? ' Livraison à ' + Cat.formater(frais) + ', offerte dès ' + Cat.formater(Cat.SEUIL_LIVRAISON_OFFERTE) + '.'
           : ' Livraison offerte.')
         : ' Frais de livraison éventuels confirmés séparément.'
@@ -491,7 +494,7 @@
     resume.reception = mode;
     // Même règle qu'au récapitulatif : le total enregistré et envoyé par
     // e-mail doit être celui que le paiement va réellement débiter.
-    resume.frais = Cat.fraisLivraison(resume.total, mode, paysChoisi());
+    resume.frais = Cat.fraisLivraison(resume.total, mode, paysChoisi(), Panier.lire());
     resume.total += resume.frais;
 
     bouton.disabled = true;

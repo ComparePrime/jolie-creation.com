@@ -221,10 +221,10 @@
         { "fichier": "vue-7.webp", "alt": "Deux biscuits nuages au prénom Eileen, calligraphie dorée sur glaçage blanc" }
       ],
       "produits": [
-        { "ref": "chiffre-pois", "nom": "Chiffre personnalisé rose à pois", "prix": 500, "perso": ["age"] },
-        { "ref": "noeud-dore", "nom": "Grand nœud rose et doré", "prix": 600 },
-        { "ref": "licorne", "nom": "Licorne avec crinière rose, violette et dorée", "prix": 800 },
-        { "ref": "nuage-prenom", "nom": "Nuage avec prénom et petit nœud", "prix": 600, "perso": ["prenom"], "photo": "vue-7.webp" }
+        { "ref": "chiffre-pois", "nom": "Chiffre personnalisé rose à pois", "prix": 500, "perso": ["age"], "photo": "chiffre-personnalise-rose-a-pois.webp" },
+        { "ref": "noeud-dore", "nom": "Grand nœud rose et doré", "prix": 600, "photo": "grand-noeud-rose-dore.webp" },
+        { "ref": "licorne", "nom": "Licorne avec crinière rose, violette et dorée", "prix": 800, "photo": "licorne-criniere-rose-violette-doree.webp" },
+        { "ref": "nuage-prenom", "nom": "Nuage avec prénom et petit nœud", "prix": 600, "perso": ["prenom"], "photo": "nuage-avec-prenom-petit-noeud.webp" }
       ],
       "avis": [
         { "nom": "Mélissa", "texte": "Les biscuits étaient très jolis et soignés. Le résultat correspondait bien au thème, et ils ont beaucoup plu.", "note": 4 },
@@ -266,9 +266,22 @@
       "id": "magie-noel",
       "nom": "Magie de Noël",
       "occasion": "Noël",
-      "description": "Une collection de biscuits aux couleurs chaleureuses et intemporelles de Noël : rouge profond, vert sapin, blanc et petites touches dorées. Entre chaussettes de Noël, sapins, boules scintillantes, flocons et Père Noël, chaque modèle est décoré à la main pour apporter une touche gourmande aux fêtes. Idéale pour offrir, décorer une table de Noël ou composer un joli coffret gourmand.",
+      "description": "Une collection de biscuits aux couleurs chaleureuses de Noël, décorés à la main au glaçage royal. Idéale pour offrir, décorer une table de fête ou composer un joli coffret gourmand. Édition limitée.",
       "alt": "Biscuits de Noël personnalisés décorés à la main : sapins, flocons et boules dorées",
-      "produits": [
+      "saison": true,
+      "venteAUnite": true,
+      "sansMinimum": true,
+      "forfaitLivraison": 900,
+      "stockLimite": true,
+      "packages": [
+        { "ref": "noel", "nom": "Package de Noël", "biscuits": 4, "prix": null, "composition": [] }
+      ],
+      "produits": [],
+      /* Anciens modèles, suspendus en attendant la liste confirmée par la
+         pâtissière : conservés tels quels, mais hors de la vente. Les
+         déplacer dans « produits » (avec un prix réel) les remet en
+         vente. */
+      "produitsSuspendus": [
         { "ref": "sucre-orge", "nom": "Sucre d’orge rouge", "prix": 500 },
         { "ref": "flocon-blanc", "nom": "Flocon blanc simple", "prix": 500 },
         { "ref": "cadeau-feuillage", "nom": "Cadeau de Noël avec feuillage", "prix": 500 },
@@ -362,7 +375,6 @@
       "id": "frissons-halloween",
       "nom": "Frissons d’Halloween",
       "occasion": "Halloween",
-      "saison": true,
       "description": "Une collection à la fois effrayante et adorable pour célébrer Halloween. Entre citrouilles, petit fantôme, squelette, toile d’araignée et personnages rigolos, chaque biscuit est décoré à la main dans des teintes orange, violet, noir et blanc. Parfaite pour une fête d’Halloween, un goûter d’enfants ou une jolie box gourmande.",
       "alt": "Biscuits d’Halloween personnalisés : citrouilles, fantôme et toile d’araignée",
       "galerie": [
@@ -807,9 +819,16 @@
        les commande pas un par un. Le drapeau se déduit des données, il
        ne se saisit pas : ajouter un tableau `packages` à une collection
        suffit à la faire basculer. */
-    c.packagesSeuls = !!(c.packages && c.packages.length);
+    c.packagesSeuls = !!(c.packages && c.packages.length) && !c.venteAUnite;
 
-    c.produits.forEach(function (p) {
+    /* Un article sans prix confirmé est « en attente de configuration » :
+       il reste décrit sur la page, mais n'entre pas dans ARTICLES — donc
+       ni panier, ni retarification, ni paiement. Jamais « 0 CHF ». */
+    function aUnPrix(x) { return typeof x.prix === 'number' && isFinite(x.prix) && x.prix > 0; }
+    c.enAttente = c.produits.filter(function (p) { return !aUnPrix(p); }).concat(
+      (c.packages || []).filter(function (pk) { return !aUnPrix(pk); }));
+
+    c.produits.filter(aUnPrix).forEach(function (p) {
       p.id = c.id + '-' + p.ref;
       p.collectionId = c.id;
       p.collection = c.nom;
@@ -817,6 +836,8 @@
       p.biscuits = 1;
       /* Connu du catalogue, absent de la vente à l'unité. */
       p.seulEnPackage = c.packagesSeuls;
+      /* Hors du compte des douze (collection du moment vendue sans minimum). */
+      p.sansMinimum = !!c.sansMinimum;
       p.court = p.nom;
       p.champs = (p.perso || []).map(function (k) { return CHAMPS[k]; });
       if (p.option) p.option.champs = (p.option.perso || []).map(function (k) { return CHAMPS[k]; });
@@ -831,7 +852,7 @@
        serveur, paiement — le traite donc sans rien connaître de lui.
        Seules deux choses le distinguent d'un biscuit : sa catégorie, et
        le fait qu'il compte pour plusieurs. */
-    (c.packages || []).forEach(function (pk) {
+    (c.packages || []).filter(aUnPrix).forEach(function (pk) {
       var parRef = {};
       c.produits.forEach(function (p) { parRef[p.ref] = p; });
       pk.id = c.id + '-pack-' + pk.ref;
@@ -840,7 +861,9 @@
       pk.categorie = 'package';
       /* Le nombre de biscuits se compte, il ne se saisit pas : une
          composition modifiée ne peut pas mentir sur son total. */
-      pk.biscuits = pk.composition.reduce(function (n, x) { return n + x.qte; }, 0);
+      pk.biscuits = pk.composition.length
+        ? pk.composition.reduce(function (n, x) { return n + x.qte; }, 0)
+        : pk.biscuits;
       pk.detail = pk.composition.map(function (x) {
         var modele = parRef[x.ref];
         return { ref: x.ref, qte: x.qte, nom: modele ? modele.nom : x.ref, connu: !!modele };
@@ -927,7 +950,7 @@
   function biscuitsIndividuels(lignes) {
     return (lignes || []).reduce(function (n, l) {
       var a = article(l && l.id);
-      return a && a.categorie === 'package' ? n : n + biscuitsLigne(l);
+      return a && (a.categorie === 'package' || a.sansMinimum) ? n : n + biscuitsLigne(l);
     }, 0);
   }
 
@@ -976,9 +999,86 @@
   var SEUIL_LIVRAISON_OFFERTE = 15000;
   var FRAIS_LIVRAISON_SUISSE = 900;
 
-  function fraisLivraison(payable, mode, pays) {
+  /* Forfait imposé par une collection (Magie de Noël : 9 CHF, jamais
+     offert). Il suffit qu'une ligne en porte un pour que tout le panier
+     passe au forfait : la livraison se facture une seule fois, même si
+     d'autres collections sont dans le même panier. */
+  function forfaitLivraison(lignes) {
+    var forfait = 0;
+    (lignes || []).forEach(function (l) {
+      var a = article(l && l.id);
+      var c = a && PAR_COLLECTION[a.collectionId];
+      if (c && c.forfaitLivraison && biscuitsLigne(l) > 0) forfait = Math.max(forfait, c.forfaitLivraison);
+    });
+    return forfait;
+  }
+
+  function fraisLivraison(payable, mode, pays, lignes) {
     if (mode !== 'livraison' || pays !== 'Suisse') return 0;
+    var forfait = forfaitLivraison(lignes);
+    if (forfait) return forfait;
     return payable >= SEUIL_LIVRAISON_OFFERTE ? 0 : FRAIS_LIVRAISON_SUISSE;
+  }
+
+  /* ---------- Stock partagé ----------
+     Aucun stock n'est renseigné tant que la pâtissière n'a pas confirmé
+     ses quantités : un modèle ou un package sans champ « stock » est
+     illimité, et rien ne s'affiche ni ne se bloque. Le jour où des
+     quantités réelles sont saisies (« stock »: n sur un modèle),
+     la mécanique est prête : un package consomme les modèles de sa
+     composition, un modèle vendu à l'unité se consomme lui-même, et les
+     deux se décomptent sur le MÊME stock.
+     « vendu » est le cumul déjà encaissé, { idModele: quantité } ; il
+     devra venir d'un stockage durable côté serveur, que ce projet
+     statique n'a pas encore. */
+  function consommationStock(lignes) {
+    var conso = {};
+    function ajoute(id, n) { conso[id] = (conso[id] || 0) + n; }
+    (lignes || []).forEach(function (l) {
+      var a = article(l && l.id);
+      var qte = Math.floor(Number(l && l.qte));
+      if (!a || !isFinite(qte) || qte <= 0) return;
+      if (a.categorie === 'package') {
+        (a.composition || []).forEach(function (x) { ajoute(a.collectionId + '-' + x.ref, x.qte * qte); });
+        ajoute(a.id, qte);
+      } else {
+        ajoute(a.id, qte);
+      }
+    });
+    return conso;
+  }
+
+  function stockDeclare(id) {
+    var a = PAR_ID[id];
+    return a && typeof a.stock === 'number' && isFinite(a.stock) ? a.stock : null;
+  }
+
+  /* Les articles dont la commande dépasserait le stock réel. Vide tant
+     qu'aucun stock n'est déclaré. */
+  function depassementsStock(lignes, vendu) {
+    var conso = consommationStock(lignes);
+    var deja = vendu || {};
+    return Object.keys(conso).filter(function (id) {
+      var stock = stockDeclare(id);
+      return stock !== null && conso[id] + (deja[id] || 0) > stock;
+    }).map(function (id) { return PAR_ID[id]; });
+  }
+
+  /* Combien de packages restent possibles : le plus petit des plafonds
+     imposés par les modèles de sa composition. null = non limité. */
+  function packagesDisponibles(id, vendu) {
+    var pk = PAR_ID[id];
+    if (!pk || pk.categorie !== 'package') return null;
+    var deja = vendu || {};
+    var plafonds = [];
+    var propre = stockDeclare(pk.id);
+    if (propre !== null) plafonds.push(propre - (deja[pk.id] || 0));
+    (pk.composition || []).forEach(function (x) {
+      var mid = pk.collectionId + '-' + x.ref;
+      var stock = stockDeclare(mid);
+      if (stock !== null && x.qte > 0) plafonds.push(Math.floor((stock - (deja[mid] || 0)) / x.qte));
+    });
+    return plafonds.length ? Math.max(0, Math.min.apply(null, plafonds)) : null;
   }
 
   /* 600 -> « 6 CHF » ; 650 -> « 6.50 CHF ». */
@@ -1012,6 +1112,10 @@
     lignesHorsVente: lignesHorsVente,
     packagesHorsZone: packagesHorsZone,
     fraisLivraison: fraisLivraison,
+    forfaitLivraison: forfaitLivraison,
+    consommationStock: consommationStock,
+    depassementsStock: depassementsStock,
+    packagesDisponibles: packagesDisponibles,
     formater: formater,
     enFrancs: enFrancs
   };
