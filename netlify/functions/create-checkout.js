@@ -158,6 +158,17 @@ exports.handler = async (event) => {
     });
   }
 
+  /* Stock réel : tant qu'aucun stock n'est déclaré au catalogue, la liste
+     est vide et rien ne bloque. Le cumul déjà vendu viendra d'un
+     stockage durable (à brancher) ; il est vide ici. */
+  const enRupture = Catalogue.depassementsStock(lignesRecues, {});
+  if (enRupture.length) {
+    return reponse(409, {
+      erreur: 'stock_insuffisant',
+      message: 'Certains articles ne sont plus disponibles en quantité suffisante : ' + enRupture.map(function (a) { return a.court; }).join(', ') + '.'
+    });
+  }
+
   if (centimes <= 0) {
     return reponse(400, { erreur: 'rien_a_facturer', message: 'Aucun montant à payer pour ce panier.' });
   }
@@ -165,7 +176,7 @@ exports.handler = async (event) => {
   /* Livraison en Suisse : offerte dès 150 CHF de panier, 9 CHF en
      dessous. Même fonction que le récapitulatif de paiement, pour ne
      pas compter différemment de part et d'autre. */
-  const frais = Catalogue.fraisLivraison(centimes, mode, pays);
+  const frais = Catalogue.fraisLivraison(centimes, mode, pays, lignesRecues);
   centimes += frais;
 
   const origine = process.env.URL || process.env.DEPLOY_PRIME_URL ||

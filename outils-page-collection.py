@@ -20,6 +20,10 @@ Trois types, déduits des données, jamais déclarés à la main :
                              seuls, et n'ont donc pas de carte.
   TYPE C — sur devis      : ni produit ni package tarifé ; la page
                              renvoie vers la demande de devis.
+  TYPE D — venteAUnite    : un package ET des biscuits à l'unité, sans
+                             minimum (Magie de Noël). Un article sans
+                             prix confirmé n'est jamais vendu : la page
+                             annonce « à venir », sans prix ni stock.
 
 Une page générée ici vit un niveau plus bas que les autres
 (collections/<slug>.html) : tous les liens et fichiers partagés (styles,
@@ -61,6 +65,8 @@ def type_collection(c):
     données, jamais déclaré à la main. Une collection ne peut être
     B et vide de packages à la fois : packagesSeuls le garantit déjà
     côté catalogue.js."""
+    if c.get('venteAUnite'):
+        return 'D'
     if c.get('packagesSeuls'):
         return 'B'
     if c['produits']:
@@ -81,8 +87,12 @@ def prix_depart(c):
     """« Dès X CHF », au prix le plus bas réellement payable — jamais
     inventé. Une collection du moment se vend en packages : c'est leur
     prix plancher qui compte. Sans aucun prix, c'est un devis."""
-    prix = ([pk['prix'] for pk in c.get('packages') or []] if c.get('packagesSeuls')
-            else [p['prix'] for p in c['produits']])
+    if c.get('venteAUnite'):
+        prix = [x['prix'] for x in (c.get('packages') or []) + c['produits']
+                if isinstance(x.get('prix'), (int, float))]
+    else:
+        prix = ([pk['prix'] for pk in c.get('packages') or []] if c.get('packagesSeuls')
+                else [p['prix'] for p in c['produits']])
     return f'Dès {chf(min(prix))}' if prix else 'Sur devis'
 
 
@@ -94,6 +104,8 @@ def faits_hero(c, type_):
         n = len(c['packages'])
         return [f'{n} package{"s" if n > 1 else ""} au choix, composé{"s" if n > 1 else ""} d’avance',
                 'Sans minimum de commande']
+    if type_ == 'D':
+        return ['Édition limitée', 'Sans minimum de commande', 'Livraison forfaitaire de 9 CHF en Suisse']
     if type_ == 'C':
         return ['Sur devis, composé avec vous', 'Formes, couleurs et quantité sur mesure']
     n = len(c['produits'])
@@ -445,18 +457,93 @@ def carte_package(pk, c):
           <div class="produit-corps">
             <h3 class="produit-nom">{e(pk['nom'])}</h3>
             <span class="produit-prix">{chf(pk['prix'])} &middot; {pk['biscuits']} biscuits</span>
-            <ul class="package-option-composition">
-{composition}
-            </ul>
+{('            <ul class="package-option-composition">' + chr(10) + composition + chr(10) + '            </ul>') if composition else ''}
             <button type="button" class="btn btn-primary produit-ajouter" data-package-ajouter="{e(pk['id'])}">Ajouter au panier</button>
           </div>
         </article>'''
+
+
+def bloc_delai():
+    """Le conseil d'anticipation, posé une fois par page. Il vaut pour
+    les biscuits personnalisés, faits sur commande."""
+    return '''<aside class="delai-note" aria-label="Délai de commande">
+        <strong>Anticipez votre commande</strong>
+        <p>Pour vous garantir une création réalisée avec soin, pensez à commander vos biscuits personnalisés au minimum 2 à 3 semaines avant votre événement.</p>
+      </aside>'''
+
+
+def carte_attente(titre, detail):
+    """Un article dont le prix n'est pas encore confirmé : décrit, jamais
+    vendu — ni prix, ni bouton, ni stock affiché."""
+    return f'''        <article class="produit-carte produit-attente">
+          <div class="produit-corps">
+            <h3 class="produit-nom">{e(titre)}</h3>
+            <p class="produit-attente-texte">{e(detail)}</p>
+            <span class="produit-prix produit-prix-attente">En attente de configuration</span>
+          </div>
+        </article>'''
+
+
+def section_noel(c):
+    """Type D : hero (déjà posé plus haut), puis package, biscuits à
+    l'unité et informations pratiques. Chaque article suit le même
+    principe : prix confirmé → carte d'achat ; sinon → « à venir »."""
+    pk_prets = [pk for pk in c.get('packages') or [] if isinstance(pk.get('prix'), (int, float))]
+    cartes_pk = '\n\n'.join(carte_package(pk, c) for pk in pk_prets)
+    if not cartes_pk:
+        cartes_pk = carte_attente('Package de Noël — 4 biscuits',
+                                  'Composition et prix à venir. Un package se commande seul, sans minimum.')
+    cartes_p = '\n\n'.join(carte_produit(p) for p in c['produits'])
+    if not cartes_p:
+        cartes_p = carte_attente('Biscuits de Noël à l’unité',
+                                 'Modèles et prix à venir. Chaque biscuit se commandera à l’unité, sans minimum.')
+    return f'''  <section id="package" aria-labelledby="package-title">
+    <div class="wrap">
+      <div class="section-head center section-head-mince">
+        <span class="eyebrow" style="justify-content:center;">Le package de Noël</span>
+        <h2 id="package-title">Un package de 4 biscuits à offrir</h2>
+      </div>
+      <div class="produit-grille">
+{cartes_pk}
+      </div>
+    </div>
+  </section>
+
+  <section id="produits" aria-labelledby="produits-title">
+    <div class="wrap">
+      <div class="section-head center section-head-mince">
+        <span class="eyebrow" style="justify-content:center;">À l’unité</span>
+        <h2 id="produits-title">Les biscuits de Noël</h2>
+      </div>
+      <div class="produit-grille">
+{cartes_p}
+      </div>
+    </div>
+  </section>
+
+  <section id="infos-pratiques" aria-labelledby="infos-title">
+    <div class="wrap">
+      <div class="section-head center section-head-mince">
+        <span class="eyebrow" style="justify-content:center;">Bon à savoir</span>
+        <h2 id="infos-title">Informations pratiques</h2>
+      </div>
+      <ul class="infos-pratiques">
+        <li><strong>Quantités limitées.</strong> Les biscuits de Noël sont préparés en nombre restreint.</li>
+        <li><strong>Livraison à 9 CHF</strong> en Suisse, quel que soit le montant de la commande. Retrait possible dans le canton de Fribourg.</li>
+        <li><strong>Sans minimum de commande :</strong> un package ou un seul biscuit suffit.</li>
+        <li><strong>Commande selon disponibilité.</strong> Les créations de Noël déjà prêtes se commandent directement, sans délai d’anticipation. Les biscuits personnalisés sur mesure demandent 2 à 3 semaines.</li>
+      </ul>
+    </div>
+  </section>'''
 
 
 def section_produits(c, type_):
     """Le cœur de la page, différent selon le type — jamais un produit
     seulEnPackage affiché comme achetable, jamais un prix inventé pour
     une collection sur devis."""
+    if type_ == 'D':
+        return section_noel(c)
+
     if type_ == 'A':
         cartes = '\n\n'.join(carte_produit(p) for p in c['produits'])
         return f'''  <section id="produits" aria-labelledby="produits-title">
@@ -471,6 +558,7 @@ def section_produits(c, type_):
       </div>
 
       <p class="tarifs-note">Minimum de 12 biscuits à l’unité, toutes collections confondues — vous pouvez compléter avec d’autres collections. Livraison offerte dès 150 CHF en Suisse, 9 CHF en dessous. Retrait possible dans le canton de Fribourg.</p>
+      {bloc_delai()}
     </div>
   </section>'''
 
@@ -618,7 +706,7 @@ def page(c):
           <h1 id="collection-titre">{e(c['nom'])}</h1>
           <p class="collection-texte">{e(description)}</p>
           <ul class="collection-faits">
-            {'' if type_ == 'C' else f'<li>{prix}</li>'}{''.join(f'<li>{e(f)}</li>' for f in faits_hero(c, type_))}
+            {'' if type_ == 'C' or prix == 'Sur devis' else f'<li>{prix}</li>'}{''.join(f'<li>{e(f)}</li>' for f in faits_hero(c, type_))}
           </ul>
         </div>
       </article>
@@ -637,12 +725,13 @@ def page(c):
     <div class="wrap">
       <div class="cta-final">
         <span class="eyebrow" style="color:var(--gold-light);">Envie de la collection {e(c['nom'])} ?</span>
-        <h2>{ {'A': 'Composez vos biscuits', 'B': 'Choisissez votre package', 'C': 'Composons cette collection'}[type_] } <span class="script">{ {'A': 'dès maintenant', 'B': 'dès maintenant', 'C': 'ensemble'}[type_] }</span></h2>
+        <h2>{ {'A': 'Composez vos biscuits', 'B': 'Choisissez votre package', 'D': 'Choisissez vos biscuits de Noël', 'C': 'Composons cette collection'}[type_] } <span class="script">{ {'A': 'dès maintenant', 'B': 'dès maintenant', 'D': 'dès maintenant', 'C': 'ensemble'}[type_] }</span></h2>
         <p>{ {'A': 'Ajoutez vos modèles au panier ci-dessus, ou décrivez-moi votre projet si vous avez une envie particulière.',
                'B': 'Choisissez votre package ci-dessus, ou décrivez-moi votre projet si vous avez une envie particulière.',
+               'D': 'Retrouvez le package et les biscuits de Noël ci-dessus, ou décrivez-moi votre projet si vous avez une envie particulière.',
                'C': 'Décrivez-moi votre projet : je reviens vers vous avec une proposition sur mesure.'}[type_] }</p>
         <div class="hero-actions">
-          <a href="#produits" class="btn btn-primary">{ {'A': 'Voir les biscuits', 'B': 'Voir les packages', 'C': 'Voir la collection'}[type_] }</a>
+          <a href="#produits" class="btn btn-primary">{ {'A': 'Voir les biscuits', 'B': 'Voir les packages', 'D': 'Voir la collection', 'C': 'Voir la collection'}[type_] }</a>
           <a href="/contact.html?formule=biscuits" class="btn btn-ghost on-dark">Demander un devis</a>
         </div>
       </div>

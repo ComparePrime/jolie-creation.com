@@ -32,7 +32,7 @@ const C = require('./catalogue.js');
 console.log(JSON.stringify(C.COLLECTIONS.map((c) => ({
   id: c.id, slug: c.slug, nom: c.nom, occasion: c.occasion, description: c.description,
   alt: c.alt, image: c.image, saison: !!c.saison,
-  packagesSeuls: !!c.packagesSeuls,
+  packagesSeuls: !!c.packagesSeuls, venteAUnite: !!c.venteAUnite, stockLimite: !!c.stockLimite,
   galerie: (c.galerie || []).map((v) => ({ image: v.image, alt: v.alt })),
   produits: c.produits.map((p) => ({
     prix: p.prix,
@@ -41,10 +41,10 @@ console.log(JSON.stringify(C.COLLECTIONS.map((c) => ({
   })),
   packagesResume: c.packagesResume || '',
   packages: (c.packages || []).map((pk) => ({
-    id: pk.id, nom: pk.nom, prix: pk.prix, prixTexte: C.formater(pk.prix),
+    id: pk.id, nom: pk.nom, prix: pk.prix, prixTexte: typeof pk.prix === 'number' ? C.formater(pk.prix) : '',
     biscuits: pk.biscuits, resume: pk.resume || '', complet: !!pk.complet,
     horsSuisse: !!pk.horsSuisse,
-    detail: pk.detail.map((d) => ({ qte: d.qte, nom: d.nom }))
+    detail: (pk.detail || []).map((d) => ({ qte: d.qte, nom: d.nom }))
   })),
   avis: (c.avis || []).map((a) => ({ note: a.note }))
 }))));
@@ -80,6 +80,12 @@ def prix_depart(c):
     prix inventé. Une collection du moment ne se vend qu'en packages :
     c'est leur prix plancher qui compte, pas celui, non vendable à
     l'unité, de ses modèles. Sans aucun prix arrêté, c'est un devis."""
+    if c.get('venteAUnite'):
+        # Prix pas encore confirmés : rien n'est affiché — ni « 0 CHF »,
+        # ni « Sur devis ».
+        prix = [x['prix'] for x in c['packages'] + c['produits']
+                if isinstance(x.get('prix'), (int, float))]
+        return f'Dès {chf(min(prix))}' if prix else None
     prix = ([pk['prix'] for pk in c['packages']] if c['packagesSeuls']
             else [p['prix'] for p in c['produits']])
     return f'Dès {chf(min(prix))}' if prix else 'Sur devis'
@@ -124,15 +130,23 @@ def carte_saison(c, premier=False):
               else 'loading="lazy" fetchpriority="auto"')
     avis = avis_resume(c)
     ligne_avis = f'\n            <span class="boutique-vedette-avis">{e(avis)}</span>' if avis else ''
-    return f'''        <a class="boutique-vedette" href="collections/{c['slug']}">
+    prix = prix_depart(c)
+    ligne_prix = f'\n            <span class="boutique-vedette-prix">{prix}</span>' if prix else ''
+    # La collection phare (Noël) : plus grande, mention discrète de
+    # disponibilité limitée — jamais de quantité ni de compte à rebours.
+    phare = bool(c.get('stockLimite'))
+    classe = 'boutique-vedette boutique-vedette-phare' if phare else 'boutique-vedette'
+    limite = '\n            <span class="boutique-vedette-limite">Disponibilité limitée</span>' if phare else ''
+    bouton = ('Découvrir la collection' if phare
+              else 'Voir les packages' if c['packagesSeuls'] else 'Découvrir')
+    return f'''        <a class="{classe}" href="collections/{c['slug']}">
           <span class="boutique-vedette-photo">
             <img src="{c['image']}" alt="{e(c['alt'])}" {charge} decoding="async" width="1000" height="1000">
           </span>
           <span class="boutique-vedette-corps">
             <span class="saison-occasion">Collection du moment</span>
-            <span class="boutique-vedette-nom">{e(c['nom'])}</span>
-            <span class="boutique-vedette-prix">{prix_depart(c)}</span>{ligne_avis}
-            <span class="btn btn-primary btn-small">{'Voir les packages' if c['packagesSeuls'] else 'Découvrir'}</span>
+            <span class="boutique-vedette-nom">{e(c['nom'])}</span>{limite}{ligne_prix}{ligne_avis}
+            <span class="btn btn-primary btn-small">{bouton}</span>
           </span>
         </a>'''
 

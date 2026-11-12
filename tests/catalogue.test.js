@@ -64,7 +64,7 @@ const COLLECTIONS_ATTENDUES = [
 /* Nombre de modèles par collection, relu sur la liste fournie. */
 const MODELES_ATTENDUS = {
   'automne': 7,
-  'magie-noel': 16, 'frissons-halloween': 9, 'douceurs-paques': 9,
+  'magie-noel': 0, 'frissons-halloween': 9, 'douceurs-paques': 9,
   'merci-maitresse': 4, 'bonne-fete-maman': 2, 'bapteme-douceur': 1,
   'annonce-grossesse': 5, 'douceur-personnalisee': 2, 'girls-club': 1,
   'american-road-trip': 12, 'petit-chantier': 9, 'passion-cheval': 10,
@@ -78,7 +78,6 @@ const MODELES_ATTENDUS = {
 /* Quelques prix relus un par un, aux deux extrémités de chaque collection.
    Si une transcription dérape, c'est ici que cela se voit. */
 const PRIX_TEMOINS = {
-  'magie-noel-sucre-orge': 500, 'magie-noel-joyeux-noel': 700,
   'frissons-halloween-crane': 400, 'frissons-halloween-chauve-souris': 650,
   'douceurs-paques-lapin-dos': 500, 'douceurs-paques-joyeuses-paques': 800,
   'merci-maitresse-avion': 600, 'merci-maitresse-crayon': 650,
@@ -114,8 +113,8 @@ const PRIX_TEMOINS = {
         c.id + ' : ' + c.produits.length + ' modèles');
     });
     const biscuits = Catalogue.ARTICLES.filter((a) => a.categorie === 'biscuit');
-    assert.strictEqual(biscuits.length, 150);
-    assert.strictEqual(Catalogue.ARTICLES.length, 156);   // 150 biscuits + 6 packages
+    assert.strictEqual(biscuits.length, 134);
+    assert.strictEqual(Catalogue.ARTICLES.length, 140);   // 134 biscuits + 6 packages (Noël suspendu : 16 modèles retirés de la vente)
   });
 
   await cas('les prix témoins sont exacts', () => {
@@ -177,7 +176,7 @@ const PRIX_TEMOINS = {
   });
 
   await cas('un biscuit non personnalisable ne demande rien', () => {
-    const simple = Catalogue.article('magie-noel-sucre-orge');
+    const simple = Catalogue.article('moto-vroom');
     assert.strictEqual(simple.champs.length, 0);
     assert.strictEqual(simple.option, undefined);
   });
@@ -194,9 +193,12 @@ const PRIX_TEMOINS = {
     assert.strictEqual(Catalogue.MIN_BISCUITS, 12);
   });
 
-  await cas('deux collections du moment, Automne puis Halloween', () => {
+  await cas('deux collections du moment, Magie de Noël puis Automne', () => {
     const saison = Catalogue.COLLECTIONS.filter((c) => c.saison).map((c) => c.id);
-    assert.deepStrictEqual(saison, ['automne', 'frissons-halloween']);
+    assert.deepStrictEqual(saison, ['magie-noel', 'automne']);
+    // Halloween quitte la section, pas le catalogue.
+    const h = Catalogue.collection('frissons-halloween');
+    assert.ok(h && !h.saison && h.packages.length === 3);
   });
 
   await cas('les galeries sont numérotées sans trou et décrites', () => {
@@ -242,7 +244,7 @@ const PRIX_TEMOINS = {
 
   await cas('une collection sans modèle n’ajoute aucun article achetable', () => {
     const surDevis = Catalogue.COLLECTIONS.filter((c) => !c.produits.length);
-    assert.strictEqual(surDevis.length, 3, surDevis.map((c) => c.id).join(' '));
+    assert.strictEqual(surDevis.length, 4, surDevis.map((c) => c.id).join(' '));
     surDevis.forEach((c) => {
       assert.strictEqual(Catalogue.ARTICLES.filter((a) => a.collectionId === c.id).length, 0, c.id);
     });
@@ -538,7 +540,7 @@ const PRIX_TEMOINS = {
   });
 
   await cas('le minimum de douze reste la règle sans package', () => {
-    const panier = [{ id: 'magie-noel-sapin', qte: 5 }];
+    const panier = [{ id: 'moto-vroom', qte: 5 }];
     assert.strictEqual(Catalogue.minimumRequis(panier), 12);
     assert.strictEqual(Catalogue.minimumRequis(panier, 'Suisse'), 12);
     assert.strictEqual(Catalogue.minimumRequis(panier, 'France'), 12);
@@ -622,12 +624,12 @@ const PRIX_TEMOINS = {
 
   await cas('les packages ne touchent que les collections du moment', () => {
     Catalogue.COLLECTIONS.forEach((c) => {
-      if (c.saison) return;
+      if (c.saison || c.id === 'frissons-halloween') return;
       assert.ok(!c.packages || !c.packages.length,
         c.id + ' : une collection classique ne se vend pas en package');
     });
     const avecPackages = Catalogue.COLLECTIONS.filter((c) => (c.packages || []).length);
-    assert.deepStrictEqual(avecPackages.map((c) => c.id), ['automne', 'frissons-halloween']);
+    assert.deepStrictEqual(avecPackages.map((c) => c.id), ['magie-noel', 'automne', 'frissons-halloween']);
   });
 
   /* ---------- Frais de livraison ---------- */
@@ -660,6 +662,100 @@ const PRIX_TEMOINS = {
     // La clé est bidon : on échoue au contact de SumUp (502), preuve que
     // la retarification (avec frais) a bien été acceptée avant cela.
     assert.ok(r.code === 502, 'attendu 502 (SumUp injoignable), reçu ' + r.code + ' : ' + JSON.stringify(r.corps));
+  });
+
+  /* ---------- Magie de Noël : structure prête, rien d'inventé ---------- */
+  const noel = Catalogue.collection('magie-noel');
+  /* Un catalogue « comme si » les prix de Noël étaient saisis : la source
+     réelle est relue et deux valeurs seulement y sont remplacées, puis
+     tout l'aplatissement (articles, drapeaux) se rejoue pour de bon. */
+  const fs = require('fs');
+  const source = fs.readFileSync(require('path').join(__dirname, '..', 'catalogue.js'), 'utf8');
+  function catalogueNoelPrix() {
+    const src = source
+      .replace('"biscuits": 4, "prix": null, "composition": []',
+        '"biscuits": 4, "prix": 1200, "composition": [{ "ref": "etoile", "qte": 2 }, { "ref": "sapin", "qte": 2 }]')
+      .replace('"produits": [],', '"produits": [ { "ref": "etoile", "nom": "Étoile test", "prix": 500 }, { "ref": "sapin", "nom": "Sapin test", "prix": 600 } ],');
+    const m = { exports: {} };
+    new Function('module', 'exports', src)(m, m.exports);
+    return m.exports;
+  }
+
+  await cas('Noël : package de 4 biscuits et modèles prévus, mais sans prix ni vente', () => {
+    assert.strictEqual(noel.packages.length, 1);
+    assert.strictEqual(noel.packages[0].biscuits, 4);
+    assert.strictEqual(noel.packages[0].prix, null);
+    assert.strictEqual(noel.enAttente.length, 1);
+    assert.strictEqual(noel.venteAUnite, true);
+    assert.strictEqual(noel.packagesSeuls, false);
+    assert.strictEqual(Catalogue.ARTICLES.filter((a) => a.collectionId === 'magie-noel').length, 0);
+    assert.strictEqual(Catalogue.article('magie-noel-pack-noel'), null);
+    assert.strictEqual(noel.produitsSuspendus.length, 16);   // conservés, hors vente
+    assert.strictEqual(Catalogue.article('magie-noel-sapin'), null);
+  });
+
+  await cas('Noël : aucun stock ni quantité fictifs dans les données', () => {
+    [].concat(noel.packages, noel.produits, noel.produitsSuspendus).forEach((x) => {
+      assert.strictEqual(x.stock, undefined, x.ref);
+    });
+    assert.deepStrictEqual(Catalogue.depassementsStock([{ id: 'moto-vroom', qte: 99 }], {}), []);
+  });
+
+  await cas('Noël : pas de minimum de douze, package ou biscuit seul', () => {
+    const C2 = catalogueNoelPrix();
+    [[{ id: 'magie-noel-etoile', qte: 1 }], [{ id: 'magie-noel-pack-noel', qte: 1 }],
+     [{ id: 'magie-noel-pack-noel', qte: 2 }, { id: 'magie-noel-etoile', qte: 3 }]].forEach((p) => {
+      assert.strictEqual(C2.minimumRequis(p), 0);
+      assert.strictEqual(C2.lignesHorsVente(p).length, 0);
+    });
+    assert.strictEqual(C2.article('magie-noel-pack-noel').biscuits, 4);
+    // Les biscuits classiques gardent leurs douze, Noël ne les remplace pas.
+    const mixte = [{ id: 'magie-noel-etoile', qte: 12 }, { id: 'moto-vroom', qte: 5 }];
+    assert.strictEqual(C2.biscuitsIndividuels(mixte), 5);
+    assert.strictEqual(C2.minimumRequis(mixte), 12);
+  });
+
+  await cas('Noël : livraison forfaitaire de 9 CHF, jamais offerte, comptée une seule fois', () => {
+    const C2 = catalogueNoelPrix();
+    const pk = [{ id: 'magie-noel-pack-noel', qte: 1 }];
+    assert.strictEqual(C2.fraisLivraison(1200, 'livraison', 'Suisse', pk), 900);
+    assert.strictEqual(C2.fraisLivraison(99999, 'livraison', 'Suisse', pk), 900);
+    assert.strictEqual(C2.fraisLivraison(99999, 'livraison', 'Suisse', [{ id: 'magie-noel-etoile', qte: 50 }]), 900);
+    const mixte = pk.concat([{ id: 'automne-pack-gourmande', qte: 5 }]);
+    assert.strictEqual(C2.fraisLivraison(40000, 'livraison', 'Suisse', mixte), 900);
+    assert.strictEqual(C2.fraisLivraison(1200, 'retrait', 'Suisse', pk), 0);
+    assert.strictEqual(C2.fraisLivraison(1200, 'livraison', 'France', pk), 0);
+  });
+
+  await cas('les autres collections gardent la livraison offerte dès 150 CHF', () => {
+    const l = [{ id: 'automne-pack-gourmande', qte: 4 }];
+    assert.strictEqual(Catalogue.fraisLivraison(17960, 'livraison', 'Suisse', l), 0);
+    assert.strictEqual(Catalogue.fraisLivraison(4490, 'livraison', 'Suisse', l), 900);
+    assert.strictEqual(Catalogue.forfaitLivraison(l), 0);
+  });
+
+  await cas('Automne et Halloween : règles de package inchangées', () => {
+    const seul = [{ id: 'automne-pack-essentiel', qte: 1 }];
+    assert.strictEqual(Catalogue.minimumRequis(seul), 0);
+    assert.strictEqual(Catalogue.lignesHorsVente([{ id: 'automne-mug', qte: 1 }]).length, 1);
+    assert.strictEqual(Catalogue.minimumRequis([{ id: 'moto-vroom', qte: 1 }, seul[0]]), 12);
+  });
+
+  await cas('stock partagé : un package consomme les modèles de sa composition', () => {
+    const C2 = catalogueNoelPrix();
+    const etoile = C2.article('magie-noel-etoile');
+    etoile.stock = 5;
+    const pk = 'magie-noel-pack-noel';   // 2 étoiles + 2 sapins
+    // 2 packages = 4 étoiles, + 1 à l'unité = 5 : pile le stock.
+    assert.deepStrictEqual(C2.depassementsStock([{ id: pk, qte: 2 }, { id: etoile.id, qte: 1 }], {}), []);
+    // Un de plus dépasse le stock partagé.
+    assert.strictEqual(C2.depassementsStock([{ id: pk, qte: 2 }, { id: etoile.id, qte: 2 }], {}).length, 1);
+    // Le déjà-vendu se déduit du même stock.
+    assert.strictEqual(C2.depassementsStock([{ id: etoile.id, qte: 1 }], { 'magie-noel-etoile': 5 }).length, 1);
+    assert.strictEqual(C2.packagesDisponibles(pk, {}), 2);
+    assert.strictEqual(C2.packagesDisponibles(pk, { 'magie-noel-etoile': 3 }), 1);
+    // Sans stock déclaré sur sapin, seul l'étoile limite.
+    assert.strictEqual(C2.article('magie-noel-sapin').stock, undefined);
   });
 
   console.log(`\n${vert} test(s) au vert, ${rouge} en échec.`);

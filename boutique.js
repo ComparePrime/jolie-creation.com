@@ -219,7 +219,7 @@
     var manque = manqueMinimum(t);
     if (manque) return manque;
     if (!t.individuels) {
-      return 'Package saisonnier : cette commande se passe sans minimum.';
+      return 'Cette commande se passe sans minimum de biscuits.';
     }
     return 'Minimum de ' + Cat.MIN_BISCUITS + ' biscuits à l’unité atteint.';
   }
