@@ -267,7 +267,7 @@
       "id": "magie-noel",
       "nom": "Magie de Noël",
       "occasion": "Noël",
-      "description": "Une collection de biscuits aux couleurs chaleureuses de Noël, décorés à la main au glaçage royal : Père Noël, sapin, bonnet personnalisé, boule et sucre d’orge. Idéale pour offrir ou décorer une table de fête, en coffret de cinq biscuits ou à l’unité. Disponibilité limitée.",
+      "description": "Des biscuits de Noël décorés entièrement à la main, pour une touche de magie et de gourmandise sur vos fêtes. Les bonnets se personnalisent au prénom de vos invités et font de jolis marque-places gourmands pour la table du réveillon. À offrir en coffret de cinq biscuits ou à l’unité, en quantités limitées.",
       "alt": "Coffret de cinq biscuits de Noël décorés à la main : Père Noël, sapin, bonnet personnalisé, boule et sucre d’orge",
       "saison": true,
       "venteAUnite": true,
