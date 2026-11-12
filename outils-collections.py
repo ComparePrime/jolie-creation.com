@@ -132,10 +132,12 @@ def carte_saison(c, premier=False):
     ligne_avis = f'\n            <span class="boutique-vedette-avis">{e(avis)}</span>' if avis else ''
     prix = prix_depart(c)
     ligne_prix = f'\n            <span class="boutique-vedette-prix">{prix}</span>' if prix else ''
-    # La collection phare (Noël) : plus grande, mention discrète de
-    # disponibilité limitée — jamais de quantité ni de compte à rebours.
+    # Même carte, même taille pour toutes les collections du moment : Noël
+    # passe en premier par son ordre au catalogue, pas par sa taille. Seule
+    # une mention discrète de disponibilité limitée la distingue — jamais de
+    # quantité ni de compte à rebours ici.
     phare = bool(c.get('stockLimite'))
-    classe = 'boutique-vedette boutique-vedette-phare' if phare else 'boutique-vedette'
+    classe = 'boutique-vedette'
     limite = '\n            <span class="boutique-vedette-limite">Disponibilité limitée</span>' if phare else ''
     bouton = ('Découvrir la collection' if phare
               else 'Voir les packages' if c['packagesSeuls'] else 'Découvrir')
