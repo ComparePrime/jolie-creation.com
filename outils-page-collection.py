@@ -105,7 +105,7 @@ def faits_hero(c, type_):
         return [f'{n} package{"s" if n > 1 else ""} au choix, composé{"s" if n > 1 else ""} d’avance',
                 'Sans minimum de commande']
     if type_ == 'D':
-        return ['Édition limitée', 'Sans minimum de commande', 'Livraison forfaitaire de 9 CHF en Suisse']
+        return ['Disponibilité limitée', 'Sans minimum de commande', 'Livraison à 9 CHF en Suisse']
     if type_ == 'C':
         return ['Sur devis, composé avec vous', 'Formes, couleurs et quantité sur mesure']
     n = len(c['produits'])
@@ -378,8 +378,10 @@ def fil_ariane(c):
             f'&larr; Toutes les collections</a>')
 
 
-def champ_html(champ, prefixe, attribut):
+def champ_html(champ, prefixe, attribut, requis=False):
     cle = champ['cle']
+    req = ' required aria-required="true"' if requis else ''
+    etoile = ' <span class="req">*</span>' if requis else ''
     id_ = f'{prefixe}-{cle}'
     if champ['type'] == 'choix':
         options = ''.join(f'<option value="{e(o)}">{e(o)}</option>' for o in champ.get('options', []))
@@ -387,9 +389,9 @@ def champ_html(champ, prefixe, attribut):
     else:
         exemple = f' placeholder="{e(champ["exemple"])}"' if champ.get('exemple') else ''
         maxlen = f' maxlength="{champ["max"]}"' if champ.get('max') else ''
-        saisie = f'<input type="text" id="{id_}" name="{cle}"{exemple}{maxlen} {attribut}="{cle}">'
+        saisie = f'<input type="text" id="{id_}" name="{cle}"{exemple}{maxlen}{req} {attribut}="{cle}">'
     return f'''            <div class="choix-champ">
-              <label for="{id_}">{e(champ['libelle'])}</label>
+              <label for="{id_}">{e(champ['libelle'])}{etoile}</label>
               {saisie}
             </div>'''
 
@@ -398,10 +400,12 @@ def carte_produit(p):
     champs = p.get('champs') or []
     option = p.get('option')
     badge = '<span class="choix-badge">Personnalisable</span>' if (champs or option) else ''
+    note_perso = ('\n            <p class="produit-perso-note">Personnalisation obligatoire : à renseigner avant l’ajout au panier.</p>'
+                  if p.get('persoRequis') else '')
 
     perso = ''
     if champs:
-        blocs = '\n'.join(champ_html(ch, f'p-{p["id"]}', 'data-champ') for ch in champs)
+        blocs = '\n'.join(champ_html(ch, f'p-{p["id"]}', 'data-champ', bool(p.get('persoRequis'))) for ch in champs)
         perso += f'''
           <div class="choix-perso">
             <div class="choix-champs">
@@ -429,7 +433,7 @@ def carte_produit(p):
           </div>
           <div class="produit-corps">
             <h3 class="produit-nom">{e(p['nom'])}{badge}</h3>
-            <span class="produit-prix">{chf(p['prix'])}</span>{perso}
+            <span class="produit-prix">{chf(p['prix'])}</span>{note_perso}{perso}
             <div class="choix-pas">
               <button type="button" data-role="moins" aria-label="Retirer un {e(p['nom'])}">&minus;</button>
               <input type="number" min="1" max="99" value="1" inputmode="numeric" aria-label="Nombre de {e(p['nom'])}">
@@ -452,7 +456,7 @@ def carte_package(pk, c):
         for d in pk['detail'])
     return f'''        <article class="produit-carte" id="{e(pk['id'])}">
           <div class="produit-photo">
-            <img src="/{e(c['image'])}" alt="{e(c['alt'])}" loading="lazy" decoding="async" width="600" height="600">
+            <img src="/{e(pk.get('image') or c['image'])}" alt="{e(c['alt'])}" loading="lazy" decoding="async" width="600" height="600">
           </div>
           <div class="produit-corps">
             <h3 class="produit-nom">{e(pk['nom'])}</h3>
@@ -484,15 +488,63 @@ def carte_attente(titre, detail):
         </article>'''
 
 
+def bloc_compteur(c, pk, court=False):
+    """Compte à rebours jusqu'à la fin de l'offre. Le contenu de départ
+    est celui d'un visiteur sans JavaScript : la date, en toutes lettres.
+    noel.js le remplace par le décompte réel. La règle de date, elle,
+    est aussi appliquée par le serveur au moment du paiement."""
+    fin = pk['finOffre']
+    classe = 'noel-compteur noel-compteur-court' if court else 'noel-compteur'
+    return f'''<div class="{classe}" data-noel-compteur data-fin="{e(fin)}" role="timer">
+          <p class="noel-compteur-titre">L’offre Magie de Noël se termine dans…</p>
+          <p class="noel-compteur-date">Offre valable jusqu’au 6 décembre 2026.</p>
+          <div class="noel-compteur-cases" hidden>
+            <span><b data-u="jours">--</b> jours</span>
+            <span><b data-u="heures">--</b> heures</span>
+            <span><b data-u="minutes">--</b> minutes</span>
+            <span><b data-u="secondes">--</b> secondes</span>
+          </div>
+        </div>'''
+
+
+def coffret_noel(c, pk):
+    composition = '\n'.join(
+        f'              <li><span class="package-qte">{d["qte"]} &times;</span> {e(d["nom"])}</li>'
+        for d in pk['detail'])
+    separe = (f'<s class="noel-prix-barre" aria-label="Prix des cinq biscuits à l’unité">{chf(pk["prixSepare"])}</s>'
+              if pk.get('economie', 0) > 0 else '')
+    eco = (f'<span class="noel-economie">Économisez {chf(pk["economie"])}</span>'
+           if pk.get('economie', 0) > 0 else '')
+    return f'''      <article class="noel-coffret" id="{e(pk['id'])}">
+        <div class="noel-coffret-photo">
+          <img src="/{e(pk['image'])}" alt="Le coffret Magie de Noël, cinq biscuits décorés à la main" loading="lazy" decoding="async" width="800" height="800">
+        </div>
+        <div class="noel-coffret-corps">
+          <span class="noel-etiquette">L’offre à ne pas manquer</span>
+          <h3>{e(pk['nom'])}</h3>
+          <p class="noel-coffret-resume">{pk['biscuits']} biscuits décorés à la main, prêts à offrir :</p>
+          <ul class="package-option-composition">
+{composition}
+          </ul>
+          <p class="noel-prix-ligne"><span class="noel-prix">{chf(pk['prix'])}</span> {separe} {eco}</p>
+          <p class="noel-stock" data-noel-stock>Quantités limitées &middot; {pk['stock']} coffrets au total</p>
+          {bloc_compteur(c, pk, court=True)}
+          <button type="button" class="btn btn-primary produit-ajouter" data-package-ajouter="{e(pk['id'])}" data-noel-coffret>Ajouter au panier</button>
+        </div>
+      </article>'''
+
+
 def section_noel(c):
-    """Type D : hero (déjà posé plus haut), puis package, biscuits à
-    l'unité et informations pratiques. Chaque article suit le même
-    principe : prix confirmé → carte d'achat ; sinon → « à venir »."""
+    """Type D : le coffret en vedette, puis les biscuits à l'unité et les
+    informations pratiques. Chaque article suit le même principe : prix
+    confirmé → carte d'achat ; sinon → « à venir »."""
     pk_prets = [pk for pk in c.get('packages') or [] if isinstance(pk.get('prix'), (int, float))]
-    cartes_pk = '\n\n'.join(carte_package(pk, c) for pk in pk_prets)
-    if not cartes_pk:
-        cartes_pk = carte_attente('Package de Noël — 4 biscuits',
-                                  'Composition et prix à venir. Un package se commande seul, sans minimum.')
+    if pk_prets:
+        bloc_pk = coffret_noel(c, pk_prets[0])
+    else:
+        bloc_pk = '      <div class="produit-grille">\n' + carte_attente(
+            'Package de Noël — 4 biscuits',
+            'Composition et prix à venir. Un package se commande seul, sans minimum.') + '\n      </div>'
     cartes_p = '\n\n'.join(carte_produit(p) for p in c['produits'])
     if not cartes_p:
         cartes_p = carte_attente('Biscuits de Noël à l’unité',
@@ -500,12 +552,10 @@ def section_noel(c):
     return f'''  <section id="package" aria-labelledby="package-title">
     <div class="wrap">
       <div class="section-head center section-head-mince">
-        <span class="eyebrow" style="justify-content:center;">Le package de Noël</span>
-        <h2 id="package-title">Un package de 4 biscuits à offrir</h2>
+        <span class="eyebrow" style="justify-content:center;">Le coffret</span>
+        <h2 id="package-title">Cinq biscuits, un seul coffret</h2>
       </div>
-      <div class="produit-grille">
-{cartes_pk}
-      </div>
+{bloc_pk}
     </div>
   </section>
 
@@ -528,10 +578,10 @@ def section_noel(c):
         <h2 id="infos-title">Informations pratiques</h2>
       </div>
       <ul class="infos-pratiques">
-        <li><strong>Quantités limitées.</strong> Les biscuits de Noël sont préparés en nombre restreint.</li>
+        <li><strong>Disponibilité limitée.</strong> Le coffret est limité à 20 exemplaires ; les biscuits sont préparés en nombre restreint.</li>
         <li><strong>Livraison à 9 CHF</strong> en Suisse, quel que soit le montant de la commande. Retrait possible dans le canton de Fribourg.</li>
-        <li><strong>Sans minimum de commande :</strong> un package ou un seul biscuit suffit.</li>
-        <li><strong>Commande selon disponibilité.</strong> Les créations de Noël déjà prêtes se commandent directement, sans délai d’anticipation. Les biscuits personnalisés sur mesure demandent 2 à 3 semaines.</li>
+        <li><strong>Aucun minimum de commande :</strong> un coffret ou un seul biscuit suffit.</li>
+        <li><strong>Offre valable jusqu’au 6 décembre 2026</strong> pour le coffret Magie de Noël.</li>
       </ul>
     </div>
   </section>'''
@@ -629,7 +679,7 @@ def page(c):
     url = f'{SITE}/collections/{slug}'
     titre = f'{c["nom"]} — Biscuits personnalisés | Jolie Création'
     description = description_seo(c, type_)
-    image_principale = f'/images/collections/{c["id"]}/principale.webp'
+    image_principale = '/' + c['image']
     prix = prix_depart(c)
 
     donnees_structurees = {
@@ -689,7 +739,7 @@ def page(c):
 <body>
 {entete_nav()}
 
-<main>
+<main{' class="theme-noel"' if type_ == 'D' else ''}>
   <div class="wrap">
 {fil_ariane(c)}
   </div>
@@ -705,6 +755,7 @@ def page(c):
           <p class="collection-meta"><span class="collection-occasion">{e(c['occasion'])}</span></p>
           <h1 id="collection-titre">{e(c['nom'])}</h1>
           <p class="collection-texte">{e(description)}</p>
+          {bloc_compteur(c, c['packages'][0]) if type_ == 'D' and c['packages'] and c['packages'][0].get('finOffre') else ''}
           <ul class="collection-faits">
             {'' if type_ == 'C' or prix == 'Sur devis' else f'<li>{prix}</li>'}{''.join(f'<li>{e(f)}</li>' for f in faits_hero(c, type_))}
           </ul>
@@ -738,7 +789,7 @@ def page(c):
     </div>
   </section>
 </main>
-{pied_page()}
+{pied_page().replace('<script src="/script.js"></script>', '<script src="/script.js"></script>' + chr(10) + '<script src="/noel.js"></script>') if type_ == 'D' else pied_page()}
 </body>
 </html>
 '''

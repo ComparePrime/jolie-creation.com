@@ -13,6 +13,7 @@
 
    Seules des informations non sensibles sont renvoyées.
    ============================================================ */
+const Stock = require('../stock.js');
 const SUMUP = 'https://api.sumup.com/v0.1/checkouts/';
 
 const entetes = {
@@ -47,6 +48,17 @@ exports.handler = async (event) => {
     if (!appel.ok || !c.status) {
       console.error('SumUp retrieve error', appel.status, brut.slice(0, 300));
       return reponse(502, { erreur: 'sumup', message: 'Commande introuvable.' });
+    }
+
+    /* Paiement confirmé par SumUp : la réservation de stock devient une
+       vente. Idempotent — la page peut être rechargée sans double décompte. */
+    if (c.status === 'PAID' && c.checkout_reference) {
+      try {
+        const magasin = exports.stockageDeTest || Stock.storeNetlify(event);
+        await Stock.confirmer(magasin, c.checkout_reference);
+      } catch (e) {
+        console.error('Stock : confirmation impossible', e && e.message);
+      }
     }
 
     return reponse(200, {

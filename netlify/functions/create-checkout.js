@@ -21,6 +21,7 @@
       seule fois, ici, au bord de l'API.
    ============================================================ */
 const Catalogue = require('../../catalogue.js');
+const Stock = require('../stock.js');
 
 const SUMUP = 'https://api.sumup.com/v0.1/checkouts';
 // Chaque modèle de biscuit est une ligne : un panier riche en compte vite
@@ -58,6 +59,23 @@ function reference(proposee) {
   const jour = new Date().toISOString().slice(0, 10).replace(/-/g, '');
   const alea = Math.random().toString(36).slice(2, 8).toUpperCase().padEnd(6, '0');
   return 'JC-' + jour + '-' + alea;
+}
+
+/* Le stockage du stock réel, remplaçable par les tests. Il n'est ouvert
+   que pour un panier qui contient un article à stock limité : les autres
+   collections ne dépendent d'aucun stockage. */
+function stockage(event) {
+  return exports.stockageDeTest || Stock.storeNetlify(event);
+}
+
+/* État d'un paiement SumUp, pour relire les réservations en attente. */
+async function statutSumUp(id) {
+  const r = await fetch(SUMUP + '/' + encodeURIComponent(id), {
+    headers: { Authorization: 'Bearer ' + process.env.SUMUP_API_KEY }
+  });
+  if (!r.ok) return null;
+  const c = await r.json();
+  return c && c.status ? c.status : null;
 }
 
 exports.handler = async (event) => {
@@ -158,15 +176,51 @@ exports.handler = async (event) => {
     });
   }
 
-  /* Stock réel : tant qu'aucun stock n'est déclaré au catalogue, la liste
-     est vide et rien ne bloque. Le cumul déjà vendu viendra d'un
-     stockage durable (à brancher) ; il est vide ici. */
-  const enRupture = Catalogue.depassementsStock(lignesRecues, {});
-  if (enRupture.length) {
-    return reponse(409, {
-      erreur: 'stock_insuffisant',
-      message: 'Certains articles ne sont plus disponibles en quantité suffisante : ' + enRupture.map(function (a) { return a.court; }).join(', ') + '.'
+  /* Une offre a une date limite : passé cet instant, le serveur refuse,
+     quel que soit l'état de la page dans le navigateur. */
+  const expirees = Catalogue.lignesOffreTerminee(lignesRecues, Date.now());
+  if (expirees.length) {
+    return reponse(410, {
+      erreur: 'offre_terminee',
+      message: 'L’offre Magie de Noël est terminée : ' + expirees.map((a) => a.nom).join(', ') + ' ne peut plus être commandé.'
     });
+  }
+
+  /* Un biscuit dont la personnalisation est indispensable ne part pas
+     sans elle. */
+  const sansPerso = Catalogue.personnalisationManquante(lignesRecues);
+  if (sansPerso.length) {
+    return reponse(400, {
+      erreur: 'personnalisation_manquante',
+      message: 'Précisez la personnalisation de : ' + sansPerso.map((a) => a.nom).join(', ') + '.'
+    });
+  }
+
+  const ref = reference(charge.reference);
+
+  /* Stock réel, vérifié et retenu côté serveur. Un article sans stock
+     déclaré n'est pas concerné. Si le stock ne peut pas être vérifié,
+     on refuse plutôt que de risquer de vendre ce qui n'existe plus. */
+  const limite = Object.keys(Stock.consommationLimitee(lignesRecues)).length > 0;
+  let magasin = null;
+  if (limite) {
+    try {
+      magasin = stockage(event);
+      await Stock.reconcilier(magasin, statutSumUp, Date.now());
+      await Stock.reserver(magasin, ref, lignesRecues, Date.now());
+    } catch (e) {
+      if (e instanceof Stock.StockInsuffisant) {
+        return reponse(409, {
+          erreur: 'stock_insuffisant',
+          message: 'Plus assez de stock pour : ' + e.articles.map((a) => a.nom).join(', ') + '. Retirez-le du panier pour continuer.'
+        });
+      }
+      console.error('Stock indisponible', e && e.message);
+      return reponse(503, {
+        erreur: 'stock_indisponible',
+        message: 'Le stock n’a pas pu être vérifié. Réessayez dans un instant.'
+      });
+    }
   }
 
   if (centimes <= 0) {
@@ -181,8 +235,6 @@ exports.handler = async (event) => {
 
   const origine = process.env.URL || process.env.DEPLOY_PRIME_URL ||
     (event.headers && event.headers.origin) || 'https://jolie-creation.com';
-  const ref = reference(charge.reference);
-
   const description = ('Jolie Création — ' + biscuits + ' biscuits · ' + libelles.join(', '))
     .slice(0, MAX_DESCRIPTION);
 
@@ -211,11 +263,14 @@ exports.handler = async (event) => {
 
     if (!appel.ok || !data.hosted_checkout_url) {
       console.error('SumUp checkout error', appel.status, brut.slice(0, 400));
+      if (magasin) await Stock.liberer(magasin, ref).catch(() => {});
       return reponse(502, {
         erreur: 'sumup',
         message: 'La session de paiement n’a pas pu être créée. Réessayez ou contactez-moi directement.'
       });
     }
+
+    if (magasin) await Stock.lierCheckout(magasin, ref, data.id).catch(() => {});
 
     return reponse(200, {
       url: data.hosted_checkout_url,
@@ -228,6 +283,7 @@ exports.handler = async (event) => {
     });
   } catch (e) {
     console.error('SumUp checkout exception', e && e.message);
+    if (magasin) await Stock.liberer(magasin, ref).catch(() => {});
     return reponse(502, {
       erreur: 'sumup',
       message: 'La session de paiement n’a pas pu être créée. Réessayez ou contactez-moi directement.'

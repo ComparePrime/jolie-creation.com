@@ -64,7 +64,7 @@ const COLLECTIONS_ATTENDUES = [
 /* Nombre de modèles par collection, relu sur la liste fournie. */
 const MODELES_ATTENDUS = {
   'automne': 7,
-  'magie-noel': 0, 'frissons-halloween': 9, 'douceurs-paques': 9,
+  'magie-noel': 5, 'frissons-halloween': 9, 'douceurs-paques': 9,
   'merci-maitresse': 4, 'bonne-fete-maman': 2, 'bapteme-douceur': 1,
   'annonce-grossesse': 5, 'douceur-personnalisee': 2, 'girls-club': 1,
   'american-road-trip': 12, 'petit-chantier': 9, 'passion-cheval': 10,
@@ -113,8 +113,8 @@ const PRIX_TEMOINS = {
         c.id + ' : ' + c.produits.length + ' modèles');
     });
     const biscuits = Catalogue.ARTICLES.filter((a) => a.categorie === 'biscuit');
-    assert.strictEqual(biscuits.length, 134);
-    assert.strictEqual(Catalogue.ARTICLES.length, 140);   // 134 biscuits + 6 packages (Noël suspendu : 16 modèles retirés de la vente)
+    assert.strictEqual(biscuits.length, 139);
+    assert.strictEqual(Catalogue.ARTICLES.length, 146);   // 139 biscuits + 7 packages (Noël : 5 biscuits + le coffret)
   });
 
   await cas('les prix témoins sont exacts', () => {
@@ -183,7 +183,7 @@ const PRIX_TEMOINS = {
 
   await cas('chaque collection annonce son image et son texte alternatif', () => {
     Catalogue.COLLECTIONS.forEach((c) => {
-      assert.strictEqual(c.image, 'images/collections/' + c.id + '/principale.webp', c.id);
+      assert.strictEqual(c.image, 'images/collections/' + c.id + '/' + (c.photoPrincipale || 'principale.webp'), c.id);
       assert.ok(c.alt && c.alt.length > 20, c.id + ' : texte alternatif trop court');
       assert.ok(c.description && c.description.length > 60, c.id + ' : description trop courte');
     });
@@ -244,7 +244,7 @@ const PRIX_TEMOINS = {
 
   await cas('une collection sans modèle n’ajoute aucun article achetable', () => {
     const surDevis = Catalogue.COLLECTIONS.filter((c) => !c.produits.length);
-    assert.strictEqual(surDevis.length, 4, surDevis.map((c) => c.id).join(' '));
+    assert.strictEqual(surDevis.length, 3, surDevis.map((c) => c.id).join(' '));
     surDevis.forEach((c) => {
       assert.strictEqual(Catalogue.ARTICLES.filter((a) => a.collectionId === c.id).length, 0, c.id);
     });
@@ -664,67 +664,92 @@ const PRIX_TEMOINS = {
     assert.ok(r.code === 502, 'attendu 502 (SumUp injoignable), reçu ' + r.code + ' : ' + JSON.stringify(r.corps));
   });
 
-  /* ---------- Magie de Noël : structure prête, rien d'inventé ---------- */
+  /* ---------- Magie de Noël ---------- */
   const noel = Catalogue.collection('magie-noel');
-  /* Un catalogue « comme si » les prix de Noël étaient saisis : la source
-     réelle est relue et deux valeurs seulement y sont remplacées, puis
-     tout l'aplatissement (articles, drapeaux) se rejoue pour de bon. */
-  const fs = require('fs');
-  const source = fs.readFileSync(require('path').join(__dirname, '..', 'catalogue.js'), 'utf8');
-  function catalogueNoelPrix() {
-    const src = source
-      .replace('"biscuits": 4, "prix": null, "composition": []',
-        '"biscuits": 4, "prix": 1200, "composition": [{ "ref": "etoile", "qte": 2 }, { "ref": "sapin", "qte": 2 }]')
-      .replace('"produits": [],', '"produits": [ { "ref": "etoile", "nom": "Étoile test", "prix": 500 }, { "ref": "sapin", "nom": "Sapin test", "prix": 600 } ],');
-    const m = { exports: {} };
-    new Function('module', 'exports', src)(m, m.exports);
-    return m.exports;
-  }
+  const Stock = require('../netlify/stock.js');
+  const coffret = Catalogue.article('magie-noel-pack-coffret');
+  const PRIX_NOEL = { 'pere-noel': 700, 'sapin': 700, 'bonnet': 650, 'boule': 600, 'sucre-orge': 600 };
 
-  await cas('Noël : package de 4 biscuits et modèles prévus, mais sans prix ni vente', () => {
-    assert.strictEqual(noel.packages.length, 1);
-    assert.strictEqual(noel.packages[0].biscuits, 4);
-    assert.strictEqual(noel.packages[0].prix, null);
-    assert.strictEqual(noel.enAttente.length, 1);
+  /* Un stockage en mémoire, de même interface que Netlify Blobs. */
+  function stockageMemoire() {
+    let etat = null; let version = 0;
+    return {
+      async lire() { return { etat: etat && JSON.parse(JSON.stringify(etat)), etag: etat ? String(version) : null }; },
+      async ecrire(nouveau, etag) {
+        if ((etag || null) !== (etat ? String(version) : null)) return false;
+        etat = JSON.parse(JSON.stringify(nouveau)); version++; return true;
+      },
+      voir() { return etat; }
+    };
+  }
+  const maintenantReel = Date.now;
+  const a_l_heure = (iso, fn) => async () => {
+    Date.now = () => Date.parse(iso);
+    try { await fn(); } finally { Date.now = maintenantReel; }
+  };
+  const AVANT_FIN = '2026-11-20T10:00:00+01:00';
+  const APRES_FIN = '2026-12-07T00:00:01+01:00';
+
+  await cas('Noël : les cinq biscuits ont les bons prix', () => {
+    assert.strictEqual(noel.produits.length, 5);
+    Object.keys(PRIX_NOEL).forEach((ref) => {
+      assert.strictEqual(Catalogue.article('magie-noel-' + ref).prix, PRIX_NOEL[ref], ref);
+    });
+    assert.strictEqual(noel.produits.map((p) => p.nom).join('|'),
+      'Père Noël|Sapin|Bonnet de Noël personnalisé|Boule de Noël|Sucre d’orge');
+  });
+
+  await cas('Noël : le coffret coûte 29.90 CHF, contient les cinq biscuits, économie de 2.60 CHF', () => {
+    assert.strictEqual(coffret.prix, 2990);
+    assert.strictEqual(coffret.nom, 'Le coffret Magie de Noël');
+    assert.strictEqual(coffret.biscuits, 5);
+    assert.deepStrictEqual(coffret.composition.map((x) => x.ref + 'x' + x.qte),
+      ['pere-noelx1', 'sapinx1', 'bonnetx1', 'boulex1', 'sucre-orgex1']);
+    assert.strictEqual(coffret.prixSepare, 3250);
+    assert.strictEqual(coffret.economie, 260);
+    assert.strictEqual(Catalogue.formater(coffret.economie), '2.60 CHF');
+  });
+
+  await cas('Noël : une seule collection du moment « sans minimum », livraison 9 CHF, stock initial 20', () => {
     assert.strictEqual(noel.venteAUnite, true);
     assert.strictEqual(noel.packagesSeuls, false);
-    assert.strictEqual(Catalogue.ARTICLES.filter((a) => a.collectionId === 'magie-noel').length, 0);
-    assert.strictEqual(Catalogue.article('magie-noel-pack-noel'), null);
-    assert.strictEqual(noel.produitsSuspendus.length, 16);   // conservés, hors vente
-    assert.strictEqual(Catalogue.article('magie-noel-sapin'), null);
+    assert.strictEqual(coffret.stock, 20);
+    // Aucun stock inventé pour les biscuits individuels.
+    noel.produits.forEach((p) => assert.strictEqual(p.stock, undefined, p.ref));
+    assert.strictEqual(Catalogue.packagesDisponibles(coffret.id, {}), 20);
   });
 
-  await cas('Noël : aucun stock ni quantité fictifs dans les données', () => {
-    [].concat(noel.packages, noel.produits, noel.produitsSuspendus).forEach((x) => {
-      assert.strictEqual(x.stock, undefined, x.ref);
-    });
-    assert.deepStrictEqual(Catalogue.depassementsStock([{ id: 'moto-vroom', qte: 99 }], {}), []);
+  await cas('Noël : le bonnet exige sa personnalisation, les autres non', () => {
+    const bonnet = Catalogue.article('magie-noel-bonnet');
+    assert.strictEqual(bonnet.persoRequis, true);
+    assert.strictEqual(bonnet.champs.length, 1);
+    assert.strictEqual(Catalogue.personnalisationManquante([{ id: bonnet.id, qte: 1 }]).length, 1);
+    assert.strictEqual(Catalogue.personnalisationManquante([{ id: bonnet.id, qte: 1, details: { prenomOuTexte: '  ' } }]).length, 1);
+    assert.strictEqual(Catalogue.personnalisationManquante([{ id: bonnet.id, qte: 1, details: { prenomOuTexte: 'Léa' } }]).length, 0);
+    assert.strictEqual(Catalogue.personnalisationManquante([{ id: 'magie-noel-sapin', qte: 1 }]).length, 0);
   });
 
-  await cas('Noël : pas de minimum de douze, package ou biscuit seul', () => {
-    const C2 = catalogueNoelPrix();
-    [[{ id: 'magie-noel-etoile', qte: 1 }], [{ id: 'magie-noel-pack-noel', qte: 1 }],
-     [{ id: 'magie-noel-pack-noel', qte: 2 }, { id: 'magie-noel-etoile', qte: 3 }]].forEach((p) => {
-      assert.strictEqual(C2.minimumRequis(p), 0);
-      assert.strictEqual(C2.lignesHorsVente(p).length, 0);
+  await cas('Noël : pas de minimum de douze, coffret ou biscuit seul, ou mélangés', () => {
+    [[{ id: 'magie-noel-sapin', qte: 1 }], [{ id: coffret.id, qte: 1 }],
+     [{ id: coffret.id, qte: 2 }, { id: 'magie-noel-boule', qte: 3 }]].forEach((p) => {
+      assert.strictEqual(Catalogue.minimumRequis(p), 0);
+      assert.strictEqual(Catalogue.lignesHorsVente(p).length, 0);
     });
-    assert.strictEqual(C2.article('magie-noel-pack-noel').biscuits, 4);
-    // Les biscuits classiques gardent leurs douze, Noël ne les remplace pas.
-    const mixte = [{ id: 'magie-noel-etoile', qte: 12 }, { id: 'moto-vroom', qte: 5 }];
-    assert.strictEqual(C2.biscuitsIndividuels(mixte), 5);
-    assert.strictEqual(C2.minimumRequis(mixte), 12);
+    // Les biscuits classiques gardent leurs douze.
+    const mixte = [{ id: 'magie-noel-sapin', qte: 12 }, { id: 'moto-vroom', qte: 5 }];
+    assert.strictEqual(Catalogue.biscuitsIndividuels(mixte), 5);
+    assert.strictEqual(Catalogue.minimumRequis(mixte), 12);
   });
 
   await cas('Noël : livraison forfaitaire de 9 CHF, jamais offerte, comptée une seule fois', () => {
-    const C2 = catalogueNoelPrix();
-    const pk = [{ id: 'magie-noel-pack-noel', qte: 1 }];
-    assert.strictEqual(C2.fraisLivraison(1200, 'livraison', 'Suisse', pk), 900);
-    assert.strictEqual(C2.fraisLivraison(99999, 'livraison', 'Suisse', pk), 900);
-    assert.strictEqual(C2.fraisLivraison(99999, 'livraison', 'Suisse', [{ id: 'magie-noel-etoile', qte: 50 }]), 900);
+    const pk = [{ id: coffret.id, qte: 1 }];
+    assert.strictEqual(Catalogue.fraisLivraison(2990, 'livraison', 'Suisse', pk), 900);
+    assert.strictEqual(Catalogue.fraisLivraison(99999, 'livraison', 'Suisse', pk), 900);
+    assert.strictEqual(Catalogue.fraisLivraison(99999, 'livraison', 'Suisse', [{ id: 'magie-noel-sapin', qte: 50 }]), 900);
     const mixte = pk.concat([{ id: 'automne-pack-gourmande', qte: 5 }]);
-    assert.strictEqual(C2.fraisLivraison(40000, 'livraison', 'Suisse', mixte), 900);
-    assert.strictEqual(C2.fraisLivraison(1200, 'retrait', 'Suisse', pk), 0);
-    assert.strictEqual(C2.fraisLivraison(1200, 'livraison', 'France', pk), 0);
+    assert.strictEqual(Catalogue.fraisLivraison(40000, 'livraison', 'Suisse', mixte), 900);
+    assert.strictEqual(Catalogue.fraisLivraison(2990, 'retrait', 'Suisse', pk), 0);
+    assert.strictEqual(Catalogue.fraisLivraison(2990, 'livraison', 'France', pk), 0);
   });
 
   await cas('les autres collections gardent la livraison offerte dès 150 CHF', () => {
@@ -739,23 +764,157 @@ const PRIX_TEMOINS = {
     assert.strictEqual(Catalogue.minimumRequis(seul), 0);
     assert.strictEqual(Catalogue.lignesHorsVente([{ id: 'automne-mug', qte: 1 }]).length, 1);
     assert.strictEqual(Catalogue.minimumRequis([{ id: 'moto-vroom', qte: 1 }, seul[0]]), 12);
+    assert.strictEqual(Catalogue.stockDeclare('automne-pack-essentiel'), null);
   });
 
-  await cas('stock partagé : un package consomme les modèles de sa composition', () => {
-    const C2 = catalogueNoelPrix();
-    const etoile = C2.article('magie-noel-etoile');
-    etoile.stock = 5;
-    const pk = 'magie-noel-pack-noel';   // 2 étoiles + 2 sapins
-    // 2 packages = 4 étoiles, + 1 à l'unité = 5 : pile le stock.
-    assert.deepStrictEqual(C2.depassementsStock([{ id: pk, qte: 2 }, { id: etoile.id, qte: 1 }], {}), []);
-    // Un de plus dépasse le stock partagé.
-    assert.strictEqual(C2.depassementsStock([{ id: pk, qte: 2 }, { id: etoile.id, qte: 2 }], {}).length, 1);
-    // Le déjà-vendu se déduit du même stock.
-    assert.strictEqual(C2.depassementsStock([{ id: etoile.id, qte: 1 }], { 'magie-noel-etoile': 5 }).length, 1);
-    assert.strictEqual(C2.packagesDisponibles(pk, {}), 2);
-    assert.strictEqual(C2.packagesDisponibles(pk, { 'magie-noel-etoile': 3 }), 1);
-    // Sans stock déclaré sur sapin, seul l'étoile limite.
-    assert.strictEqual(C2.article('magie-noel-sapin').stock, undefined);
+  await cas('la date limite : 6 décembre 2026, 23 h 59 min 59 s, heure suisse', () => {
+    assert.strictEqual(new Date(coffret.finOffreMs).toISOString(), '2026-12-06T22:59:59.000Z');
+    assert.strictEqual(Catalogue.offreTerminee(coffret, Date.parse('2026-12-06T23:59:59+01:00')), false);
+    assert.strictEqual(Catalogue.offreTerminee(coffret, Date.parse('2026-12-07T00:00:00+01:00')), true);
+    assert.strictEqual(Catalogue.offreTerminee(Catalogue.article('automne-pack-essentiel'), Date.parse('2030-01-01')), false);
+  });
+
+  await cas('stock partagé : le coffret et les biscuits se décomptent sur le même stock', () => {
+    const sapin = Catalogue.article('magie-noel-sapin');
+    sapin.stock = 5;
+    try {
+      // 2 coffrets = 2 sapins ; + 3 à l'unité = 5 : pile le stock.
+      assert.deepStrictEqual(Catalogue.depassementsStock([{ id: coffret.id, qte: 2 }, { id: sapin.id, qte: 3 }], {}), []);
+      assert.strictEqual(Catalogue.depassementsStock([{ id: coffret.id, qte: 2 }, { id: sapin.id, qte: 4 }], {}).length, 1);
+      assert.strictEqual(Catalogue.packagesDisponibles(coffret.id, { 'magie-noel-sapin': 4 }), 1);
+    } finally { delete sapin.stock; }
+  });
+
+  await cas('stock : une vente confirmée diminue le stock, jamais deux fois', async () => {
+    const st = stockageMemoire();
+    const lignes = [{ id: coffret.id, qte: 2 }];
+    await Stock.reserver(st, 'JC-20261101-AAAAAA', lignes, 1);
+    // Réservé, pas encore vendu : déjà retiré de ce qui reste.
+    assert.strictEqual(Stock.vuePublique(await Stock.lireEtat(st))[coffret.id].restant, 18);
+    await Stock.confirmer(st, 'JC-20261101-AAAAAA');
+    await Stock.confirmer(st, 'JC-20261101-AAAAAA');   // rejouée : sans effet
+    const vue = Stock.vuePublique(await Stock.lireEtat(st))[coffret.id];
+    assert.strictEqual(vue.restant, 18);
+    assert.strictEqual(vue.stock, 20);
+    assert.strictEqual((await Stock.lireEtat(st)).vendu[coffret.id], 2);
+  });
+
+  await cas('stock : impossible de commander au-delà de 20, épuisé à zéro', async () => {
+    const st = stockageMemoire();
+    await Stock.reserver(st, 'JC-20261101-AAAAAA', [{ id: coffret.id, qte: 20 }], 1);
+    await Stock.confirmer(st, 'JC-20261101-AAAAAA');
+    assert.strictEqual(Stock.vuePublique(await Stock.lireEtat(st))[coffret.id].restant, 0);
+    await assert.rejects(() => Stock.reserver(st, 'JC-20261101-BBBBBB', [{ id: coffret.id, qte: 1 }], 2),
+      (e) => e instanceof Stock.StockInsuffisant);
+    await assert.rejects(() => Stock.vendre(st, 'JC-20261101-CCCCCC', [{ id: coffret.id, qte: 1 }]),
+      (e) => e instanceof Stock.StockInsuffisant);
+    // Un panier sans coffret n'est pas concerné.
+    assert.deepStrictEqual(Stock.consommationLimitee([{ id: 'magie-noel-sapin', qte: 3 }]), {});
+  });
+
+  await cas('stock : une réservation compte, et se libère si le paiement échoue', async () => {
+    const st = stockageMemoire();
+    await Stock.reserver(st, 'JC-20261101-AAAAAA', [{ id: coffret.id, qte: 20 }], 1);
+    await assert.rejects(() => Stock.reserver(st, 'JC-20261101-BBBBBB', [{ id: coffret.id, qte: 1 }], 2));
+    await Stock.liberer(st, 'JC-20261101-AAAAAA');
+    await Stock.reserver(st, 'JC-20261101-BBBBBB', [{ id: coffret.id, qte: 1 }], 3);
+  });
+
+  await cas('stock : une réservation orpheline est relue chez SumUp, puis comptée ou libérée', async () => {
+    const st = stockageMemoire();
+    await Stock.reserver(st, 'JC-20261101-AAAAAA', [{ id: coffret.id, qte: 3 }], 1, 'co-payé');
+    await Stock.reserver(st, 'JC-20261101-BBBBBB', [{ id: coffret.id, qte: 2 }], 1, 'co-échoué');
+    await Stock.reconcilier(st, async (id) => (id === 'co-payé' ? 'PAID' : 'FAILED'), 5);
+    const etat = await Stock.lireEtat(st);
+    assert.strictEqual(etat.vendu[coffret.id], 3);
+    assert.deepStrictEqual(etat.reservations, {});
+  });
+
+  await cas('stock : deux écritures simultanées ne se partagent pas le dernier coffret', async () => {
+    const st = stockageMemoire();
+    await Stock.reserver(st, 'JC-20261101-AAAAAA', [{ id: coffret.id, qte: 19 }], 1);
+    const res = await Promise.allSettled([
+      Stock.reserver(st, 'JC-20261101-BBBBBB', [{ id: coffret.id, qte: 1 }], 2),
+      Stock.reserver(st, 'JC-20261101-CCCCCC', [{ id: coffret.id, qte: 1 }], 2)
+    ]);
+    assert.strictEqual(res.filter((r) => r.status === 'fulfilled').length, 1);
+  });
+
+  /* ---------- Le serveur de paiement et le coffret ---------- */
+  const fonctionStock = require('../netlify/functions/stock.js');
+  const BONNET_OK = { id: 'magie-noel-bonnet', qte: 1, details: { prenomOuTexte: 'Léa' } };
+  const PAYS = { reception: 'livraison', pays: 'Suisse' };
+
+  await cas('serveur : un seul coffret, un seul biscuit, ou un mélange sont acceptés (502 = SumUp injoignable)', a_l_heure(AVANT_FIN, async () => {
+    for (const lignes of [[{ id: coffret.id, qte: 1 }], [{ id: 'magie-noel-sapin', qte: 1 }],
+      [{ id: coffret.id, qte: 1 }, BONNET_OK, { id: 'magie-noel-boule', qte: 2 }]]) {
+      fonction.stockageDeTest = stockageMemoire();
+      const r = await appeler({ lignes, client: PAYS }, AVEC_CLES);
+      assert.strictEqual(r.code, 502, JSON.stringify(r.corps));
+      // Le paiement n'a pas pu être créé : le stock retenu est rendu.
+      const etat = fonction.stockageDeTest.voir();
+      assert.deepStrictEqual(etat ? etat.reservations : {}, {});
+    }
+    delete fonction.stockageDeTest;
+  }));
+
+  await cas('serveur : le bonnet sans personnalisation est refusé', a_l_heure(AVANT_FIN, async () => {
+    fonction.stockageDeTest = stockageMemoire();
+    const r = await appeler({ lignes: [{ id: 'magie-noel-bonnet', qte: 1 }], client: PAYS }, AVEC_CLES);
+    assert.strictEqual(r.code, 400);
+    assert.strictEqual(r.corps.erreur, 'personnalisation_manquante');
+    delete fonction.stockageDeTest;
+  }));
+
+  await cas('serveur : le coffret est refusé après le 6 décembre 2026', a_l_heure(APRES_FIN, async () => {
+    fonction.stockageDeTest = stockageMemoire();
+    const r = await appeler({ lignes: [{ id: coffret.id, qte: 1 }], client: PAYS }, AVEC_CLES);
+    assert.strictEqual(r.code, 410);
+    assert.strictEqual(r.corps.erreur, 'offre_terminee');
+    delete fonction.stockageDeTest;
+  }));
+
+  await cas('serveur : le coffret est refusé une fois le stock épuisé', a_l_heure(AVANT_FIN, async () => {
+    const st = stockageMemoire();
+    await Stock.vendre(st, 'JC-20261101-AAAAAA', [{ id: coffret.id, qte: 20 }]);
+    fonction.stockageDeTest = st;
+    const r = await appeler({ lignes: [{ id: coffret.id, qte: 1 }], client: PAYS }, AVEC_CLES);
+    assert.strictEqual(r.code, 409);
+    assert.strictEqual(r.corps.erreur, 'stock_insuffisant');
+    // Un biscuit seul reste commandable : son stock n'est pas limité.
+    const ok = await appeler({ lignes: [{ id: 'magie-noel-sapin', qte: 1 }], client: PAYS }, AVEC_CLES);
+    assert.strictEqual(ok.code, 502);
+    delete fonction.stockageDeTest;
+  }));
+
+  await cas('serveur : un autre collection ne dépend d’aucun stockage', async () => {
+    delete fonction.stockageDeTest;
+    const r = await appeler({ lignes: [{ id: 'petit-ocean-baleine', qte: 12 }], client: PAYS }, AVEC_CLES);
+    assert.strictEqual(r.code, 502);
+  });
+
+  await cas('retrait : le coffret se décompte à l’enregistrement, et se refuse hors stock ou hors date', async () => {
+    const st = stockageMemoire();
+    fonctionStock.stockageDeTest = st;
+    const post = async (corps) => {
+      const r = await fonctionStock.handler({ httpMethod: 'POST', body: JSON.stringify(corps), headers: {} });
+      return { code: r.statusCode, corps: JSON.parse(r.body) };
+    };
+    Date.now = () => Date.parse(AVANT_FIN);
+    try {
+      assert.strictEqual((await post({ reference: 'JC-20261101-AAAAAA', lignes: [{ id: coffret.id, qte: 19 }] })).code, 200);
+      assert.strictEqual((await post({ action: 'verifier', lignes: [{ id: coffret.id, qte: 2 }] })).code, 409);
+      assert.strictEqual((await post({ reference: 'JC-20261101-BBBBBB', lignes: [{ id: coffret.id, qte: 1 }] })).code, 200);
+      assert.strictEqual((await post({ reference: 'JC-20261101-CCCCCC', lignes: [{ id: coffret.id, qte: 1 }] })).code, 409);
+      assert.strictEqual((await post({ reference: 'JC-20261101-DDDDDD', lignes: [BONNET_OK].map((l) => ({ id: l.id, qte: 1 })) })).code, 400);
+      const lecture = await fonctionStock.handler({ httpMethod: 'GET', headers: {} });
+      const d = JSON.parse(lecture.body);
+      assert.strictEqual(d.coffret.restant, 0);
+      assert.strictEqual(d.coffret.stock, 20);
+      Date.now = () => Date.parse(APRES_FIN);
+      assert.strictEqual((await post({ reference: 'JC-20261101-EEEEEE', lignes: [{ id: coffret.id, qte: 1 }] })).code, 410);
+      assert.strictEqual(JSON.parse((await fonctionStock.handler({ httpMethod: 'GET', headers: {} })).body).offreTerminee, true);
+    } finally { Date.now = maintenantReel; delete fonctionStock.stockageDeTest; }
   });
 
   console.log(`\n${vert} test(s) au vert, ${rouge} en échec.`);

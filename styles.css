@@ -3071,3 +3071,100 @@ form.devis-form{
   .collections-liste .collection-bloc:nth-child(even) .collection-photo{ grid-column: 2; grid-row: 1; }
   .collections-liste .collection-bloc:nth-child(even) .collection-corps{ grid-column: 1; grid-row: 1; }
 }
+
+/* ============================================================
+   Page Magie de Noël — ambiance de fête, limitée à cette page
+   ------------------------------------------------------------
+   Tout est sous .theme-noel, posé sur <main> uniquement : l'en-tête,
+   le pied de page, les autres collections et les couleurs globales ne
+   bougent pas. Vert sapin, bordeaux, ivoire, touches dorées discrètes.
+   ============================================================ */
+.theme-noel{
+  --noel-sapin: #1F3D2F;
+  --noel-bordeaux: #7C1F2C;
+  --noel-bordeaux-clair: #9B2E3C;
+  --noel-ivoire: #FBF6EA;
+  --noel-beige: #F1E6D0;
+  --paper: #FFFDF8;
+  --line: #E4D6B8;
+  --gold-deep: #8A6428;
+  background: var(--noel-ivoire);
+  background-image: radial-gradient(circle at 12% 0%, rgba(185,138,70,.10), transparent 38%),
+                    radial-gradient(circle at 92% 18%, rgba(31,61,47,.07), transparent 34%);
+}
+.theme-noel h1, .theme-noel h2, .theme-noel .collection-corps h1{ color: var(--noel-sapin); }
+.theme-noel h3{ color: var(--noel-bordeaux); }
+.theme-noel .eyebrow, .theme-noel .collection-occasion{ color: var(--noel-bordeaux); }
+.theme-noel .btn-primary{
+  background: linear-gradient(135deg, var(--noel-bordeaux-clair), var(--noel-bordeaux));
+  color: #FBF3E2;
+  box-shadow: 0 14px 28px -14px rgba(124,31,44,.55);
+}
+.theme-noel .btn-primary:hover{ box-shadow: 0 18px 34px -14px rgba(124,31,44,.65); }
+.theme-noel .btn-primary[disabled]{
+  background: var(--noel-beige); color: var(--ink-soft); box-shadow: none; cursor: not-allowed; transform: none;
+}
+.theme-noel .btn-ghost{ border-color: var(--noel-sapin); color: var(--noel-sapin); }
+.theme-noel .btn-ghost:hover{ background: var(--noel-sapin); color: var(--noel-ivoire); }
+.theme-noel .produit-carte, .theme-noel .infos-pratiques li{ border-color: var(--line); }
+.theme-noel .produit-prix{ color: var(--noel-bordeaux); }
+.theme-noel .collection-faits li{ border-color: var(--line); }
+.theme-noel .collection-bloc{ border: 1px solid var(--line); box-shadow: 0 18px 44px -26px rgba(31,61,47,.35); }
+.theme-noel section[aria-labelledby$="-title"] .section-head h2::after{
+  content: ""; display: block; width: 54px; height: 2px; margin: 14px auto 0;
+  background: linear-gradient(90deg, transparent, var(--gold), transparent);
+}
+.produit-perso-note{ font-size: 13px; color: var(--noel-bordeaux, var(--gold-deep)); margin: 0 0 8px; }
+.produit-carte .req{ color: var(--noel-bordeaux, #a33); }
+.produit-carte input[aria-invalid="true"]{ border-color: var(--noel-bordeaux, #a33); }
+
+/* Compte à rebours */
+.noel-compteur{
+  margin: 18px 0 8px; padding: 16px 20px; text-align: center;
+  background: var(--noel-sapin); color: #F7EFD9; border-radius: 18px;
+  border: 1px solid rgba(231,199,126,.55);
+}
+.noel-compteur-titre{ margin: 0 0 8px; font-family: var(--font-display); font-size: 17px; color: #F7EFD9; }
+.noel-compteur-date{ margin: 0; font-size: 14px; color: #E7D9B5; }
+.noel-compteur-cases{ display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+.noel-compteur-cases[hidden]{ display: none; }
+.noel-compteur-cases span{ font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: #E7D9B5; }
+.noel-compteur-cases b{
+  display: block; font-family: var(--font-display); font-size: clamp(24px, 6vw, 34px);
+  font-weight: 600; line-height: 1.1; color: var(--gold-light); font-variant-numeric: tabular-nums;
+}
+.noel-compteur.est-termine{ background: var(--noel-beige); color: var(--ink); border-color: var(--line); }
+.noel-compteur.est-termine .noel-compteur-titre{ color: var(--noel-bordeaux); margin: 0; }
+.noel-compteur-court{ margin: 16px 0; padding: 12px 14px; }
+.noel-compteur-court .noel-compteur-titre{ font-size: 15px; margin-bottom: 6px; }
+
+/* Le coffret en vedette */
+.noel-coffret{
+  display: grid; grid-template-columns: 1fr; max-width: 1000px; margin: 0 auto;
+  background: var(--paper); border: 1px solid var(--gold-light); border-radius: 28px; overflow: hidden;
+  box-shadow: 0 24px 56px -30px rgba(31,61,47,.5);
+}
+@media (min-width: 800px){ .noel-coffret{ grid-template-columns: 1fr 1fr; } }
+.noel-coffret-photo{ min-height: 320px; }
+.noel-coffret-photo img{ width: 100%; height: 100%; object-fit: cover; display: block; }
+.noel-coffret-corps{ padding: 28px 26px 30px; }
+@media (min-width: 800px){ .noel-coffret-corps{ padding: 38px 40px; } }
+.noel-etiquette{
+  display: inline-block; margin-bottom: 10px; padding: 5px 14px; border-radius: 999px;
+  font-size: 12px; letter-spacing: .08em; text-transform: uppercase;
+  color: #FBF3E2; background: var(--noel-bordeaux);
+}
+.noel-coffret h3{ font-family: var(--font-display); font-size: clamp(26px, 4vw, 34px); line-height: 1.2; margin: 0 0 8px; }
+.noel-coffret-resume{ margin: 0 0 6px; color: var(--ink-soft); }
+.noel-coffret .package-option-composition{ margin: 0 0 14px; }
+.noel-prix-ligne{ display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 14px; margin: 0 0 10px; }
+.noel-prix{ font-family: var(--font-display); font-size: 34px; font-weight: 600; color: var(--noel-bordeaux); }
+.noel-prix-barre{ color: var(--ink-soft); font-size: 17px; }
+.noel-economie{
+  padding: 4px 12px; border-radius: 999px; font-size: 14px; font-weight: 500;
+  color: var(--noel-sapin); background: var(--noel-beige); border: 1px solid var(--gold-light);
+}
+.noel-stock{ margin: 0 0 4px; font-size: 15px; font-weight: 500; color: var(--gold-deep); }
+.noel-stock.est-epuise{ color: var(--noel-bordeaux); }
+.noel-coffret .btn{ width: 100%; }
+@media (min-width: 520px){ .noel-coffret .btn{ width: auto; } }

@@ -79,6 +79,7 @@
   var CHAMPS = {
     prenom:   { cle: 'prenom',   libelle: 'Prénom',            type: 'texte', exemple: 'Ex. Léa', max: 30 },
     age:      { cle: 'age',      libelle: 'Âge ou chiffre',    type: 'texte', exemple: 'Ex. 4',   max: 10 },
+    prenomOuTexte: { cle: 'prenomOuTexte', libelle: 'Prénom ou texte à inscrire', type: 'texte', exemple: 'Ex. Léa', max: 30 },
     texte:    { cle: 'texte',    libelle: 'Texte à inscrire',  type: 'texte', exemple: 'Ex. Merci Maîtresse', max: 40 },
     date:     { cle: 'date',     libelle: 'Date',              type: 'texte', exemple: 'Ex. 14 juin 2026', max: 30 },
     initiale: { cle: 'initiale', libelle: 'Initiale',          type: 'texte', exemple: 'Ex. L',   max: 4 },
@@ -266,38 +267,35 @@
       "id": "magie-noel",
       "nom": "Magie de Noël",
       "occasion": "Noël",
-      "description": "Une collection de biscuits aux couleurs chaleureuses de Noël, décorés à la main au glaçage royal. Idéale pour offrir, décorer une table de fête ou composer un joli coffret gourmand. Édition limitée.",
-      "alt": "Biscuits de Noël personnalisés décorés à la main : sapins, flocons et boules dorées",
+      "description": "Une collection de biscuits aux couleurs chaleureuses de Noël, décorés à la main au glaçage royal : Père Noël, sapin, bonnet personnalisé, boule et sucre d’orge. Idéale pour offrir ou décorer une table de fête, en coffret de cinq biscuits ou à l’unité. Disponibilité limitée.",
+      "alt": "Coffret de cinq biscuits de Noël décorés à la main : Père Noël, sapin, bonnet personnalisé, boule et sucre d’orge",
       "saison": true,
       "venteAUnite": true,
       "sansMinimum": true,
       "forfaitLivraison": 900,
       "stockLimite": true,
+      "photoPrincipale": "coffret-biscuits-noel-5-pieces.webp",
       "packages": [
-        { "ref": "noel", "nom": "Package de Noël", "biscuits": 4, "prix": null, "composition": [] }
+        { "ref": "coffret", "nom": "Le coffret Magie de Noël", "prix": 2990,
+          "photo": "coffret-biscuits-noel-5-pieces.webp",
+          "stock": 20,
+          "finOffre": "2026-12-06T23:59:59+01:00",
+          "resume": "Les cinq biscuits de la collection, réunis dans un coffret prêt à offrir.",
+          "composition": [
+            { "ref": "pere-noel", "qte": 1 },
+            { "ref": "sapin", "qte": 1 },
+            { "ref": "bonnet", "qte": 1 },
+            { "ref": "boule", "qte": 1 },
+            { "ref": "sucre-orge", "qte": 1 }
+          ] }
       ],
-      "produits": [],
-      /* Anciens modèles, suspendus en attendant la liste confirmée par la
-         pâtissière : conservés tels quels, mais hors de la vente. Les
-         déplacer dans « produits » (avec un prix réel) les remet en
-         vente. */
-      "produitsSuspendus": [
-        { "ref": "sucre-orge", "nom": "Sucre d’orge rouge", "prix": 500 },
-        { "ref": "flocon-blanc", "nom": "Flocon blanc simple", "prix": 500 },
-        { "ref": "cadeau-feuillage", "nom": "Cadeau de Noël avec feuillage", "prix": 500 },
-        { "ref": "chaussette", "nom": "Petite chaussette de Noël", "prix": 550 },
-        { "ref": "moufle", "nom": "Moufle effet tricot", "prix": 550 },
-        { "ref": "rond-rouge-flocon", "nom": "Biscuit rond rouge – flocon blanc", "prix": 550 },
-        { "ref": "sapin", "nom": "Sapin de Noël décoré", "prix": 550 },
-        { "ref": "couronne", "nom": "Couronne de Noël ronde", "prix": 600 },
-        { "ref": "boule-rouge", "nom": "Boule de Noël rouge pailletée", "prix": 600 },
-        { "ref": "rond-vert-flocon", "nom": "Biscuit rond vert – grand flocon", "prix": 600 },
-        { "ref": "plaque-verte", "nom": "Plaque verte avec boules de Noël en relief", "prix": 600 },
-        { "ref": "pain-epices", "nom": "Bonhomme pain d’épices", "prix": 650 },
-        { "ref": "ho-ho-ho", "nom": "« Ho Ho Ho » en relief", "prix": 650 },
-        { "ref": "boule-neige", "nom": "Boule à neige avec sapins", "prix": 650 },
-        { "ref": "pere-noel", "nom": "Père Noël détaillé", "prix": 700 },
-        { "ref": "joyeux-noel", "nom": "Grand biscuit « Joyeux Noël »", "prix": 700 }
+      "produits": [
+        { "ref": "pere-noel", "nom": "Père Noël", "prix": 700, "photo": "biscuit-noel-pere-noel.webp" },
+        { "ref": "sapin", "nom": "Sapin", "prix": 700, "photo": "biscuit-noel-sapin.webp" },
+        { "ref": "bonnet", "nom": "Bonnet de Noël personnalisé", "prix": 650, "photo": "biscuit-noel-bonnet-personnalise.webp",
+          "perso": ["prenomOuTexte"], "persoRequis": true },
+        { "ref": "boule", "nom": "Boule de Noël", "prix": 600, "photo": "biscuit-noel-boule.webp" },
+        { "ref": "sucre-orge", "nom": "Sucre d’orge", "prix": 600, "photo": "biscuit-noel-sucre-orge.webp" }
       ],
       "avis": [
         { "nom": "Nathan", "texte": "Le thème est adorable et les biscuits sont aussi beaux que gourmands. Une idée originale pour faire plaisir.", "note": 5 },
@@ -808,7 +806,7 @@
   var ARTICLES = [];
   COLLECTIONS.forEach(function (c) {
     c.slug = c.slug || c.id;
-    c.image = 'images/collections/' + c.id + '/principale.webp';
+    c.image = 'images/collections/' + c.id + '/' + (c.photoPrincipale || 'principale.webp');
     (c.galerie || []).forEach(function (v) {
       v.image = 'images/collections/' + c.id + '/' + v.fichier;
     });
@@ -838,6 +836,9 @@
       p.seulEnPackage = c.packagesSeuls;
       /* Hors du compte des douze (collection du moment vendue sans minimum). */
       p.sansMinimum = !!c.sansMinimum;
+      /* Personnalisation indispensable à la réalisation : le biscuit ne
+         s'ajoute pas au panier sans elle. */
+      p.persoRequis = !!p.persoRequis;
       p.court = p.nom;
       p.champs = (p.perso || []).map(function (k) { return CHAMPS[k]; });
       if (p.option) p.option.champs = (p.option.perso || []).map(function (k) { return CHAMPS[k]; });
@@ -869,6 +870,14 @@
         return { ref: x.ref, qte: x.qte, nom: modele ? modele.nom : x.ref, connu: !!modele };
       });
       pk.court = c.nom + ' — ' + pk.nom;
+      /* Prix des mêmes biscuits achetés séparément, et économie : calculés
+         depuis la composition, jamais saisis à la main. */
+      if (pk.composition.length && pk.detail.every(function (d) { return d.connu; })) {
+        pk.prixSepare = pk.composition.reduce(function (n, x) { return n + parRef[x.ref].prix * x.qte; }, 0);
+        pk.economie = pk.prixSepare - pk.prix;
+      }
+      pk.image = pk.photo ? 'images/collections/' + c.id + '/' + pk.photo : c.image;
+      pk.finOffreMs = pk.finOffre ? Date.parse(pk.finOffre) : null;
       pk.perso = [];
       pk.champs = [];
       ARTICLES.push(pk);
@@ -1020,6 +1029,31 @@
     return payable >= SEUIL_LIVRAISON_OFFERTE ? 0 : FRAIS_LIVRAISON_SUISSE;
   }
 
+  /* ---------- Date limite d'une offre ----------
+     Un article peut porter « finOffre » (date ISO avec fuseau). Passé cet
+     instant il ne se commande plus. La fonction est appelée côté serveur
+     avec l'heure du serveur : masquer un bouton ne suffirait pas. */
+  function offreTerminee(a, maintenant) {
+    return !!(a && a.finOffreMs && (maintenant === undefined ? Date.now() : maintenant) > a.finOffreMs);
+  }
+
+  function lignesOffreTerminee(lignes, maintenant) {
+    return (lignes || []).filter(function (l) {
+      return offreTerminee(article(l && l.id), maintenant);
+    }).map(function (l) { return article(l.id); });
+  }
+
+  /* Les biscuits dont la personnalisation est indispensable, et que la
+     ligne n'a pas renseignée. */
+  function personnalisationManquante(lignes) {
+    return (lignes || []).filter(function (l) {
+      var a = article(l && l.id);
+      if (!a || !a.persoRequis) return false;
+      var d = (l && l.details) || {};
+      return a.champs.some(function (ch) { return !String(d[ch.cle] || '').trim(); });
+    }).map(function (l) { return article(l.id); });
+  }
+
   /* ---------- Stock partagé ----------
      Aucun stock n'est renseigné tant que la pâtissière n'a pas confirmé
      ses quantités : un modèle ou un package sans champ « stock » est
@@ -1113,6 +1147,10 @@
     packagesHorsZone: packagesHorsZone,
     fraisLivraison: fraisLivraison,
     forfaitLivraison: forfaitLivraison,
+    offreTerminee: offreTerminee,
+    lignesOffreTerminee: lignesOffreTerminee,
+    personnalisationManquante: personnalisationManquante,
+    stockDeclare: stockDeclare,
     consommationStock: consommationStock,
     depassementsStock: depassementsStock,
     packagesDisponibles: packagesDisponibles,
