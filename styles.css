@@ -3165,3 +3165,6 @@ form.devis-form{
 .theme-noel section{ padding: 36px 0; }
 .theme-noel main > section:first-of-type + section, .theme-noel > section:first-of-type + section{ padding-top: 36px; }
 .theme-noel .section-head-mince{ margin-bottom: 20px; }
+.noel-perso{ margin: 0 0 14px; padding: 12px 14px; background: var(--noel-ivoire); border: 1px solid var(--line); border-radius: 14px; }
+.noel-perso .produit-perso-note{ margin: 0 0 8px; }
+.noel-perso .choix-champ{ margin: 0; }

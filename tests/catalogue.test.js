@@ -729,6 +729,16 @@ const PRIX_TEMOINS = {
     assert.strictEqual(Catalogue.personnalisationManquante([{ id: 'magie-noel-sapin', qte: 1 }]).length, 0);
   });
 
+  await cas('Noël : le coffret exige la personnalisation de son bonnet', () => {
+    assert.strictEqual(coffret.persoRequis, true);
+    assert.strictEqual(coffret.champs.length, 1);
+    assert.strictEqual(Catalogue.personnalisationManquante([{ id: coffret.id, qte: 1 }]).length, 1);
+    assert.strictEqual(Catalogue.personnalisationManquante([{ id: coffret.id, qte: 1, details: { bonnet: 'Léa' } }]).length, 0);
+    // Deux coffrets avec deux prénoms : l'exigence vaut pour chaque ligne.
+    assert.strictEqual(Catalogue.personnalisationManquante([
+      { id: coffret.id, qte: 1, details: { bonnet: 'Léa' } }, { id: coffret.id, qte: 1 }]).length, 1);
+  });
+
   await cas('Noël : pas de minimum de douze, coffret ou biscuit seul, ou mélangés', () => {
     [[{ id: 'magie-noel-sapin', qte: 1 }], [{ id: coffret.id, qte: 1 }],
      [{ id: coffret.id, qte: 2 }, { id: 'magie-noel-boule', qte: 3 }]].forEach((p) => {
@@ -846,8 +856,8 @@ const PRIX_TEMOINS = {
   const PAYS = { reception: 'livraison', pays: 'Suisse' };
 
   await cas('serveur : un seul coffret, un seul biscuit, ou un mélange sont acceptés (502 = SumUp injoignable)', a_l_heure(AVANT_FIN, async () => {
-    for (const lignes of [[{ id: coffret.id, qte: 1 }], [{ id: 'magie-noel-sapin', qte: 1 }],
-      [{ id: coffret.id, qte: 1 }, BONNET_OK, { id: 'magie-noel-boule', qte: 2 }]]) {
+    for (const lignes of [[{ id: coffret.id, qte: 1, details: { bonnet: 'Léa' } }], [{ id: 'magie-noel-sapin', qte: 1 }],
+      [{ id: coffret.id, qte: 1, details: { bonnet: 'Léa' } }, BONNET_OK, { id: 'magie-noel-boule', qte: 2 }]]) {
       fonction.stockageDeTest = stockageMemoire();
       const r = await appeler({ lignes, client: PAYS }, AVEC_CLES);
       assert.strictEqual(r.code, 502, JSON.stringify(r.corps));
@@ -855,6 +865,16 @@ const PRIX_TEMOINS = {
       const etat = fonction.stockageDeTest.voir();
       assert.deepStrictEqual(etat ? etat.reservations : {}, {});
     }
+    delete fonction.stockageDeTest;
+  }));
+
+  await cas('serveur : le coffret sans prénom de bonnet est refusé, avec prénom accepté', a_l_heure(AVANT_FIN, async () => {
+    fonction.stockageDeTest = stockageMemoire();
+    const sans = await appeler({ lignes: [{ id: coffret.id, qte: 1 }], client: PAYS }, AVEC_CLES);
+    assert.strictEqual(sans.code, 400);
+    assert.strictEqual(sans.corps.erreur, 'personnalisation_manquante');
+    const avec = await appeler({ lignes: [{ id: coffret.id, qte: 1, details: { bonnet: 'Léa' } }], client: PAYS }, AVEC_CLES);
+    assert.strictEqual(avec.code, 502);
     delete fonction.stockageDeTest;
   }));
 
@@ -868,7 +888,7 @@ const PRIX_TEMOINS = {
 
   await cas('serveur : le coffret est refusé après le 6 décembre 2026', a_l_heure(APRES_FIN, async () => {
     fonction.stockageDeTest = stockageMemoire();
-    const r = await appeler({ lignes: [{ id: coffret.id, qte: 1 }], client: PAYS }, AVEC_CLES);
+    const r = await appeler({ lignes: [{ id: coffret.id, qte: 1, details: { bonnet: 'Léa' } }], client: PAYS }, AVEC_CLES);
     assert.strictEqual(r.code, 410);
     assert.strictEqual(r.corps.erreur, 'offre_terminee');
     delete fonction.stockageDeTest;
@@ -876,9 +896,9 @@ const PRIX_TEMOINS = {
 
   await cas('serveur : le coffret est refusé une fois le stock épuisé', a_l_heure(AVANT_FIN, async () => {
     const st = stockageMemoire();
-    await Stock.vendre(st, 'JC-20261101-AAAAAA', [{ id: coffret.id, qte: 20 }]);
+    await Stock.vendre(st, 'JC-20261101-AAAAAA', [{ id: coffret.id, qte: 20, details: { bonnet: 'Léa' } }]);
     fonction.stockageDeTest = st;
-    const r = await appeler({ lignes: [{ id: coffret.id, qte: 1 }], client: PAYS }, AVEC_CLES);
+    const r = await appeler({ lignes: [{ id: coffret.id, qte: 1, details: { bonnet: 'Léa' } }], client: PAYS }, AVEC_CLES);
     assert.strictEqual(r.code, 409);
     assert.strictEqual(r.corps.erreur, 'stock_insuffisant');
     // Un biscuit seul reste commandable : son stock n'est pas limité.
@@ -902,17 +922,17 @@ const PRIX_TEMOINS = {
     };
     Date.now = () => Date.parse(AVANT_FIN);
     try {
-      assert.strictEqual((await post({ reference: 'JC-20261101-AAAAAA', lignes: [{ id: coffret.id, qte: 19 }] })).code, 200);
-      assert.strictEqual((await post({ action: 'verifier', lignes: [{ id: coffret.id, qte: 2 }] })).code, 409);
-      assert.strictEqual((await post({ reference: 'JC-20261101-BBBBBB', lignes: [{ id: coffret.id, qte: 1 }] })).code, 200);
-      assert.strictEqual((await post({ reference: 'JC-20261101-CCCCCC', lignes: [{ id: coffret.id, qte: 1 }] })).code, 409);
+      assert.strictEqual((await post({ reference: 'JC-20261101-AAAAAA', lignes: [{ id: coffret.id, qte: 19, details: { bonnet: 'Léa' } }] })).code, 200);
+      assert.strictEqual((await post({ action: 'verifier', lignes: [{ id: coffret.id, qte: 2, details: { bonnet: 'Léa' } }] })).code, 409);
+      assert.strictEqual((await post({ reference: 'JC-20261101-BBBBBB', lignes: [{ id: coffret.id, qte: 1, details: { bonnet: 'Léa' } }] })).code, 200);
+      assert.strictEqual((await post({ reference: 'JC-20261101-CCCCCC', lignes: [{ id: coffret.id, qte: 1, details: { bonnet: 'Léa' } }] })).code, 409);
       assert.strictEqual((await post({ reference: 'JC-20261101-DDDDDD', lignes: [BONNET_OK].map((l) => ({ id: l.id, qte: 1 })) })).code, 400);
       const lecture = await fonctionStock.handler({ httpMethod: 'GET', headers: {} });
       const d = JSON.parse(lecture.body);
       assert.strictEqual(d.coffret.restant, 0);
       assert.strictEqual(d.coffret.stock, 20);
       Date.now = () => Date.parse(APRES_FIN);
-      assert.strictEqual((await post({ reference: 'JC-20261101-EEEEEE', lignes: [{ id: coffret.id, qte: 1 }] })).code, 410);
+      assert.strictEqual((await post({ reference: 'JC-20261101-EEEEEE', lignes: [{ id: coffret.id, qte: 1, details: { bonnet: 'Léa' } }] })).code, 410);
       assert.strictEqual(JSON.parse((await fonctionStock.handler({ httpMethod: 'GET', headers: {} })).body).offreTerminee, true);
     } finally { Date.now = maintenantReel; delete fonctionStock.stockageDeTest; }
   });

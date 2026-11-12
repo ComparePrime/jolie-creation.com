@@ -507,6 +507,21 @@ def bloc_compteur(c, pk, court=False):
         </div>'''
 
 
+def perso_coffret(pk):
+    """Le champ du bonnet, obligatoire : le coffret ne s'ajoute pas au
+    panier sans lui."""
+    champs = pk.get('champs') or []
+    if not champs:
+        return ''
+    blocs = '\n'.join(champ_html(ch, f'p-{pk["id"]}', 'data-champ', bool(pk.get('persoRequis'))) for ch in champs)
+    return f'''          <div class="noel-perso choix-perso">
+            <p class="produit-perso-note">Le bonnet de votre coffret est personnalisé : indiquez le prénom ou le texte souhaité.</p>
+            <div class="choix-champs">
+{blocs}
+            </div>
+          </div>'''
+
+
 def coffret_noel(c, pk):
     composition = '\n'.join(
         f'              <li><span class="package-qte">{d["qte"]} &times;</span> {e(d["nom"])}</li>'
@@ -527,6 +542,7 @@ def coffret_noel(c, pk):
 {composition}
           </ul>
           <p class="noel-prix-ligne"><span class="noel-prix">{chf(pk['prix'])}</span> {separe} {eco}</p>
+{perso_coffret(pk)}
           <p class="noel-stock" data-noel-stock>Quantités limitées &middot; {pk['stock']} coffrets au total</p>
           {bloc_compteur(c, pk, court=True)}
           <button type="button" class="btn btn-primary produit-ajouter" data-package-ajouter="{e(pk['id'])}" data-noel-coffret>Ajouter au panier</button>
