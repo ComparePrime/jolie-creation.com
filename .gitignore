@@ -5,3 +5,4 @@ node_modules/
 
 # Dépôt tiers cloné pour consultation, hors du site.
 .ecc/
+__pycache__/
