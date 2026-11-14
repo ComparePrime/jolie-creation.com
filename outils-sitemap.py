@@ -45,6 +45,9 @@ def main():
     toutes = list(PAGES) + [
         (f'collections/{slug}.html', f'/collections/{slug}', '0.7')
         for slug in slugs_collections(racine)
+    ] + [('blog/index.html', '/blog/', '0.8')] + [
+        (f'blog/{f.name}', f'/blog/{f.stem}', '0.6')
+        for f in sorted((racine / 'blog').glob('*.html')) if f.name != 'index.html'
     ]
 
     adresses = [adresse for _, adresse, _ in toutes]

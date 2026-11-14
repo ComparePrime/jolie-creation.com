@@ -86,3 +86,10 @@
   to = "/micro-scenographies.html"
   status = 301
   force = true
+
+# Les sources Markdown du blog ne sont pas des pages : elles ne doivent
+# jamais être indexées (le contenu vit sur /blog/…).
+[[headers]]
+  for = "/blog-sources/*"
+  [headers.values]
+    X-Robots-Tag = "noindex"

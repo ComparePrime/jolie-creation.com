@@ -77,6 +77,15 @@ def pages_collections(racine):
         cwd=racine, capture_output=True, text=True, check=True).stdout
     return {f'collections/{slug}.html': False for slug in json.loads(sortie)}
 
+def pages_blog(racine):
+    """L'accueil du blog et chaque article : ils portent leur propre
+    fil d'Ariane et leurs données BlogPosting, le socle s'y ajoute."""
+    pages = {}
+    for f in sorted((racine / 'blog').glob('*.html')):
+        pages[f'blog/{f.name}'] = False
+    return pages
+
+
 DEBUT = '<!-- socle:jsonld -->'
 FIN = '<!-- /socle:jsonld -->'
 
@@ -107,6 +116,7 @@ def main():
     racine = pathlib.Path(__file__).resolve().parent
     toutes_pages = dict(PAGES)
     toutes_pages.update(pages_collections(racine))
+    toutes_pages.update(pages_blog(racine))
     for page, titre in toutes_pages.items():
         f = racine / page
         t = f.read_text(encoding='utf-8')

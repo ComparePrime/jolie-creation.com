@@ -174,6 +174,7 @@ def entete_nav():
         <li><a href="/micro-scenographies.html">Micro-scénographies</a></li>
         <li><a href="/mes-realisations.html">Mes réalisations</a></li>
         <li><a href="/a-propos.html">À propos de moi</a></li>
+        <li><a href="/blog/">Blog</a></li>
       </ul>
     </nav>
     <div class="header-actions">
@@ -198,6 +199,7 @@ def entete_nav():
     <li><a href="/micro-scenographies.html">Micro-scénographies</a></li>
     <li><a href="/mes-realisations.html">Mes réalisations</a></li>
     <li><a href="/a-propos.html">À propos de moi</a></li>
+    <li><a href="/blog/">Blog</a></li>
   </ul>
   <a href="/contact.html" class="btn btn-primary">Demander un devis</a>
 </div>'''
@@ -222,6 +224,7 @@ def pied_page():
           <li><a href="/biscuits-personnalises.html">Biscuits personnalisés</a></li>
           <li><a href="/micro-scenographies.html">Micro-scénographies</a></li>
           <li><a href="/mes-realisations.html">Mes réalisations</a></li>
+          <li><a href="/blog/">Blog &amp; conseils</a></li>
         </ul>
       </div>
       <div>

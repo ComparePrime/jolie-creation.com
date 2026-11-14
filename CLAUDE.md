@@ -85,6 +85,7 @@ une correction faite à la main y disparaît à la prochaine exécution.
 | `collections:saison`, `collections:toutes`, `collections:jsonld`, `saison:apercu` | `outils-collections.py` |
 | `socle:jsonld` | `outils-jsonld.py` |
 | les rangées de `folio-masonry` | `outils-galerie.py` |
+| tout `blog/` (accueil et articles), `images/blog/` | `outils-blog.py`, depuis `blog-sources/` |
 
 `outils-photos.py` et `outils-webp.py` dérivent et convertissent les
 photos, `outils-sitemap.py` régénère `sitemap.xml`. Tous sont
