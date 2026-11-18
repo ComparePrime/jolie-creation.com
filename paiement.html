@@ -526,10 +526,12 @@
           if (r.ok) return null;
           // Fonction absente (hébergement sans fonctions) : on ne bloque pas
           // ce qui n'est pas limité, le serveur de paiement revérifie de toute façon.
-          if (r.status === 404) return null;
+          // Une panne du service de stock (5xx) ne doit pas bloquer la cliente :
+          // le serveur de paiement revérifie de son côté.
+          if (r.status === 404 || r.status >= 500) return null;
           return d.message || 'Cette commande n’a pas pu être vérifiée. Merci de réessayer.';
         });
-      }).catch(function () { return 'Le stock n’a pas pu être vérifié. Vérifiez votre connexion et réessayez.'; });
+      }).catch(function () { return null; });
     }
 
     controleServeur('verifier').then(function (refus) {

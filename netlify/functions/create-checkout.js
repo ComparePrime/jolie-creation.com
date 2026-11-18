@@ -215,11 +215,16 @@ exports.handler = async (event) => {
           message: 'Plus assez de stock pour : ' + e.articles.map((a) => a.nom).join(', ') + '. Retirez-le du panier pour continuer.'
         });
       }
-      console.error('Stock indisponible', e && e.message);
-      return reponse(503, {
-        erreur: 'stock_indisponible',
-        message: 'Le stock n’a pas pu être vérifié. Réessayez dans un instant.'
-      });
+      console.error('STOCK INDISPONIBLE', e && e.name, e && e.message);
+      if (Stock.stockStrict()) {
+        return reponse(503, {
+          erreur: 'stock_indisponible',
+          message: 'Le stock n’a pas pu être vérifié. Réessayez dans un instant.'
+        });
+      }
+      // Le stockage est en panne : on ne bloque pas la cliente. La commande
+      // part sans réservation ; elle reste visible dans l'e-mail de commande.
+      magasin = null;
     }
   }
 
