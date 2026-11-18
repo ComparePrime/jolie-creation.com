@@ -504,37 +504,23 @@
     bouton.textContent = mode === 'livraison' ? 'Redirection vers le paiement…' : 'Enregistrement…';
     message('');
 
-    /* Articles à date limite, à stock limité ou à personnalisation
-       indispensable : le serveur les contrôle AVANT que la commande ne
-       soit enregistrée, pour ne pas envoyer une commande qu'il refusera. */
-    function controleServeur(action) {
-      var lignes = Panier.lire();
-      var concerne = lignes.some(function (l) {
-        var a = Cat.article(l.id);
-        return a && (Cat.stockDeclare(a.id) !== null || a.finOffreMs || a.persoRequis);
+    /* Date limite, stock et personnalisation indispensable : contrôlés ici
+       AVANT d'enregistrer la commande, avec les mêmes fonctions que le
+       serveur de paiement (qui les revérifie pour un paiement en ligne). */
+    function controleCommande() {
+      var lignes = Panier.lire().map(function (l) {
+        return { id: l.id, qte: l.qte, details: l.details };
       });
-      if (!concerne) return Promise.resolve(null);
-      return fetch('/.netlify/functions/stock', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action: action, reference: reference, lignes: lignes.map(function (l) {
-          return { id: l.id, qte: l.qte, option: l.option, details: l.details };
-        }) })
-      }).then(function (r) {
-        return r.text().then(function (t) {
-          var d = {}; try { d = JSON.parse(t); } catch (e) { /* illisible */ }
-          if (r.ok) return null;
-          // Fonction absente (hébergement sans fonctions) : on ne bloque pas
-          // ce qui n'est pas limité, le serveur de paiement revérifie de toute façon.
-          // Une panne du service de stock (5xx) ne doit pas bloquer la cliente :
-          // le serveur de paiement revérifie de son côté.
-          if (r.status === 404 || r.status >= 500) return null;
-          return d.message || 'Cette commande n’a pas pu être vérifiée. Merci de réessayer.';
-        });
-      }).catch(function () { return null; });
+      var termine = Cat.lignesOffreTerminee(lignes);
+      if (termine.length) return 'L’offre Magie de Noël est terminée : ' + termine.map(function (a) { return a.nom; }).join(', ') + ' ne peut plus être commandé.';
+      var sansPerso = Cat.personnalisationManquante(lignes);
+      if (sansPerso.length) return 'Précisez la personnalisation de : ' + sansPerso.map(function (a) { return a.nom; }).join(', ') + '.';
+      var rupture = Cat.depassementsStock(lignes, {});
+      if (rupture.length) return 'Plus assez de stock pour : ' + rupture.map(function (a) { return a.nom; }).join(', ') + '. Retirez-le du panier pour continuer.';
+      return null;
     }
 
-    controleServeur('verifier').then(function (refus) {
+    Promise.resolve(controleCommande()).then(function (refus) {
       if (refus) { var e = new Error('refus'); e.refus = refus; throw e; }
       return enregistrerCommande(reference, mode, resume);
     }).then(function (r) {
@@ -549,13 +535,8 @@
       /* Retrait : rien à débiter. La commande est enregistrée, on va
          directement à la confirmation. */
       if (mode === 'retrait') {
-        // Réglée sur place : la commande enregistrée compte tout de suite
-        // dans le stock des articles limités.
-        return controleServeur('vendre').then(function (refus) {
-          if (refus) { var e = new Error('refus'); e.refus = refus; throw e; }
-          window.location.href = 'commande-confirmee.html?retrait=1&ref=' + encodeURIComponent(reference);
-          return null;
-        });
+        window.location.href = 'commande-confirmee.html?retrait=1&ref=' + encodeURIComponent(reference);
+        return null;
       }
 
       return fetch('/.netlify/functions/create-checkout', {

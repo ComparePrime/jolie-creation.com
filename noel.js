@@ -7,19 +7,19 @@
    n'a jamais suffi, et ne suffit pas ici non plus.
 
    - Le décompte vise l'instant exact porté par data-fin (23 h 59 min
-     59 s, heure suisse). Il se cale sur l'horloge du serveur quand elle
-     est connue, pour ne pas dépendre d'une horloge d'ordinateur fausse.
-   - Le stock affiché est celui renvoyé par /stock : les coffrets
-     réellement vendus. S'il est injoignable, la page n'affiche aucun
-     chiffre : « Quantités limitées », rien de plus.
+     59 s, heure suisse).
+   - Le stock affiché est écrit dans la page à partir de catalogue.js
+     (« stock »), que la pâtissière met à jour à la main : ce script ne
+     le devine pas et n'interroge aucun service.
    ============================================================ */
 (function () {
   'use strict';
 
-  var decalage = 0;            // heure du serveur - heure du navigateur
+  var decalage = 0;
   var termine = false;
-  var epuise = false;
+  var epuise = !!(zoneStockInit() && zoneStockInit().classList.contains('est-epuise'));
 
+  function zoneStockInit() { return document.querySelector('[data-noel-stock]'); }
   var compteurs = document.querySelectorAll('[data-noel-compteur]');
   var boutons = document.querySelectorAll('[data-noel-coffret]');
   var zoneStock = document.querySelector('[data-noel-stock]');
@@ -68,33 +68,6 @@
     });
     bloquerBoutons();
   }
-
-  function afficherStock(coffret) {
-    if (!zoneStock || !coffret) return;
-    var n = coffret.restant;
-    if (n <= 0) {
-      epuise = true;
-      zoneStock.textContent = 'Épuisé';
-      zoneStock.classList.add('est-epuise');
-    } else if (n === coffret.stock) {
-      zoneStock.textContent = 'Seulement ' + n + ' coffrets disponibles';
-    } else if (n <= 5) {
-      zoneStock.textContent = 'Derniers coffrets disponibles : ' + n + ' restant' + (n > 1 ? 's' : '');
-    } else {
-      zoneStock.textContent = n + ' coffrets restants sur ' + coffret.stock;
-    }
-    bloquerBoutons();
-  }
-
-  fetch('/.netlify/functions/stock', { cache: 'no-store' }).then(function (r) {
-    if (!r.ok) throw new Error('stock');
-    return r.json();
-  }).then(function (d) {
-    if (typeof d.maintenant === 'number') decalage = d.maintenant - Date.now();
-    if (d.offreTerminee) termine = true;
-    afficherStock(d.coffret);
-    tic();
-  }).catch(function () { /* aucun chiffre inventé : texte statique conservé */ });
 
   tic();
   setInterval(tic, 1000);
