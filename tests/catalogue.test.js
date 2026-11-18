@@ -666,22 +666,9 @@ const PRIX_TEMOINS = {
 
   /* ---------- Magie de Noël ---------- */
   const noel = Catalogue.collection('magie-noel');
-  const Stock = require('../netlify/stock.js');
   const coffret = Catalogue.article('magie-noel-pack-coffret');
   const PRIX_NOEL = { 'pere-noel': 700, 'sapin': 700, 'bonnet': 650, 'boule': 600, 'sucre-orge': 600 };
 
-  /* Un stockage en mémoire, de même interface que Netlify Blobs. */
-  function stockageMemoire() {
-    let etat = null; let version = 0;
-    return {
-      async lire() { return { etat: etat && JSON.parse(JSON.stringify(etat)), etag: etat ? String(version) : null }; },
-      async ecrire(nouveau, etag) {
-        if ((etag || null) !== (etat ? String(version) : null)) return false;
-        etat = JSON.parse(JSON.stringify(nouveau)); version++; return true;
-      },
-      voir() { return etat; }
-    };
-  }
   const maintenantReel = Date.now;
   const a_l_heure = (iso, fn) => async () => {
     Date.now = () => Date.parse(iso);
@@ -795,164 +782,69 @@ const PRIX_TEMOINS = {
     } finally { delete sapin.stock; }
   });
 
-  await cas('stock : une vente confirmée diminue le stock, jamais deux fois', async () => {
-    const st = stockageMemoire();
-    const lignes = [{ id: coffret.id, qte: 2 }];
-    await Stock.reserver(st, 'JC-20261101-AAAAAA', lignes, 1);
-    // Réservé, pas encore vendu : déjà retiré de ce qui reste.
-    assert.strictEqual(Stock.vuePublique(await Stock.lireEtat(st))[coffret.id].restant, 18);
-    await Stock.confirmer(st, 'JC-20261101-AAAAAA');
-    await Stock.confirmer(st, 'JC-20261101-AAAAAA');   // rejouée : sans effet
-    const vue = Stock.vuePublique(await Stock.lireEtat(st))[coffret.id];
-    assert.strictEqual(vue.restant, 18);
-    assert.strictEqual(vue.stock, 20);
-    assert.strictEqual((await Stock.lireEtat(st)).vendu[coffret.id], 2);
-  });
-
-  await cas('stock : impossible de commander au-delà de 20, épuisé à zéro', async () => {
-    const st = stockageMemoire();
-    await Stock.reserver(st, 'JC-20261101-AAAAAA', [{ id: coffret.id, qte: 20 }], 1);
-    await Stock.confirmer(st, 'JC-20261101-AAAAAA');
-    assert.strictEqual(Stock.vuePublique(await Stock.lireEtat(st))[coffret.id].restant, 0);
-    await assert.rejects(() => Stock.reserver(st, 'JC-20261101-BBBBBB', [{ id: coffret.id, qte: 1 }], 2),
-      (e) => e instanceof Stock.StockInsuffisant);
-    await assert.rejects(() => Stock.vendre(st, 'JC-20261101-CCCCCC', [{ id: coffret.id, qte: 1 }]),
-      (e) => e instanceof Stock.StockInsuffisant);
-    // Un panier sans coffret n'est pas concerné.
-    assert.deepStrictEqual(Stock.consommationLimitee([{ id: 'magie-noel-sapin', qte: 3 }]), {});
-  });
-
-  await cas('stock : une réservation compte, et se libère si le paiement échoue', async () => {
-    const st = stockageMemoire();
-    await Stock.reserver(st, 'JC-20261101-AAAAAA', [{ id: coffret.id, qte: 20 }], 1);
-    await assert.rejects(() => Stock.reserver(st, 'JC-20261101-BBBBBB', [{ id: coffret.id, qte: 1 }], 2));
-    await Stock.liberer(st, 'JC-20261101-AAAAAA');
-    await Stock.reserver(st, 'JC-20261101-BBBBBB', [{ id: coffret.id, qte: 1 }], 3);
-  });
-
-  await cas('stock : une réservation orpheline est relue chez SumUp, puis comptée ou libérée', async () => {
-    const st = stockageMemoire();
-    await Stock.reserver(st, 'JC-20261101-AAAAAA', [{ id: coffret.id, qte: 3 }], 1, 'co-payé');
-    await Stock.reserver(st, 'JC-20261101-BBBBBB', [{ id: coffret.id, qte: 2 }], 1, 'co-échoué');
-    await Stock.reconcilier(st, async (id) => (id === 'co-payé' ? 'PAID' : 'FAILED'), 5);
-    const etat = await Stock.lireEtat(st);
-    assert.strictEqual(etat.vendu[coffret.id], 3);
-    assert.deepStrictEqual(etat.reservations, {});
-  });
-
-  await cas('stock : deux écritures simultanées ne se partagent pas le dernier coffret', async () => {
-    const st = stockageMemoire();
-    await Stock.reserver(st, 'JC-20261101-AAAAAA', [{ id: coffret.id, qte: 19 }], 1);
-    const res = await Promise.allSettled([
-      Stock.reserver(st, 'JC-20261101-BBBBBB', [{ id: coffret.id, qte: 1 }], 2),
-      Stock.reserver(st, 'JC-20261101-CCCCCC', [{ id: coffret.id, qte: 1 }], 2)
-    ]);
-    assert.strictEqual(res.filter((r) => r.status === 'fulfilled').length, 1);
-  });
-
   /* ---------- Le serveur de paiement et le coffret ---------- */
-  const fonctionStock = require('../netlify/functions/stock.js');
   const BONNET_OK = { id: 'magie-noel-bonnet', qte: 1, details: { prenomOuTexte: 'Léa' } };
   const PAYS = { reception: 'livraison', pays: 'Suisse' };
 
   await cas('serveur : un seul coffret, un seul biscuit, ou un mélange sont acceptés (502 = SumUp injoignable)', a_l_heure(AVANT_FIN, async () => {
     for (const lignes of [[{ id: coffret.id, qte: 1, details: { bonnet: 'Léa' } }], [{ id: 'magie-noel-sapin', qte: 1 }],
       [{ id: coffret.id, qte: 1, details: { bonnet: 'Léa' } }, BONNET_OK, { id: 'magie-noel-boule', qte: 2 }]]) {
-      fonction.stockageDeTest = stockageMemoire();
       const r = await appeler({ lignes, client: PAYS }, AVEC_CLES);
       assert.strictEqual(r.code, 502, JSON.stringify(r.corps));
-      // Le paiement n'a pas pu être créé : le stock retenu est rendu.
-      const etat = fonction.stockageDeTest.voir();
-      assert.deepStrictEqual(etat ? etat.reservations : {}, {});
     }
-    delete fonction.stockageDeTest;
   }));
 
   await cas('serveur : le coffret sans prénom de bonnet est refusé, avec prénom accepté', a_l_heure(AVANT_FIN, async () => {
-    fonction.stockageDeTest = stockageMemoire();
     const sans = await appeler({ lignes: [{ id: coffret.id, qte: 1 }], client: PAYS }, AVEC_CLES);
     assert.strictEqual(sans.code, 400);
     assert.strictEqual(sans.corps.erreur, 'personnalisation_manquante');
     const avec = await appeler({ lignes: [{ id: coffret.id, qte: 1, details: { bonnet: 'Léa' } }], client: PAYS }, AVEC_CLES);
     assert.strictEqual(avec.code, 502);
-    delete fonction.stockageDeTest;
   }));
 
   await cas('serveur : le bonnet sans personnalisation est refusé', a_l_heure(AVANT_FIN, async () => {
-    fonction.stockageDeTest = stockageMemoire();
     const r = await appeler({ lignes: [{ id: 'magie-noel-bonnet', qte: 1 }], client: PAYS }, AVEC_CLES);
     assert.strictEqual(r.code, 400);
     assert.strictEqual(r.corps.erreur, 'personnalisation_manquante');
-    delete fonction.stockageDeTest;
   }));
 
   await cas('serveur : le coffret est refusé après le 6 décembre 2026', a_l_heure(APRES_FIN, async () => {
-    fonction.stockageDeTest = stockageMemoire();
     const r = await appeler({ lignes: [{ id: coffret.id, qte: 1, details: { bonnet: 'Léa' } }], client: PAYS }, AVEC_CLES);
     assert.strictEqual(r.code, 410);
     assert.strictEqual(r.corps.erreur, 'offre_terminee');
-    delete fonction.stockageDeTest;
   }));
 
-  await cas('serveur : le coffret est refusé une fois le stock épuisé', a_l_heure(AVANT_FIN, async () => {
-    const st = stockageMemoire();
-    await Stock.vendre(st, 'JC-20261101-AAAAAA', [{ id: coffret.id, qte: 20, details: { bonnet: 'Léa' } }]);
-    fonction.stockageDeTest = st;
-    const r = await appeler({ lignes: [{ id: coffret.id, qte: 1, details: { bonnet: 'Léa' } }], client: PAYS }, AVEC_CLES);
-    assert.strictEqual(r.code, 409);
-    assert.strictEqual(r.corps.erreur, 'stock_insuffisant');
-    // Un biscuit seul reste commandable : son stock n'est pas limité.
-    const ok = await appeler({ lignes: [{ id: 'magie-noel-sapin', qte: 1 }], client: PAYS }, AVEC_CLES);
-    assert.strictEqual(ok.code, 502);
-    delete fonction.stockageDeTest;
+  await cas('serveur : le coffret est refusé quand le stock est à zéro ou dépassé', a_l_heure(AVANT_FIN, async () => {
+    const lignes = (n) => [{ id: coffret.id, qte: n, details: { bonnet: 'Léa' } }];
+    const stock = coffret.stock;
+    try {
+      coffret.stock = 3;
+      assert.strictEqual((await appeler({ lignes: lignes(4), client: PAYS }, AVEC_CLES)).code, 409);
+      assert.strictEqual((await appeler({ lignes: lignes(3), client: PAYS }, AVEC_CLES)).code, 502);   // 502 : accepté, SumUp injoignable
+      coffret.stock = 0;
+      const r = await appeler({ lignes: lignes(1), client: PAYS }, AVEC_CLES);
+      assert.strictEqual(r.code, 409);
+      assert.strictEqual(r.corps.erreur, 'stock_insuffisant');
+      // Un biscuit seul reste commandable : son stock n'est pas limité.
+      assert.strictEqual((await appeler({ lignes: [{ id: 'magie-noel-sapin', qte: 1 }], client: PAYS }, AVEC_CLES)).code, 502);
+    } finally { coffret.stock = stock; }
   }));
 
-  await cas('panne du stockage : la cliente n’est pas bloquée (sauf mode strict)', a_l_heure(AVANT_FIN, async () => {
-    const casse = { async lire() { throw new Error('Netlify Blobs indisponible'); }, async ecrire() { throw new Error('KO'); } };
-    const lignes = [{ id: coffret.id, qte: 1, details: { bonnet: 'Léa' } }];
-    fonction.stockageDeTest = casse;
-    const r = await appeler({ lignes, client: PAYS }, AVEC_CLES);
-    assert.strictEqual(r.code, 502, JSON.stringify(r.corps));      // SumUp injoignable : la commande est allée jusqu'au paiement
-    const strict = await appeler({ lignes, client: PAYS }, { ...AVEC_CLES, STOCK_STRICT: '1' });
-    assert.strictEqual(strict.code, 503);
-    delete fonction.stockageDeTest;
-    fonctionStock.stockageDeTest = casse;
-    const post = await fonctionStock.handler({ httpMethod: 'POST', body: JSON.stringify({ action: 'verifier', lignes }), headers: {} });
-    assert.strictEqual(post.statusCode, 200);
-    const get = await fonctionStock.handler({ httpMethod: 'GET', headers: {} });
-    assert.strictEqual(get.statusCode, 503);
-    assert.ok(JSON.parse(get.body).cause.includes('indisponible'));
-    delete fonctionStock.stockageDeTest;
-  }));
-
-  await cas('serveur : un autre collection ne dépend d’aucun stockage', async () => {
-    delete fonction.stockageDeTest;
-    const r = await appeler({ lignes: [{ id: 'petit-ocean-baleine', qte: 12 }], client: PAYS }, AVEC_CLES);
-    assert.strictEqual(r.code, 502);
+  await cas('le stock du coffret se règle à la main dans le catalogue', () => {
+    assert.strictEqual(coffret.stock, 20);
+    assert.strictEqual(coffret.stockInitial, 20);
+    const stock = coffret.stock;
+    try {
+      coffret.stock = 17;
+      assert.strictEqual(Catalogue.packagesDisponibles(coffret.id, {}), 17);
+      coffret.stock = 0;
+      assert.strictEqual(Catalogue.packagesDisponibles(coffret.id, {}), 0);
+    } finally { coffret.stock = stock; }
   });
 
-  await cas('retrait : le coffret se décompte à l’enregistrement, et se refuse hors stock ou hors date', async () => {
-    const st = stockageMemoire();
-    fonctionStock.stockageDeTest = st;
-    const post = async (corps) => {
-      const r = await fonctionStock.handler({ httpMethod: 'POST', body: JSON.stringify(corps), headers: {} });
-      return { code: r.statusCode, corps: JSON.parse(r.body) };
-    };
-    Date.now = () => Date.parse(AVANT_FIN);
-    try {
-      assert.strictEqual((await post({ reference: 'JC-20261101-AAAAAA', lignes: [{ id: coffret.id, qte: 19, details: { bonnet: 'Léa' } }] })).code, 200);
-      assert.strictEqual((await post({ action: 'verifier', lignes: [{ id: coffret.id, qte: 2, details: { bonnet: 'Léa' } }] })).code, 409);
-      assert.strictEqual((await post({ reference: 'JC-20261101-BBBBBB', lignes: [{ id: coffret.id, qte: 1, details: { bonnet: 'Léa' } }] })).code, 200);
-      assert.strictEqual((await post({ reference: 'JC-20261101-CCCCCC', lignes: [{ id: coffret.id, qte: 1, details: { bonnet: 'Léa' } }] })).code, 409);
-      assert.strictEqual((await post({ reference: 'JC-20261101-DDDDDD', lignes: [BONNET_OK].map((l) => ({ id: l.id, qte: 1 })) })).code, 400);
-      const lecture = await fonctionStock.handler({ httpMethod: 'GET', headers: {} });
-      const d = JSON.parse(lecture.body);
-      assert.strictEqual(d.coffret.restant, 0);
-      assert.strictEqual(d.coffret.stock, 20);
-      Date.now = () => Date.parse(APRES_FIN);
-      assert.strictEqual((await post({ reference: 'JC-20261101-EEEEEE', lignes: [{ id: coffret.id, qte: 1, details: { bonnet: 'Léa' } }] })).code, 410);
-      assert.strictEqual(JSON.parse((await fonctionStock.handler({ httpMethod: 'GET', headers: {} })).body).offreTerminee, true);
-    } finally { Date.now = maintenantReel; delete fonctionStock.stockageDeTest; }
+  await cas('serveur : un autre collection ne dépend d’aucun stockage', async () => {
+    const r = await appeler({ lignes: [{ id: 'petit-ocean-baleine', qte: 12 }], client: PAYS }, AVEC_CLES);
+    assert.strictEqual(r.code, 502);
   });
 
   console.log(`\n${vert} test(s) au vert, ${rouge} en échec.`);

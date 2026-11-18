@@ -510,6 +510,22 @@ def bloc_compteur(c, pk, court=False):
         </div>'''
 
 
+def texte_stock(pk):
+    """Le stock du coffret est écrit à la main dans catalogue.js (« stock »,
+    mis à jour par la pâtissière), jamais deviné : la page dit exactement
+    ce que le catalogue dit."""
+    n, total = pk.get('stock'), pk.get('stockInitial') or pk.get('stock')
+    if n is None:
+        return 'Quantités limitées'
+    if n <= 0:
+        return 'Épuisé'
+    if n == total:
+        return f'Seulement {n} coffrets disponibles'
+    if n <= 5:
+        return f'Derniers coffrets disponibles : {n} restant{"s" if n > 1 else ""}'
+    return f'{n} coffrets restants sur {total}'
+
+
 def perso_coffret(pk):
     """Le champ du bonnet, obligatoire : le coffret ne s'ajoute pas au
     panier sans lui."""
@@ -546,9 +562,9 @@ def coffret_noel(c, pk):
           </ul>
           <p class="noel-prix-ligne"><span class="noel-prix">{chf(pk['prix'])}</span> {separe} {eco}</p>
 {perso_coffret(pk)}
-          <p class="noel-stock" data-noel-stock>Quantités limitées &middot; {pk['stock']} coffrets au total</p>
+          <p class="noel-stock{' est-epuise' if pk.get('stock') is not None and pk['stock'] <= 0 else ''}" data-noel-stock>{texte_stock(pk)}</p>
           {bloc_compteur(c, pk, court=True)}
-          <button type="button" class="btn btn-primary produit-ajouter" data-package-ajouter="{e(pk['id'])}" data-noel-coffret>Ajouter au panier</button>
+          <button type="button" class="btn btn-primary produit-ajouter" data-package-ajouter="{e(pk['id'])}" data-noel-coffret{' disabled aria-disabled="true"' if pk.get('stock') is not None and pk['stock'] <= 0 else ''}>{'Épuisé' if pk.get('stock') is not None and pk['stock'] <= 0 else 'Ajouter au panier'}</button>
         </div>
       </article>'''
 

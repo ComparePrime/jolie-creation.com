@@ -21,7 +21,6 @@
       seule fois, ici, au bord de l'API.
    ============================================================ */
 const Catalogue = require('../../catalogue.js');
-const Stock = require('../stock.js');
 
 const SUMUP = 'https://api.sumup.com/v0.1/checkouts';
 // Chaque modèle de biscuit est une ligne : un panier riche en compte vite
@@ -59,23 +58,6 @@ function reference(proposee) {
   const jour = new Date().toISOString().slice(0, 10).replace(/-/g, '');
   const alea = Math.random().toString(36).slice(2, 8).toUpperCase().padEnd(6, '0');
   return 'JC-' + jour + '-' + alea;
-}
-
-/* Le stockage du stock réel, remplaçable par les tests. Il n'est ouvert
-   que pour un panier qui contient un article à stock limité : les autres
-   collections ne dépendent d'aucun stockage. */
-function stockage(event) {
-  return exports.stockageDeTest || Stock.storeNetlify(event);
-}
-
-/* État d'un paiement SumUp, pour relire les réservations en attente. */
-async function statutSumUp(id) {
-  const r = await fetch(SUMUP + '/' + encodeURIComponent(id), {
-    headers: { Authorization: 'Bearer ' + process.env.SUMUP_API_KEY }
-  });
-  if (!r.ok) return null;
-  const c = await r.json();
-  return c && c.status ? c.status : null;
 }
 
 exports.handler = async (event) => {
@@ -198,34 +180,16 @@ exports.handler = async (event) => {
 
   const ref = reference(charge.reference);
 
-  /* Stock réel, vérifié et retenu côté serveur. Un article sans stock
-     déclaré n'est pas concerné. Si le stock ne peut pas être vérifié,
-     on refuse plutôt que de risquer de vendre ce qui n'existe plus. */
-  const limite = Object.keys(Stock.consommationLimitee(lignesRecues)).length > 0;
-  let magasin = null;
-  if (limite) {
-    try {
-      magasin = stockage(event);
-      await Stock.reconcilier(magasin, statutSumUp, Date.now());
-      await Stock.reserver(magasin, ref, lignesRecues, Date.now());
-    } catch (e) {
-      if (e instanceof Stock.StockInsuffisant) {
-        return reponse(409, {
-          erreur: 'stock_insuffisant',
-          message: 'Plus assez de stock pour : ' + e.articles.map((a) => a.nom).join(', ') + '. Retirez-le du panier pour continuer.'
-        });
-      }
-      console.error('STOCK INDISPONIBLE', e && e.name, e && e.message);
-      if (Stock.stockStrict()) {
-        return reponse(503, {
-          erreur: 'stock_indisponible',
-          message: 'Le stock n’a pas pu être vérifié. Réessayez dans un instant.'
-        });
-      }
-      // Le stockage est en panne : on ne bloque pas la cliente. La commande
-      // part sans réservation ; elle reste visible dans l'e-mail de commande.
-      magasin = null;
-    }
+  /* Stock : le nombre de coffrets restants est écrit à la main dans
+     catalogue.js (« stock »), mis à jour par la pâtissière. Une commande
+     qui dépasse ce stock, ou un stock à zéro, est refusée ici, quoi
+     qu'affiche la page. */
+  const enRupture = Catalogue.depassementsStock(lignesRecues, {});
+  if (enRupture.length) {
+    return reponse(409, {
+      erreur: 'stock_insuffisant',
+      message: 'Plus assez de stock pour : ' + enRupture.map((a) => a.nom).join(', ') + '. Retirez-le du panier pour continuer.'
+    });
   }
 
   if (centimes <= 0) {
@@ -268,14 +232,11 @@ exports.handler = async (event) => {
 
     if (!appel.ok || !data.hosted_checkout_url) {
       console.error('SumUp checkout error', appel.status, brut.slice(0, 400));
-      if (magasin) await Stock.liberer(magasin, ref).catch(() => {});
       return reponse(502, {
         erreur: 'sumup',
         message: 'La session de paiement n’a pas pu être créée. Réessayez ou contactez-moi directement.'
       });
     }
-
-    if (magasin) await Stock.lierCheckout(magasin, ref, data.id).catch(() => {});
 
     return reponse(200, {
       url: data.hosted_checkout_url,
@@ -288,7 +249,6 @@ exports.handler = async (event) => {
     });
   } catch (e) {
     console.error('SumUp checkout exception', e && e.message);
-    if (magasin) await Stock.liberer(magasin, ref).catch(() => {});
     return reponse(502, {
       erreur: 'sumup',
       message: 'La session de paiement n’a pas pu être créée. Réessayez ou contactez-moi directement.'
