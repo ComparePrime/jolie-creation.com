@@ -907,6 +907,24 @@ const PRIX_TEMOINS = {
     delete fonction.stockageDeTest;
   }));
 
+  await cas('panne du stockage : la cliente n’est pas bloquée (sauf mode strict)', a_l_heure(AVANT_FIN, async () => {
+    const casse = { async lire() { throw new Error('Netlify Blobs indisponible'); }, async ecrire() { throw new Error('KO'); } };
+    const lignes = [{ id: coffret.id, qte: 1, details: { bonnet: 'Léa' } }];
+    fonction.stockageDeTest = casse;
+    const r = await appeler({ lignes, client: PAYS }, AVEC_CLES);
+    assert.strictEqual(r.code, 502, JSON.stringify(r.corps));      // SumUp injoignable : la commande est allée jusqu'au paiement
+    const strict = await appeler({ lignes, client: PAYS }, { ...AVEC_CLES, STOCK_STRICT: '1' });
+    assert.strictEqual(strict.code, 503);
+    delete fonction.stockageDeTest;
+    fonctionStock.stockageDeTest = casse;
+    const post = await fonctionStock.handler({ httpMethod: 'POST', body: JSON.stringify({ action: 'verifier', lignes }), headers: {} });
+    assert.strictEqual(post.statusCode, 200);
+    const get = await fonctionStock.handler({ httpMethod: 'GET', headers: {} });
+    assert.strictEqual(get.statusCode, 503);
+    assert.ok(JSON.parse(get.body).cause.includes('indisponible'));
+    delete fonctionStock.stockageDeTest;
+  }));
+
   await cas('serveur : un autre collection ne dépend d’aucun stockage', async () => {
     delete fonction.stockageDeTest;
     const r = await appeler({ lignes: [{ id: 'petit-ocean-baleine', qte: 12 }], client: PAYS }, AVEC_CLES);

@@ -31,6 +31,13 @@ const CLE = 'etat';
 const RESERVATION_MAX_MS = 24 * 3600 * 1000;
 const ESSAIS = 8;
 
+/* Que faire quand le stockage lui-même est en panne (pas un stock épuisé) ?
+   Par défaut on laisse vendre : bloquer toutes les commandes parce qu'un
+   service de stockage répond mal coûte plus cher que le risque de vendre
+   un coffret de trop, que la pâtissière voit dans la commande. Positionner
+   STOCK_STRICT=1 dans Netlify pour refuser à la place. */
+function stockStrict() { return process.env.STOCK_STRICT === '1'; }
+
 class StockInsuffisant extends Error {
   constructor(articles) {
     super('stock_insuffisant');
@@ -119,8 +126,13 @@ function vuePublique(etat) {
 
 function storeNetlify(event) {
   const blobs = require('@netlify/blobs');
-  // Les fonctions « Lambda » reçoivent leur contexte Blobs de l'événement.
-  if (event && blobs.connectLambda) blobs.connectLambda(event);
+  /* Les fonctions « Lambda » reçoivent leur contexte Blobs de
+     l'événement ; quand il n'y est pas, Netlify le fournit par
+     l'environnement, et getStore() le trouve seul. Un événement sans
+     « blobs » ne doit donc jamais faire échouer l'ouverture. */
+  if (event && event.blobs && blobs.connectLambda) {
+    try { blobs.connectLambda(event); } catch (e) { /* repli : contexte d'environnement */ }
+  }
   const store = blobs.getStore({ name: NOM_STORE, consistency: 'strong' });
   return {
     async lire() {
@@ -179,5 +191,5 @@ async function reconcilier(stockage, statut, maintenant) {
 module.exports = {
   StockInsuffisant, etatVide, reserverDans, confirmerDans, vendreDans, libererDans,
   vuePublique, dejaPris, consommationLimitee,
-  storeNetlify, modifier, lireEtat, reserver, lierCheckout, confirmer, vendre, liberer, reconcilier
+  stockStrict, storeNetlify, modifier, lireEtat, reserver, lierCheckout, confirmer, vendre, liberer, reconcilier
 };

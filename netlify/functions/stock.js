@@ -37,8 +37,11 @@ exports.handler = async (event) => {
       });
     } catch (e) {
       // Pas de chiffre inventé : la page retombe sur « quantités limitées ».
-      console.error('Stock illisible', e && e.message);
-      return reponse(503, { erreur: 'stock_indisponible' });
+      console.error('Stock illisible', e && e.name, e && e.message);
+      // La cause est renvoyée (jamais de secret) : elle dit à qui ouvre
+      // cette adresse pourquoi le stockage ne répond pas.
+      return reponse(503, { erreur: 'stock_indisponible',
+        cause: String((e && e.name) || 'Erreur') + ' : ' + String((e && e.message) || '').slice(0, 200) });
     }
   }
 
@@ -78,7 +81,9 @@ exports.handler = async (event) => {
       return reponse(409, { erreur: 'stock_insuffisant',
         message: 'Plus assez de stock pour : ' + e.articles.map((a) => a.nom).join(', ') + '.' });
     }
-    console.error('Stock indisponible', e && e.message);
+    console.error('STOCK INDISPONIBLE', e && e.name, e && e.message);
+    // Stockage en panne : on laisse passer, sauf mode strict.
+    if (!Stock.stockStrict()) return reponse(200, { ok: true, controle: false });
     return reponse(503, { erreur: 'stock_indisponible', message: 'Le stock n’a pas pu être vérifié. Réessayez dans un instant.' });
   }
 };
