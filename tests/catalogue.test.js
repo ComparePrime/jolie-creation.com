@@ -700,10 +700,10 @@ const PRIX_TEMOINS = {
   await cas('Noël : une seule collection du moment « sans minimum », livraison 9 CHF, stock initial 20', () => {
     assert.strictEqual(noel.venteAUnite, true);
     assert.strictEqual(noel.packagesSeuls, false);
-    assert.strictEqual(coffret.stock, 20);
+    assert.strictEqual(coffret.stockInitial, 20);   // « stock » est le restant, mis à jour à la main
     // Aucun stock inventé pour les biscuits individuels.
     noel.produits.forEach((p) => assert.strictEqual(p.stock, undefined, p.ref));
-    assert.strictEqual(Catalogue.packagesDisponibles(coffret.id, {}), 20);
+    assert.strictEqual(Catalogue.packagesDisponibles(coffret.id, {}), coffret.stock);
   });
 
   await cas('Noël : le bonnet exige sa personnalisation, les autres non', () => {
@@ -831,8 +831,8 @@ const PRIX_TEMOINS = {
   }));
 
   await cas('le stock du coffret se règle à la main dans le catalogue', () => {
-    assert.strictEqual(coffret.stock, 20);
     assert.strictEqual(coffret.stockInitial, 20);
+    assert.ok(coffret.stock >= 0 && coffret.stock <= coffret.stockInitial);
     const stock = coffret.stock;
     try {
       coffret.stock = 17;

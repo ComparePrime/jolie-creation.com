@@ -279,7 +279,7 @@
       "packages": [
         { "ref": "coffret", "nom": "Le coffret Magie de Noël", "prix": 2990,
           "photo": "coffret-biscuits-noel-5-pieces.webp",
-          "stock": 20,
+          "stock": 18,
           "stockInitial": 20,
           "perso": ["bonnet"], "persoRequis": true,
           "finOffre": "2026-12-06T23:59:59+01:00",
