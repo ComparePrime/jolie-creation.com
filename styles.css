@@ -3268,3 +3268,22 @@ a.blog-pastille:hover{ border-color: var(--gold); }
 .blog-nav-suiv{ text-align: right; }
 .blog-lies{ padding: 30px 0 70px; }
 .blog-section-titre{ text-align: center; margin: 0 0 26px; }
+
+/* Page « Demander un devis » : les délais de réservation, avant le
+   formulaire. Un bloc par activité, même vocabulaire visuel que les
+   cartes du site (papier, filet doré, Fraunces). */
+.delais-devis{ padding: 10px 0 20px; }
+.delais-tete{ text-align: center; max-width: 620px; margin: 0 auto 28px; }
+.delais-tete h2{ font-size: clamp(26px, 3.4vw, 34px); margin: 12px 0 10px; }
+.delais-tete p{ margin: 0; color: var(--ink-soft); }
+.delais-grille{ display: grid; gap: 18px; grid-template-columns: 1fr; max-width: 900px; margin: 0 auto; }
+@media (min-width: 720px){ .delais-grille{ grid-template-columns: 1fr 1fr; gap: 22px; } }
+.delai-carte{
+  background: var(--paper); border: 1px solid var(--line); border-top: 3px solid var(--gold);
+  border-radius: 20px; padding: 24px 26px 26px; box-shadow: 0 14px 30px -24px rgba(58,44,30,.35);
+}
+.delai-carte h3{ font-size: 20px; margin: 0 0 8px; }
+.delai-duree{ margin: 0 0 12px; font-size: 15px; color: var(--ink-soft); }
+.delai-chiffre{ font-family: var(--font-display); font-size: 34px; font-weight: 600; line-height: 1; color: var(--gold-deep); margin-right: 6px; }
+.delai-carte p:last-child{ margin: 0; font-size: 15.5px; line-height: 1.6; }
+.delais-pied{ text-align: center; margin: 22px auto 0; max-width: 56ch; font-size: 14.5px; color: var(--ink-soft); }
